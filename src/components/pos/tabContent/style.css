@@ -1,0 +1,14 @@
+.order-items .ant-card-body{
+    padding: 12px !important;
+    border: 1px solid transparent;
+}
+
+.product-items .ant-card-body{
+    padding: 12px !important;
+    border: 1px solid transparent;
+}
+
+.order-items .ant-card-body:hover {
+    border-radius: 8px 8px 8px 8px;
+    border: 1px solid #fb5231;
+}

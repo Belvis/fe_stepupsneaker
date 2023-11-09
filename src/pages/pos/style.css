@@ -1,0 +1,12 @@
+.ant-tabs-nav-wrap {
+    margin-right: 1rem;
+    margin-left: 1rem;
+}
+
+.page-tab{
+    height: 100%;
+}
+
+.page-tab-parent & {
+    height: 100%;
+}
