@@ -56,26 +56,29 @@ import {
   CustomerEdit,
   CustomerList,
   CustomerShow,
-} from "./pages/customers";
-import { EmployeeCreate, EmployeeEdit, EmployeeList } from "./pages/employees";
-import { OrderList, OrderShow } from "./pages/orders";
-import { PaymentMethodList } from "./pages/paymentMethods";
-import { PaymentList } from "./pages/payments";
-import { PointOfSales } from "./pages/pos";
-import { BrandList } from "./pages/product/brands";
-import { ColorList } from "./pages/product/colors";
-import { MaterialList } from "./pages/product/material";
-import {
+  EmployeeCreate,
+  EmployeeEdit,
+  EmployeeList,
+  OrderList,
+  OrderShow,
+  PaymentMethodList,
+  PaymentList,
+  PointOfSales,
+  BrandList,
+  ColorList,
+  MaterialList,
   ProductCreate,
   ProductList,
   ProductShow,
-} from "./pages/product/products";
-import { SizeList } from "./pages/product/sizes";
-import { SoleList } from "./pages/product/soles";
-import { StyleList } from "./pages/product/styles";
-import { TradeMarkList } from "./pages/product/tradeMark";
-import { RoleList } from "./pages/roles";
-import { VoucherCreate, VoucherEdit, VoucherList } from "./pages/vouchers";
+  SizeList,
+  SoleList,
+  StyleList,
+  TradeMarkList,
+  RoleList,
+  VoucherCreate,
+  VoucherEdit,
+  VoucherList,
+} from "./pages/admin";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 // const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
