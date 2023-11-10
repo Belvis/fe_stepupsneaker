@@ -31,7 +31,7 @@ import {
 import dayjs from "dayjs";
 
 // import { Map, MapMarker } from "../../components";
-import { BikeWhiteIcon } from "../../components/icons";
+import { BikeWhiteIcon } from "../../components";
 // import { useOrderCustomKbarActions } from "../../hooks";
 import {
   IEvent,

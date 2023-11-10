@@ -50,6 +50,21 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
         theme={{
           ...RefineThemes.Orange,
           algorithm: mode === "light" ? defaultAlgorithm : darkAlgorithm,
+          // token: {
+          //   // Seed Token
+          //   // colorPrimary: '#00b96b',
+          //   // borderRadius: 2,
+          //   // // Alias Token
+          //   // colorBgContainer: '#f6ffed',
+          // },
+          components: {
+            Table: {
+              headerBg: mode === "light" ? "#fb5231" : "#141414",
+              headerColor: mode === "light" ? "#ffffff" : undefined,
+              // borderColor: mode === "light" ? "#ffffff" : undefined,
+              rowHoverBg: mode === "light" ? "#fff2e8" : undefined,
+            },
+          },
         }}
       >
         {children}

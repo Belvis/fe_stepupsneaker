@@ -1,44 +1,33 @@
+import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { List, NumberField, useTable } from "@refinedev/antd";
 import {
-  useTranslate,
-  IResourceComponentsProps,
-  useDelete,
-  HttpError,
   CrudFilters,
+  HttpError,
+  IResourceComponentsProps,
   getDefaultFilter,
-  useCustom,
+  useDelete,
+  useTranslate,
 } from "@refinedev/core";
-import { EditButton, List, NumberField, useTable } from "@refinedev/antd";
 import {
-  DeleteOutlined,
-  SearchOutlined,
-  IdcardOutlined,
-} from "@ant-design/icons";
-import {
-  Table,
-  Avatar,
-  Space,
-  Typography,
-  Tooltip,
   Button,
+  Card,
+  Col,
   Form,
   Input,
+  Row,
   Select,
+  Space,
+  Table,
+  Typography,
 } from "antd";
 
-import {
-  ICustomer,
-  ICustomerFilterVariables,
-  IPayment,
-  IPaymentFilterVariables,
-} from "../../interfaces";
 import { ColumnsType } from "antd/es/table";
-import { UserStatus } from "../../components/admin/userStatus";
-import { confirmDialog } from "primereact/confirmdialog";
+import dayjs from "dayjs";
 import { debounce } from "lodash";
-import { useEffect, useState } from "react";
+import { tablePaginationSettings } from "../../constants";
+import { IPayment, IPaymentFilterVariables } from "../../interfaces";
 
 const { Text } = Typography;
-import dayjs from "dayjs";
 
 export const PaymentList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
@@ -63,8 +52,6 @@ export const PaymentList: React.FC<IResourceComponentsProps> = () => {
       return customerFilters;
     },
   });
-
-  const { mutate: mutateDelete } = useDelete();
 
   const columns: ColumnsType<IPayment> = [
     {
@@ -131,73 +118,60 @@ export const PaymentList: React.FC<IResourceComponentsProps> = () => {
     },
   ];
 
+  const handleClearFilters = () => {
+    searchFormProps.form?.setFieldValue("q", "");
+    searchFormProps.form?.submit();
+  };
+
   return (
     <List>
-      <Form
-        {...searchFormProps}
-        onValuesChange={debounce(() => {
-          searchFormProps.form?.submit();
-        }, 500)}
-        initialValues={{
-          name: getDefaultFilter("q", filters, "eq"),
-          status: getDefaultFilter("status", filters, "eq"),
-        }}
-      >
-        <Space wrap style={{ marginBottom: "16px" }}>
-          <Text style={{ fontSize: "18px" }} strong>
-            {t("payments.filters.title")}
-          </Text>
-          <Form.Item name="q" noStyle>
-            <Input
-              style={{
-                width: "400px",
+      <Row gutter={[8, 12]} align="middle" justify="center">
+        <Col span={24}>
+          <Card>
+            <Form
+              {...searchFormProps}
+              onValuesChange={debounce(() => {
+                searchFormProps.form?.submit();
+              }, 500)}
+              initialValues={{
+                name: getDefaultFilter("q", filters, "eq"),
               }}
-              placeholder={t("payments.filters.search.placeholder")}
-              suffix={<SearchOutlined />}
-            />
-          </Form.Item>
-          <Form.Item noStyle label={t("payments.fields.status")} name="status">
-            <Select
-              placeholder={t("payments.filters.status.placeholder")}
-              style={{
-                width: "200px",
-              }}
-              options={[
-                {
-                  label: t("enum.userStatuses.ACTIVE"),
-                  value: "ACTIVE",
-                },
-                {
-                  label: t("enum.userStatuses.IN_ACTIVE"),
-                  value: "IN_ACTIVE",
-                },
-                {
-                  label: t("enum.userStatuses.BLOCKED"),
-                  value: "BLOCKED",
-                },
-              ]}
-            />
-          </Form.Item>
-        </Space>
-      </Form>
-      <Table
-        {...tableProps}
-        pagination={{
-          ...tableProps.pagination,
-          pageSizeOptions: [5, 10, 20, 50, 100],
-          showTotal(total: number, range: [number, number]): React.ReactNode {
-            return (
-              <div>
-                {range[0]} - {range[1]} of {total} items
-              </div>
-            );
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-        }}
-        rowKey="id"
-        columns={columns}
-      />
+            >
+              <Space wrap>
+                <Text style={{ fontSize: "18px" }} strong>
+                  {t("payments.filters.title")}
+                </Text>
+                <Form.Item name="q" noStyle>
+                  <Input
+                    style={{
+                      width: "400px",
+                    }}
+                    placeholder={t("payments.filters.search.placeholder")}
+                    suffix={<SearchOutlined />}
+                  />
+                </Form.Item>
+                <Button
+                  icon={<UndoOutlined />}
+                  onClick={() => handleClearFilters()}
+                >
+                  {t("actions.clear")}
+                </Button>
+              </Space>
+            </Form>
+          </Card>
+        </Col>
+        <Col span={24}>
+          <Table
+            {...tableProps}
+            pagination={{
+              ...tableProps.pagination,
+              ...tablePaginationSettings,
+            }}
+            rowKey="id"
+            columns={columns}
+          />
+        </Col>
+      </Row>
     </List>
   );
 };

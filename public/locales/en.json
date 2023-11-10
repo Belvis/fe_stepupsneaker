@@ -120,12 +120,12 @@
             "product": "Search product by keyword",
             "customer": "Search customer by keyword",
             "brand": "Search by product brand name",
-            "material": "Search by product material name",
-            "sole": "Search by product sole name",
-            "style": "Search by product style name",
-            "tradeMark": "Search by product trade mark name",
-            "size": "Search by product size name",
-            "color": "Search by product color name",
+            "material": "Search by material name",
+            "sole": "Search by sole name",
+            "style": "Search by style name",
+            "tradeMark": "Search by trade mark name",
+            "size": "Search by size name",
+            "color": "Search by color name",
             "employee": "Search employee keyword"
         },
         "more": "more"
@@ -452,6 +452,7 @@
     },
     "customers": {
         "customers": "Customers",
+        "addresses": "Addresses",
         "titles": {
             "create": "Create Customer",
             "list": "Customer",
@@ -706,7 +707,9 @@
             },
             "createdAt": "CreatedAt",
             "quantity": "Stock quantity",
-            "status": "Status"
+            "status": "Status",
+            "color": "Color",
+            "size": "Size"
         },
         "filters": {
             "title": "Filters",
@@ -820,62 +823,6 @@
         "tagFilterDescription": "Use tags to filter your search",
         "all": "All",
         "productSearch": "Product Search"
-    },
-    "users": {
-        "users": "Users",
-        "titles": {
-            "edit": "Edit User",
-            "list": "Users",
-            "show": "User Detail"
-        },
-        "fields": {
-            "id": "ID",
-            "avatar": {
-                "label": "Avatar",
-                "description": "Click or drag avatar image to this area to upload."
-            },
-            "firstName": "First Name",
-            "lastName": "Last Name",
-            "gender": {
-                "label": "Gender",
-                "Male": "Male",
-                "Female": "Female"
-            },
-            "gsm": "Gsm Number",
-            "createdAt": "CreatedAt",
-            "isActive": {
-                "label": "Active",
-                "true": "Yes",
-                "false": "No"
-            }
-        },
-        "filter": {
-            "title": "Filters",
-            "search": {
-                "label": "Search",
-                "placeholder": "FirstName, lastName, gsm, etc."
-            },
-            "createdAt": {
-                "label": "Created At"
-            },
-            "gender": {
-                "label": "Gender",
-                "placeholder": "Gender",
-                "male": "Male",
-                "female": "Female"
-            },
-            "isActive": {
-                "label": "Active",
-                "placeholder": "Active status",
-                "true": "Yes",
-                "false": "No"
-            },
-            "submit": "Filter"
-        },
-        "addresses": {
-            "addresses": "Addresses",
-            "address": "Address"
-        }
     },
     "errors": {
         "required": {

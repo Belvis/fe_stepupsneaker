@@ -1,33 +1,45 @@
 import {
-  useTranslate,
-  IResourceComponentsProps,
-  useDelete,
-  HttpError,
-  CrudFilters,
-  getDefaultFilter,
-} from "@refinedev/core";
-import { List, useTable, useModalForm } from "@refinedev/antd";
-import {
   DeleteOutlined,
   EditOutlined,
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { Table, Space, Typography, Form, Input, Select, Tooltip } from "antd";
+import { List, useModalForm, useTable } from "@refinedev/antd";
+import {
+  CrudFilters,
+  HttpError,
+  IResourceComponentsProps,
+  getDefaultFilter,
+  useDelete,
+  useTranslate,
+} from "@refinedev/core";
+import {
+  Button,
+  Card,
+  Col,
+  Form,
+  Input,
+  Row,
+  Space,
+  Table,
+  Tooltip,
+  Typography,
+} from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { confirmDialog } from "primereact/confirmdialog";
 import { CreateRole } from "./create";
 import { EditRole } from "./edit";
-import { Button } from "antd";
 
-import { IRole, IRoleFilterVariables } from "../../interfaces";
 import { debounce } from "lodash";
-import { ProductStatus } from "../../components";
+import { tablePaginationSettings } from "../../constants";
+import { IRole, IRoleFilterVariables } from "../../interfaces";
+import { showDangerConfirmDialog } from "../../utils";
 
 const { Text } = Typography;
 
 export const RoleList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
+
+  const { mutate: mutateDelete } = useDelete();
 
   const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
     IRole,
@@ -69,7 +81,6 @@ export const RoleList: React.FC<IResourceComponentsProps> = () => {
     show: editModalShow,
     id: editId,
     onFinish: editOnFinish,
-    close: editClose,
   } = useModalForm<IRole>({
     action: "edit",
     warnWhenUnsavedChanges: true,
@@ -79,7 +90,6 @@ export const RoleList: React.FC<IResourceComponentsProps> = () => {
     {
       title: "#",
       key: "index",
-      width: "1rem",
       align: "center",
       render: (text, record, index) => (current - 1) * pageSize + index + 1,
     },
@@ -92,7 +102,6 @@ export const RoleList: React.FC<IResourceComponentsProps> = () => {
       title: t("table.actions"),
       dataIndex: "actions",
       key: "actions",
-      width: "10%",
       align: "center",
       render: (_, record) => (
         <Space size="middle">
@@ -117,23 +126,18 @@ export const RoleList: React.FC<IResourceComponentsProps> = () => {
     },
   ];
 
-  const { mutate: mutateDelete } = useDelete();
-
   function handleDelete(id: string): void {
-    confirmDialog({
-      message: t("confirmDialog.delete.message"),
-      header: t("confirmDialog.delete.header"),
-      icon: "pi pi-info-circle",
-      acceptClassName: "p-button-danger",
-      accept: () => {
-        mutateDelete({
-          resource: "roles",
-          id: id,
-        });
+    showDangerConfirmDialog({
+      options: {
+        accept: () => {
+          mutateDelete({
+            resource: "roles",
+            id: id,
+          });
+        },
+        reject: () => {},
       },
-      acceptLabel: t("confirmDialog.delete.acceptLabel"),
-      rejectLabel: t("confirmDialog.delete.rejectLabel"),
-      reject: () => {},
+      t: t,
     });
   }
 
@@ -150,51 +154,54 @@ export const RoleList: React.FC<IResourceComponentsProps> = () => {
         },
       }}
     >
-      <Form
-        {...searchFormProps}
-        onValuesChange={debounce(() => {
-          searchFormProps.form?.submit();
-        }, 500)}
-        initialValues={{
-          q: getDefaultFilter("q", filters, "eq"),
-        }}
-      >
-        <Space wrap style={{ marginBottom: "16px" }}>
-          <Text style={{ fontSize: "18px" }} strong>
-            {t("roles.filters.title")}
-          </Text>
-          <Form.Item name="q" noStyle>
-            <Input
-              style={{
-                width: "400px",
+      <Row gutter={[8, 12]} align="middle" justify="center">
+        <Col span={24}>
+          <Card>
+            <Form
+              {...searchFormProps}
+              onValuesChange={debounce(() => {
+                searchFormProps.form?.submit();
+              }, 500)}
+              initialValues={{
+                q: getDefaultFilter("q", filters, "eq"),
               }}
-              placeholder={t("roles.filters.search.placeholder")}
-              suffix={<SearchOutlined />}
-            />
-          </Form.Item>
-          <Button icon={<UndoOutlined />} onClick={() => handleClearFilters()}>
-            {t("actions.clear")}
-          </Button>
-        </Space>
-      </Form>
-      <Table
-        {...tableProps}
-        pagination={{
-          ...tableProps.pagination,
-          pageSizeOptions: [5, 10, 20, 50, 100],
-          showTotal(total: number, range: [number, number]): React.ReactNode {
-            return (
-              <div>
-                {range[0]} - {range[1]} of {total} items
-              </div>
-            );
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-        }}
-        rowKey="id"
-        columns={columns}
-      />
+            >
+              <Space wrap>
+                <Text style={{ fontSize: "18px" }} strong>
+                  {t("roles.filters.title")}
+                </Text>
+                <Form.Item name="q" noStyle>
+                  <Input
+                    style={{
+                      width: "400px",
+                    }}
+                    placeholder={t("roles.filters.search.placeholder")}
+                    suffix={<SearchOutlined />}
+                  />
+                </Form.Item>
+                <Button
+                  icon={<UndoOutlined />}
+                  onClick={() => handleClearFilters()}
+                >
+                  {t("actions.clear")}
+                </Button>
+              </Space>
+            </Form>
+          </Card>
+        </Col>
+        <Col span={24}>
+          <Table
+            {...tableProps}
+            pagination={{
+              ...tableProps.pagination,
+              ...tablePaginationSettings,
+            }}
+            rowKey="id"
+            columns={columns}
+          />
+        </Col>
+      </Row>
+
       <CreateRole
         onFinish={createOnFinish}
         modalProps={createModalProps}
@@ -203,7 +210,6 @@ export const RoleList: React.FC<IResourceComponentsProps> = () => {
       <EditRole
         id={editId}
         onFinish={editOnFinish}
-        close={editClose}
         modalProps={editModalProps}
         formProps={editFormProps}
       />

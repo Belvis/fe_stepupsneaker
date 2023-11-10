@@ -18,6 +18,25 @@ export interface IOption {
   label: string | React.ReactNode;
 }
 
+export interface ConfirmDialogOptions {
+  message?: string;
+  header?: string;
+  icon?: string;
+  acceptLabel?: string;
+  rejectLabel?: string;
+  acceptClassName?: string;
+  accept: any;
+  reject: any;
+}
+interface QRCodeData {
+  cicNumber: string;
+  idcNumber: string;
+  fullName: string;
+  dob: string;
+  gender: string;
+  address: string;
+  issueDate: string;
+}
 export interface ITransportAddress {
   more: string;
   fullName: string;

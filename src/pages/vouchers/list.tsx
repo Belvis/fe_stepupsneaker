@@ -1,14 +1,4 @@
 import {
-  useTranslate,
-  IResourceComponentsProps,
-  useDelete,
-  HttpError,
-  CrudFilters,
-  getDefaultFilter,
-  useNavigation,
-} from "@refinedev/core";
-import { List, useTable } from "@refinedev/antd";
-import {
   DeleteOutlined,
   DollarOutlined,
   EditOutlined,
@@ -16,24 +6,40 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
+import { List, useTable } from "@refinedev/antd";
 import {
-  Table,
-  Space,
-  Typography,
+  CrudFilters,
+  HttpError,
+  IResourceComponentsProps,
+  getDefaultFilter,
+  useDelete,
+  useNavigation,
+  useTranslate,
+} from "@refinedev/core";
+import {
+  Avatar,
+  Button,
+  Card,
+  Col,
   Form,
   Input,
+  Row,
   Select,
+  Space,
+  Table,
   Tooltip,
-  Avatar,
+  Typography,
 } from "antd";
 import type { ColumnsType } from "antd/es/table";
-import { confirmDialog } from "primereact/confirmdialog";
-import { Button } from "antd";
 
-import { IVoucher, IVoucherFilterVariables } from "../../interfaces";
 import { debounce } from "lodash";
 import { VoucherStatus } from "../../components";
-import dayjs from "dayjs";
+import {
+  getVouccherStatusOptions,
+  tablePaginationSettings,
+} from "../../constants";
+import { IVoucher, IVoucherFilterVariables } from "../../interfaces";
+import { formatTimestamp, showDangerConfirmDialog } from "../../utils";
 
 const { Text } = Typography;
 
@@ -77,6 +83,11 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
       render: (text, record, index) => (current - 1) * pageSize + index + 1,
     },
     {
+      title: t("vouchers.fields.code"),
+      dataIndex: "code",
+      key: "code",
+    },
+    {
       title: t("vouchers.fields.name"),
       dataIndex: "name",
       key: "name",
@@ -87,11 +98,6 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
           <Text style={{ wordBreak: "inherit" }}>{name}</Text>
         </Space>
       ),
-    },
-    {
-      title: t("vouchers.fields.code"),
-      dataIndex: "code",
-      key: "code",
     },
     {
       title: t("vouchers.fields.type"),
@@ -140,9 +146,7 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "startDate",
       key: "startDate",
       render: (_, record) => {
-        const date = dayjs(new Date(record.startDate));
-        const formattedDate = date.format("YYYY-MM-DD HH:mm:ss"); // Định dạng ngày tháng ở đây
-        return <>{formattedDate}</>;
+        return <>{formatTimestamp(record.startDate).dateTimeFormat}</>;
       },
     },
     {
@@ -150,9 +154,7 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "endDate",
       key: "endDate",
       render: (_, record) => {
-        const date = dayjs(new Date(record.endDate));
-        const formattedDate = date.format("YYYY-MM-DD HH:mm:ss"); // Định dạng ngày tháng ở đây
-        return <>{formattedDate}</>;
+        return <>{formatTimestamp(record.endDate).dateTimeFormat}</>;
       },
     },
     {
@@ -195,20 +197,17 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
   const { mutate: mutateDelete } = useDelete();
 
   function handleDelete(id: string): void {
-    confirmDialog({
-      message: t("confirmDialog.delete.message"),
-      header: t("confirmDialog.delete.header"),
-      icon: "pi pi-info-circle",
-      acceptClassName: "p-button-danger",
-      accept: () => {
-        mutateDelete({
-          resource: "vouchers",
-          id: id,
-        });
+    showDangerConfirmDialog({
+      options: {
+        accept: () => {
+          mutateDelete({
+            resource: "vouchers",
+            id: id,
+          });
+        },
+        reject: () => {},
       },
-      acceptLabel: t("confirmDialog.delete.acceptLabel"),
-      rejectLabel: t("confirmDialog.delete.rejectLabel"),
-      reject: () => {},
+      t: t,
     });
   }
 
@@ -220,74 +219,67 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
 
   return (
     <List>
-      <Form
-        {...searchFormProps}
-        onValuesChange={debounce(() => {
-          searchFormProps.form?.submit();
-        }, 500)}
-        initialValues={{
-          q: getDefaultFilter("q", filters, "eq"),
-          status: getDefaultFilter("status", filters, "eq"),
-        }}
-      >
-        <Space wrap style={{ marginBottom: "16px" }}>
-          <Text style={{ fontSize: "18px" }} strong>
-            {t("vouchers.filters.title")}
-          </Text>
-          <Form.Item name="q" noStyle>
-            <Input
-              style={{
-                width: "400px",
+      <Row gutter={[8, 12]}>
+        <Col span={24}>
+          <Card>
+            <Form
+              {...searchFormProps}
+              onValuesChange={debounce(() => {
+                searchFormProps.form?.submit();
+              }, 500)}
+              initialValues={{
+                q: getDefaultFilter("q", filters, "eq"),
+                status: getDefaultFilter("status", filters, "eq"),
               }}
-              placeholder={t("vouchers.filters.search.placeholder")}
-              suffix={<SearchOutlined />}
-            />
-          </Form.Item>
-          <Form.Item noStyle label={t("vouchers.fields.status")} name="status">
-            <Select
-              placeholder={t("vouchers.filters.status.placeholder")}
-              style={{
-                width: "200px",
-              }}
-              options={[
-                {
-                  label: t("enum.vouchersStatuses.ACTIVE"),
-                  value: "ACTIVE",
-                },
-                {
-                  label: t("enum.vouchersStatuses.IN_ACTIVE"),
-                  value: "IN_ACTIVE",
-                },
-                {
-                  label: t("enum.vouchersStatuses.EXPIRED"),
-                  value: "EXPIRED",
-                },
-              ]}
-            />
-          </Form.Item>
-          <Button icon={<UndoOutlined />} onClick={() => handleClearFilters()}>
-            {t("actions.clear")}
-          </Button>
-        </Space>
-      </Form>
-      <Table
-        {...tableProps}
-        pagination={{
-          ...tableProps.pagination,
-          pageSizeOptions: [5, 10, 20, 50, 100],
-          showTotal(total: number, range: [number, number]): React.ReactNode {
-            return (
-              <div>
-                {range[0]} - {range[1]} of {total} items
-              </div>
-            );
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-        }}
-        rowKey="id"
-        columns={columns}
-      />
+            >
+              <Space wrap>
+                <Text style={{ fontSize: "18px" }} strong>
+                  {t("vouchers.filters.title")}
+                </Text>
+                <Form.Item name="q" noStyle>
+                  <Input
+                    style={{
+                      width: "400px",
+                    }}
+                    placeholder={t("vouchers.filters.search.placeholder")}
+                    suffix={<SearchOutlined />}
+                  />
+                </Form.Item>
+                <Form.Item
+                  noStyle
+                  label={t("vouchers.fields.status")}
+                  name="status"
+                >
+                  <Select
+                    placeholder={t("vouchers.filters.status.placeholder")}
+                    style={{
+                      width: "200px",
+                    }}
+                    options={getVouccherStatusOptions(t)}
+                  />
+                </Form.Item>
+                <Button
+                  icon={<UndoOutlined />}
+                  onClick={() => handleClearFilters()}
+                >
+                  {t("actions.clear")}
+                </Button>
+              </Space>
+            </Form>
+          </Card>
+        </Col>
+        <Col span={24}>
+          <Table
+            {...tableProps}
+            pagination={{
+              ...tableProps.pagination,
+              ...tablePaginationSettings,
+            }}
+            rowKey="id"
+            columns={columns}
+          />
+        </Col>
+      </Row>
     </List>
   );
 };

@@ -1,43 +1,31 @@
-import { IResourceComponentsProps, useTranslate } from "@refinedev/core";
 import { Edit, getValueFromEvent, useForm, useSelect } from "@refinedev/antd";
+import { IResourceComponentsProps, useTranslate } from "@refinedev/core";
 import {
-  Form,
-  Select,
-  Upload,
-  Input,
-  Typography,
-  Space,
   Avatar,
-  Row,
   Col,
-  message,
   Divider,
-  InputProps,
-  Button,
-  Modal,
   Flex,
+  Form,
+  Input,
+  InputProps,
+  Row,
+  Select,
+  Space,
+  Typography,
+  Upload,
+  message,
 } from "antd";
 import InputMask from "react-input-mask";
 
-import { IEmployee, IRole } from "../../interfaces";
-import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import type { UploadChangeParam } from "antd/es/upload";
+import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useEffect, useState } from "react";
-import QRScanner from "../../components/qrScanner/QRScanner";
+import { IEmployee, IRole } from "../../interfaces";
+import { getBase64Image } from "../../utils";
+import { getUserStatusOptions } from "../../constants";
 
 const { Text } = Typography;
 const { TextArea } = Input;
-
-const filterOption = (
-  input: string,
-  option?: { label: string; value: number }
-) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
-
-const getBase64 = (img: RcFile, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
 
 export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
@@ -46,17 +34,8 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
 
   const [phoneInputValue, setPhoneInputValue] = useState("");
 
-  const [employeeData, setEmployeeData] = useState<IEmployee>();
-
   const { onFinish, formProps, saveButtonProps, queryResult } =
     useForm<IEmployee>();
-
-  useEffect(() => {
-    const employeeData = queryResult?.data?.data;
-    if (employeeData) {
-      setEmployeeData(employeeData);
-    }
-  }, [queryResult]);
 
   const { selectProps: roleSelectProps } = useSelect<IRole>({
     resource: "roles",
@@ -65,19 +44,6 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
   });
 
   const imageUrl = Form.useWatch("image", formProps.form);
-
-  const [isScanOpen, setScanOpen] = useState(false);
-
-  const handleScanOpen = () => {
-    setScanOpen(!isScanOpen);
-    console.log(isScanOpen);
-  };
-
-  const handleScanClose = () => {
-    setScanOpen(false);
-  };
-
-  const qrScanner = isScanOpen ? <QRScanner /> : null;
 
   const handleOnFinish = (values: any) => {
     onFinish({
@@ -120,7 +86,7 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
     }
     if (info.file.status === "done") {
       // Get this url from response in real world.
-      getBase64(info.file.originFileObj as RcFile, (url) => {
+      getBase64Image(info.file.originFileObj as RcFile, (url) => {
         setLoadingImage(false);
         formProps.form?.setFieldValue("image", url);
       });
@@ -138,16 +104,6 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
           {...formProps}
           style={{ marginTop: 30 }}
           layout="vertical"
-          // initialValues={{
-          //   isActive: true,
-          //   image: employeeData?.image,
-          //   phoneNumber: employeeData?.phoneNumber,
-          //   fullName: employeeData?.fullName,
-          //   email: employeeData?.email,
-          //   role: employeeData?.role ? employeeData?.role.id : "",
-          //   gender: employeeData?.gender,
-          //   address: employeeData?.address,
-          // }}
           onFinish={handleOnFinish}
         >
           <Row gutter={20}>
@@ -288,20 +244,7 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
                     >
                       <Select
                         placeholder={t("employees.fields.gender.placeholder")}
-                        options={[
-                          {
-                            label: t("employees.fields.gender.options.male"),
-                            value: "Male",
-                          },
-                          {
-                            label: t("employees.fields.gender.options.female"),
-                            value: "Female",
-                          },
-                          {
-                            label: t("employees.fields.gender.options.other"),
-                            value: "Other",
-                          },
-                        ]}
+                        options={getUserStatusOptions(t)}
                       />
                     </Form.Item>
                   </Flex>
@@ -328,14 +271,6 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
             </Col>
           </Row>
         </Form>
-        <Modal
-          title="Scan QR Code"
-          open={isScanOpen}
-          onOk={handleScanClose}
-          onCancel={handleScanClose}
-        >
-          <div>{qrScanner}</div>
-        </Modal>
       </Edit>
     </>
   );

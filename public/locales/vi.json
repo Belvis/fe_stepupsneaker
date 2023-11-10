@@ -1,0 +1,826 @@
+{
+    "pages": {
+      "login": {
+        "title": "Đăng nhập vào tài khoản của bạn",
+        "signin": "Đăng nhập",
+        "signup": "Đăng ký",
+        "divider": "hoặc",
+        "fields": {
+          "email": "E-mail",
+          "password": "Mật khẩu"
+        },
+        "errors": {
+          "validEmail": "Địa chỉ email không hợp lệ"
+        },
+        "buttons": {
+          "submit": "Đăng nhập",
+          "forgotPassword": "Quên mật khẩu?",
+          "noAccount": "Bạn chưa có tài khoản?",
+          "rememberMe": "Tìm lại mật khẩu cũ"
+        }
+      },
+      "forgotPassword": {
+        "title": "Quên mật khẩu?",
+        "fields": {
+          "email": "E-mail"
+        },
+        "errors": {
+          "validEmail": "Địa chỉ email không hợp lệ"
+        },
+        "buttons": {
+          "submit": "Đặt lại mật khẩu"
+        }
+      },
+      "register": {
+        "title": "Đăng ký tài khoản mới",
+        "fields": {
+          "email": "E-mail",
+          "password": "Mật khẩu"
+        },
+        "errors": {
+          "validEmail": "Địa chỉ email không hợp lệ"
+        },
+        "buttons": {
+          "submit": "Đăng ký",
+          "haveAccount": "Bạn đã có tài khoản?"
+        }
+      },
+      "updatePassword": {
+        "title": "Cập nhật mật khẩu",
+        "fields": {
+          "password": "Mật khẩu mới",
+          "confirmPassword": "Xác nhận mật khẩu mới"
+        },
+        "errors": {
+          "confirmPasswordNotMatch": "Mật khẩu không phù hợp"
+        },
+        "buttons": {
+          "submit": "Cập nhật"
+        }
+      },
+      "error": {
+        "404": "Xin lỗi, trang bạn truy cập không tồn tại.",
+        "info": "Có thể bạn đã quên thêm thành phần{{action}} cho {{resource}}.",
+        "resource404": "Bạn có chắc là bạn đã tạo {{resource}}.",
+        "backHome": "Về trang chủ"
+      }
+    },
+    "actions": {
+      "list": "Danh sách",
+      "create": "Tạo mới",
+      "edit": "Chỉnh sửa",
+      "show": "Chi tiết",
+      "delete": "Xóa",
+      "clear": "Làm mới",
+      "setDefault": "Đặt mặc định",
+      "apply": "Áp dụng",
+      "remove": "Loại bỏ",
+      "submit": "Xác nhận",
+      "pay": "THANH TOÁN",
+      "payConfirm": "Xác nhận thanh toán",
+      "proceedPay": "TIẾN HÀNH THANH TOÁN",
+      "calculateShipping": "Tính phí vận chuyển",
+      "showAddress": "Hiển thị địa chỉ của người dùng"
+    },
+    "buttons": {
+      "pos": "Bán hàng tại quầy",
+      "goBackAdmin": "Quay lại trang quản trị",
+      "add": "Thêm",
+      "create": "Tạo",
+      "save": "Lưu",
+      "logout": "Đăng xuất",
+      "delete": "Xóa",
+      "edit": "Chỉnh sửa",
+      "cancel": "Hủy",
+      "confirm": "Bạn có chắc không?",
+      "filter": "Lọc",
+      "clear": "Làm mới",
+      "refresh": "Làm mới",
+      "show": "Xem chi tiết",
+      "undo": "Hoàn tác",
+      "import": "Nhập",
+      "export": "Xuất",
+      "clone": "Clone",
+      "accept": "Chấp nhận",
+      "acceptAll": "Chấp nhận tất cả",
+      "reject": "Từ chối",
+      "rejectAll": "Từ chối tất cả",
+      "nextStep": "Kế tiếp",
+      "previousStep": "Trước"
+    },
+    "loading": "Đang tải",
+    "tags": {
+      "clone": "Clone"
+    },
+    "table": {
+      "actions": "Hành động"
+    },
+    "search": {
+      "placeholder": {
+        "product": "Tìm kiếm sản phẩm theo từ khóa",
+        "customer": "Tìm kiếm khách hàng theo từ khóa",
+        "brand": "Tìm kiếm theo tên thương hiệu",
+        "material": "Tìm kiếm theo tên chất liệu",
+        "sole": "Tìm kiếm theo tên đế giày",
+        "style": "Tìm kiếm theo tên kiểu dáng",
+        "tradeMark": "Tìm kiếm theo tên thương hiệu",
+        "size": "Tìm kiếm theo tên kích thước",
+        "color": "Tìm kiếm theo tên màu",
+        "employee": "Tìm kiếm từ khóa nhân viên"
+      },
+      "more": "Xem thêm"
+    },
+    "warnWhenUnsavedChanges": "Bạn có chắc bạn muốn rời đi? Bạn có dữ liệu thay đổi chưa được lưu.",
+    "notifications": {
+      "success": "Thành công",
+      "error": "Lỗi (mã trạng thái: {{statusCode}})",
+      "undoable": "Bạn có {{seconds}} giây để hoàn tác",
+      "createSuccess": "Thành công trong việc tạo {{resource}}",
+      "createError": "Đã xảy ra lỗi khi tạo {{resource}} (mã trạng thái: {{statusCode}})",
+      "deleteSuccess": "Đã xóa thành công {{resource}}",
+      "deleteError": "Lỗi khi xóa {{resource}} (mã trạng thái: {{statusCode}})",
+      "editSuccess": "Đã chỉnh sửa thành công {{resource}}",
+      "editError": "Lỗi khi chỉnh sửa {{resource}} (mã trạng thái: {{statusCode}})",
+      "importProgress": "Nhập: {{processed}}/{{total}}"
+    },
+    "colors": {
+      "colors": "Màu sắc",
+      "titles": {
+        "create": "Tạo Màu sắc",
+        "list": "Màu sắc",
+        "edit": "Chỉnh sửa Màu sắc"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên",
+        "code": "Mã màu",
+        "status": "Trạng thái"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm theo tên, mã"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "brands": {
+      "brands": "Nhãn hiệu",
+      "titles": {
+        "create": "Tạo Nhãn hiệu",
+        "list": "Nhãn hiệu",
+        "edit": "Chỉnh sửa Nhãn hiệu"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên",
+        "status": "Trạng thái"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "styles": {
+      "styles": "Kiểu dáng",
+      "titles": {
+        "create": "Tạo Kiểu dáng",
+        "list": "Kiểu dáng",
+        "edit": "Chỉnh sửa Kiểu dáng"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên",
+        "status": "Trạng thái"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "materials": {
+      "materials": "Vật Liệu",
+      "titles": {
+        "create": "Tạo Vật Liệu",
+        "list": "Vật Liệu",
+        "edit": "Chỉnh sửa Vật Liệu"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên",
+        "status": "Trạng thái"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "trade-marks": {
+      "trade-marks": "Nhãn hiệu",
+      "titles": {
+        "create": "Tạo Nhãn hiệu",
+        "list": "Nhãn hiệu",
+        "edit": "Chỉnh sửa Nhãn hiệu"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên",
+        "status": "Trạng thái"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "soles": {
+      "soles": "Đế Giày",
+      "titles": {
+        "create": "Tạo Đế Giày",
+        "list": "Đế Giày",
+        "edit": "Chỉnh sửa Đế Giày"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên",
+        "status": "Trạng thái"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "sizes": {
+      "sizes": "Kích Cỡ",
+      "titles": {
+        "create": "Tạo Kích Cỡ",
+        "list": "Kích Cỡ",
+        "edit": "Chỉnh sửa Kích Cỡ"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên",
+        "status": "Trạng thái"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "vouchers": {
+      "vouchers": "Khuyễn Mãi",
+      "titles": {
+        "create": "Tạo Khuyễn Mãi",
+        "list": "Khuyễn Mãi",
+        "edit": "Chỉnh sửa Khuyễn Mãi"
+      },
+      "fields": {
+        "id": "ID",
+        "code": "Mã",
+        "name": "Tên",
+        "status": "Trạng thái",
+        "type": "Loại",
+        "value": "Giá trị",
+        "constraint": "Điều kiện",
+        "quantity": "Số lượng",
+        "startDate": "Ngày bắt đầu",
+        "endDate": "Ngày kết thúc",
+        "images": {
+          "description": "Thêm hình ảnh Khuyễn Mãi",
+          "validation": "phải là 1080x1080 px"
+        },
+        "voucherRange": "Ngày"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      },
+      "type": {
+        "PERCENTAGE": "Phần trăm",
+        "CASH": "Tiền mặt"
+      },
+      "steps": {
+        "content": "Nội dung",
+        "relations": "quan hệ"
+      }
+    },
+    "employees": {
+      "employees": "Nhân Viên",
+      "titles": {
+        "create": "Tạo Nhân Viên",
+        "list": "Nhân Viên",
+        "edit": "Chỉnh sửa Nhân Viên"
+      },
+      "fields": {
+        "id": "ID",
+        "fullName": "Họ và tên",
+        "phone": "Điện thoại",
+        "address": "Địa chỉ",
+        "email": "E-mail",
+        "dateOfBirth": "Ngày sinh",
+        "gender": {
+          "label": "Giới tính",
+          "placeholder": "Chọn giới tính",
+          "options": {
+            "male": "Nam",
+            "female": "Nữ",
+            "other": "Khác"
+          }
+        },
+        "role": "Vai trò",
+        "status": "Trạng thái",
+        "password": "Mật khẩu",
+        "phoneNumber": "Số điện thoại",
+        "images": {
+          "description": "Thêm hình ảnh Nhân Viên",
+          "validation": "phải là 1080x1080 px"
+        }
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo từ khoá"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "roles": {
+      "roles": "Chức Vụ",
+      "titles": {
+        "create": "Tạo Chức Vụ",
+        "list": "Chức Vụ",
+        "edit": "Chỉnh sửa Chức Vụ"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        }
+      }
+    },
+    "payment-methods": {
+      "payment-methods": "Phương thức thanh toán",
+      "titles": {
+        "create": "Tạo phương thức thanh toán",
+        "list": "Phương thức thanh toán",
+        "edit": "Chỉnh sửa phương thức thanh toán"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        }
+      }
+    },
+    "customers": {
+      "customers": "Khách Hàng",
+      "addresses": "Địa chỉ",
+      "titles": {
+        "create": "Tạo Khách Hàng",
+        "list": "Khách Hàng",
+        "edit": "Chỉnh sửa Khách Hàng"
+      },
+      "fields": {
+        "id": "ID",
+        "fullName": "Họ và tên",
+        "phone": "Điện thoại",
+        "address": "Địa chỉ",
+        "email": "E-mail",
+        "dateOfBirth": "Ngày sinh",
+        "gender": {
+          "label": "Giới tính",
+          "placeholder": "Chọn giới tính",
+          "options": {
+            "male": "Nam",
+            "female": "Nữ",
+            "other": "Khác"
+          }
+        },
+        "status": "Trạng thái",
+        "password": "Mật khẩu",
+        "phoneNumber": "Số điện thoại",
+        "images": {
+          "description": "Thêm hình ảnh khách hàng",
+          "validation": "phải là 1080x1080 px"
+        },
+        "province": {
+          "label": "Tỉnh",
+          "placeholder": "Chọn tỉnh"
+        },
+        "district": {
+          "label": "Huyện",
+          "placeholder": "Chọn quận"
+        },
+        "ward": {
+          "label": "Phường",
+          "placeholder": "Chọn phường"
+        },
+        "more": "Số nhà"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên, điện thoại, email và địa chỉ"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Tìm kiếm theo trạng thái"
+        },
+        "gender": {
+          "label": "Giới tính",
+          "placeholder": "Tìm kiếm theo giới tính"
+        }
+      }
+    },
+    "dashboard": {
+      "title": "Trang chủ",
+      "deliveryMap": {
+        "title": "Bản đồ giao hàng"
+      },
+      "orders": {
+        "title": "Đơn hàng"
+      },
+      "totalSales": {
+        "title": "Tổng doanh thu"
+      },
+      "dailyRevenue": {
+        "title": "Thu nhập hàng ngày"
+      },
+      "dailyOrders": {
+        "title": "Đơn hàng hàng ngày"
+      },
+      "newCustomers": {
+        "title": "Những khách hàng mới"
+      },
+      "timeline": {
+        "title": "Mốc thời gian",
+        "orderStatuses": {
+          "pending": "Đang chuẩn bị đơn hàng",
+          "ready": "Đơn hàng đã sẵn sàng",
+          "on the way": "Đơn hàng đang trên đường tới",
+          "delivered": "Đơn hàng được giao",
+          "cancelled": "Đơn hàng bị hủy"
+        }
+      },
+      "recentOrders": {
+        "title": "Đơn đặt hàng gần đây"
+      },
+      "trendingMenus": {
+        "title": "Xu hướng hàng ngày"
+      }
+    },
+    "enum": {
+      "orderStatuses": {
+        "PENDING": "Chưa giải quyết",
+        "WAIT_FOR_CONFIRMATION": "Đang chờ xác nhận",
+        "WAIT_FOR_DELIVERY": "Sẵn sàng",
+        "DELIVERING": "Đang giao",
+        "COMPLETED": "Hoàn thành",
+        "CANCELED": "Đã hủy",
+        "EXPIRED": "Hết hạn",
+        "RETURNED": "Trả lại",
+        "EXCHANGED": "Đổi hàng"
+      },
+      "productStatuses": {
+        "IN_ACTIVE": "Ngừng hoạt động",
+        "ACTIVE": "Đang hoạt động"
+      },
+      "userStatuses": {
+        "IN_ACTIVE": "Ngừng hoạt động",
+        "ACTIVE": "Đang hoạt động",
+        "BLOCKED": "Bị chặn"
+      },
+      "vouchersStatuses": {
+        "IN_ACTIVE": "Ngừng hoạt động",
+        "ACTIVE": "Đang hoạt động",
+        "EXPIRED": "Hết hạn"
+      }
+    },
+    "orders": {
+      "orders": "Đơn Hàng",
+      "titles": {
+        "list": "Đơn Hàng",
+        "show": "Chi tiết Đơn Hàng"
+      },
+      "fields": {
+        "code": "Mã",
+        "id": "ID",
+        "status": "Trạng thái",
+        "customer": "Khách hàng",
+        "employee": "Nhân viên",
+        "voucher": "Khuyễn mãi",
+        "orderDetails": "Chi tiết đơn hàng",
+        "createdAt": "Tạo lúc",
+        "totalPrice": "Tổng cộng",
+        "itemsAmount": "{{amount}} sản phẩm",
+        "note": "Ghi chú đơn hàng",
+        "type": {
+          "title": "Loại",
+          "ONLINE": "Trực tuyến",
+          "OFFLINE": "Ngoại tuyến"
+        }
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tìm kiếm",
+          "placeholder": "Mã đơn hàng, Người dùng, v.v."
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Tình trạng đặt hàng"
+        },
+        "createdAt": {
+          "label": "Được tạo lúc"
+        },
+        "submit": "Lọc"
+      },
+      "deliverables": {
+        "deliverables": "Chi tiết đơn hàng",
+        "fields": {
+          "items": "Sản phẩm",
+          "quantity": "Số lượng",
+          "price": "Giá",
+          "total": "Tổng cộng"
+        },
+        "mainTotal": "TỔNG TIỀN HÀNG"
+      },
+      "tab": {
+        "label": "Đơn Hàng",
+        "discount": "Giảm giá",
+        "amountDue": "Khách cần trả",
+        "retailCustomer": "Khách lẻ",
+        "customerPay": "Khách hàng thanh toán",
+        "change": "Tiền thừa",
+        "cod": "Thanh toán khi giao hàng",
+        "shippingMoney": "Tiền vận chuyển"
+      },
+      "transportAddress": {
+        "name": "Tên người nhận",
+        "phoneNumber": "Số điện thoại"
+      }
+    },
+    "payments": {
+      "payments": "Thanh toán",
+      "titles": {
+        "multiple": "Thanh toán nhiều phương thức",
+        "list": "Thanh toán",
+        "show": "Chi tiết Thanh toán"
+      },
+      "fields": {
+        "id": "ID",
+        "order": "Đơn hàng",
+        "paymentMethod": "Phương thức thanh toán",
+        "transactionCode": "Mã giao dịch",
+        "totalMoney": "Tổng số tiền",
+        "description": "Mô tả",
+        "money": "Số tiền",
+        "amountDue": "Khách cần trả",
+        "customerPay": "Khách hàng thanh toán",
+        "customer": "Khách hàng",
+        "createdAt": "Thời gian"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tìm kiếm",
+          "placeholder": "Mã đơn hàng, Người dùng, v.v."
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Tình trạng đặt hàng"
+        },
+        "createdAt": {
+          "label": "Được tạo tại"
+        },
+        "submit": "Lọc"
+      },
+      "tab": {
+        "label": "Đặt hàng",
+        "discount": "Giảm giá",
+        "amountDue": "Khách cần trả",
+        "retailCustomer": "Khách lẻ",
+        "customerPay": "Khách hàng thanh toán",
+        "change": "Tiền thừa"
+      }
+    },
+    "products": {
+      "products": "Sản phẩm",
+      "noProducts": "Không có sản phẩm",
+      "titles": {
+        "list": "Sản phẩm",
+        "create": "Tạo Sản phẩm",
+        "edit": "Chỉnh sửa Sản phẩm"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên",
+        "code": "Mã",
+        "description": "Mô tả",
+        "price": "Giá",
+        "images": {
+          "label": "Hình ảnh",
+          "description": "Thêm hình ảnh sản phẩm",
+          "validation": "phải là 1080x1080 px"
+        },
+        "createdAt": "Tạo lúc",
+        "quantity": "Số lượng tồn",
+        "status": "Trạng thái",
+        "color": "Màu sắc",
+        "size": "Kích cỡ"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tên",
+          "placeholder": "Tìm kiếm theo tên"
+        },
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        }
+      }
+    },
+    "productDetails": {
+      "productDetails": "Chi tiết sản phẩm",
+      "fields": {
+        "id": "Id",
+        "name": "Tên",
+        "quantity": "Số lượng",
+        "price": "Giá",
+        "image": "Hình ảnh",
+        "size": "Kích cỡ",
+        "color": "Màu sắc",
+        "status": "Trạng thái"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "status": {
+          "label": "Trạng thái",
+          "placeholder": "Lọc theo trạng thái"
+        },
+        "brand": {
+          "label": "Thương hiệu",
+          "placeholder": "Lọc theo thương hiệu"
+        },
+        "color": {
+          "label": "Màu sắc",
+          "placeholder": "Lọc theo màu"
+        },
+        "material": {
+          "label": "Vật liệu",
+          "placeholder": "Lọc theo vật liệu"
+        },
+        "size": {
+          "label": "Kích cỡ",
+          "placeholder": "Lọc theo kích thước"
+        },
+        "sole": {
+          "label": "Duy Nhất",
+          "placeholder": "Lọc theo đế"
+        },
+        "style": {
+          "label": "Phong cách",
+          "placeholder": "Lọc theo kiểu"
+        },
+        "tradeMark": {
+          "label": "Nhãn hiệu",
+          "placeholder": "Lọc theo nhãn hiệu"
+        },
+        "priceMax": {
+          "label": "Giá tối đa",
+          "placeholder": "Lọc theo Giá tối đa"
+        },
+        "priceMin": {
+          "label": "Giá tối thiểu",
+          "placeholder": "Lọc theo giá tối thiểu"
+        },
+        "quantity": {
+          "label": "Số lượng",
+          "placeholder": "Lọc theo số lượng"
+        }
+      }
+    },
+    "reviews": {
+      "reviews": "Đánh giá",
+      "titles": {
+        "list": "Đánh giá"
+      },
+      "fields": {
+        "user": "Người dùng",
+        "orderId": "ID đơn hàng",
+        "review": "Ôn tập",
+        "rating": "Xếp hạng"
+      }
+    },
+    "errors": {
+      "required": {
+        "field": "'{{ field }}' không được để trống",
+        "common": "Trường này là bắt buộc",
+        "min": "Trường này ít nhất phải có {{ min }} ký tự",
+        "max": "Trường này phải có nhiều nhất {{ max }} ký tự",
+        "invalidMail": "Dà địa chỉ email không hợp lệ"
+      }
+    },
+    "userSelect": {
+      "product": {
+        "brand": "Thương hiệu",
+        "material": "Vật liệu",
+        "sole": "Đế",
+        "style": "Kiểu dáng",
+        "tradeMark": "Nhãn hiệu",
+        "size": "Kích cỡ",
+        "color": "Màu sắc"
+      }
+    },
+    "confirmDialog": {
+      "delete": {
+        "message": "Bạn có chắc không?",
+        "header": "Xác nhận xóa!",
+        "acceptLabel": "CÓ",
+        "rejectLabel": "KHÔNG"
+      },
+      "edit": {
+        "message": "Bạn có chắc muốn tiếp tục?",
+        "header": "Xác nhận!",
+        "acceptLabel": "CÓ",
+        "rejectLabel": "KHÔNG"
+      }
+    },
+    "pos": {
+        "title": "Bán hàng tại quầy"
+    },
+    "shop": {
+        "title": "Cửa hàng"
+    },
+    "transactions": {
+        "title": "Giao dịch"
+    }
+  }

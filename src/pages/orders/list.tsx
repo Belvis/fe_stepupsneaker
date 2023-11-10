@@ -42,6 +42,7 @@ import { IOrder, IOrderFilterVariables } from "../../interfaces";
 import { ColumnsType } from "antd/es/table";
 import { OrderActions, OrderStatus } from "../../components";
 import { debounce } from "lodash";
+import { tablePaginationSettings } from "../../constants";
 
 const { RangePicker } = DatePicker;
 const { Text, Title } = Typography;
@@ -249,16 +250,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
         {...tableProps}
         pagination={{
           ...tableProps.pagination,
-          pageSizeOptions: [5, 10, 20, 50, 100],
-          showTotal(total: number, range: [number, number]): React.ReactNode {
-            return (
-              <div>
-                {range[0]} - {range[1]} of {total} items
-              </div>
-            );
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
+          ...tablePaginationSettings,
         }}
         rowKey="id"
         columns={columns}

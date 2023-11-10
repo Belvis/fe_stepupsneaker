@@ -1,38 +1,36 @@
-import {
-  useTranslate,
-  IResourceComponentsProps,
-  useDelete,
-  useNavigation,
-  HttpError,
-  CrudFilters,
-  getDefaultFilter,
-} from "@refinedev/core";
+import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
 import { EditButton, List, useTable } from "@refinedev/antd";
 import {
-  DeleteOutlined,
-  SearchOutlined,
-  IdcardOutlined,
-} from "@ant-design/icons";
+  CrudFilters,
+  HttpError,
+  IResourceComponentsProps,
+  getDefaultFilter,
+  useDelete,
+  useTranslate,
+} from "@refinedev/core";
 import {
-  Table,
   Avatar,
-  Space,
-  Typography,
-  Tooltip,
   Button,
+  Card,
+  Col,
   Form,
   Input,
+  Row,
   Select,
+  Space,
+  Table,
+  Tooltip,
+  Typography,
 } from "antd";
 
-import { IEmployee, IEmployeeFilterVariables } from "../../interfaces";
 import { ColumnsType } from "antd/es/table";
-import { UserStatus } from "../../components/admin/userStatus";
-import { confirmDialog } from "primereact/confirmdialog";
 import { debounce } from "lodash";
+import { UserStatus } from "../../components";
+import { getUserStatusOptions, tablePaginationSettings } from "../../constants";
+import { IEmployee, IEmployeeFilterVariables } from "../../interfaces";
+import { showDangerConfirmDialog } from "../../utils";
 
 const { Text } = Typography;
-import dayjs from "dayjs";
 
 export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
@@ -67,20 +65,17 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
   const { mutate: mutateDelete } = useDelete();
 
   function handleDelete(id: string): void {
-    confirmDialog({
-      message: t("confirmDialog.delete.message"),
-      header: t("confirmDialog.delete.header"),
-      icon: "pi pi-info-circle",
-      acceptClassName: "p-button-danger",
-      accept: () => {
-        mutateDelete({
-          resource: "employees",
-          id: id,
-        });
+    showDangerConfirmDialog({
+      options: {
+        accept: () => {
+          mutateDelete({
+            resource: "employees",
+            id: id,
+          });
+        },
+        reject: () => {},
       },
-      acceptLabel: t("confirmDialog.delete.acceptLabel"),
-      rejectLabel: t("confirmDialog.delete.rejectLabel"),
-      reject: () => {},
+      t: t,
     });
   }
 
@@ -127,7 +122,6 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
       title: t("employees.fields.address"),
       dataIndex: "address",
       key: "address",
-      width: "10%",
     },
     {
       title: t("employees.fields.status"),
@@ -168,71 +162,61 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
 
   return (
     <List>
-      <Form
-        {...searchFormProps}
-        onValuesChange={debounce(() => {
-          searchFormProps.form?.submit();
-        }, 500)}
-        initialValues={{
-          name: getDefaultFilter("q", filters, "eq"),
-          status: getDefaultFilter("status", filters, "eq"),
-        }}
-      >
-        <Space wrap style={{ marginBottom: "16px" }}>
-          <Text style={{ fontSize: "18px" }} strong>
-            {t("employees.filters.title")}
-          </Text>
-          <Form.Item name="q" noStyle>
-            <Input
-              style={{
-                width: "400px",
+      <Row gutter={[8, 12]}>
+        <Col span={24}>
+          <Card>
+            <Form
+              {...searchFormProps}
+              onValuesChange={debounce(() => {
+                searchFormProps.form?.submit();
+              }, 500)}
+              initialValues={{
+                name: getDefaultFilter("q", filters, "eq"),
+                status: getDefaultFilter("status", filters, "eq"),
               }}
-              placeholder={t("employees.filters.search.placeholder")}
-              suffix={<SearchOutlined />}
-            />
-          </Form.Item>
-          <Form.Item noStyle label={t("employees.fields.status")} name="status">
-            <Select
-              placeholder={t("employees.filters.status.placeholder")}
-              style={{
-                width: "200px",
-              }}
-              options={[
-                {
-                  label: t("enum.userStatuses.ACTIVE"),
-                  value: "ACTIVE",
-                },
-                {
-                  label: t("enum.userStatuses.IN_ACTIVE"),
-                  value: "IN_ACTIVE",
-                },
-                {
-                  label: t("enum.userStatuses.BLOCKED"),
-                  value: "BLOCKED",
-                },
-              ]}
-            />
-          </Form.Item>
-        </Space>
-      </Form>
-      <Table
-        {...tableProps}
-        pagination={{
-          ...tableProps.pagination,
-          pageSizeOptions: [5, 10, 20, 50, 100],
-          showTotal(total: number, range: [number, number]): React.ReactNode {
-            return (
-              <div>
-                {range[0]} - {range[1]} of {total} items
-              </div>
-            );
-          },
-          showQuickJumper: true,
-          showSizeChanger: true,
-        }}
-        rowKey="id"
-        columns={columns}
-      />
+            >
+              <Space wrap>
+                <Text style={{ fontSize: "18px" }} strong>
+                  {t("employees.filters.title")}
+                </Text>
+                <Form.Item name="q" noStyle>
+                  <Input
+                    style={{
+                      width: "400px",
+                    }}
+                    placeholder={t("employees.filters.search.placeholder")}
+                    suffix={<SearchOutlined />}
+                  />
+                </Form.Item>
+                <Form.Item
+                  noStyle
+                  label={t("employees.fields.status")}
+                  name="status"
+                >
+                  <Select
+                    placeholder={t("employees.filters.status.placeholder")}
+                    style={{
+                      width: "200px",
+                    }}
+                    options={getUserStatusOptions(t)}
+                  />
+                </Form.Item>
+              </Space>
+            </Form>
+          </Card>
+        </Col>
+        <Col span={24}>
+          <Table
+            {...tableProps}
+            pagination={{
+              ...tableProps.pagination,
+              ...tablePaginationSettings,
+            }}
+            rowKey="id"
+            columns={columns}
+          />
+        </Col>
+      </Row>
     </List>
   );
 };

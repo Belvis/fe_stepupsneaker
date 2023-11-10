@@ -1,3 +1,4 @@
+import { Edit, getValueFromEvent, useForm } from "@refinedev/antd";
 import {
   IResourceComponentsProps,
   useApiUrl,
@@ -7,48 +8,39 @@ import {
   useParsed,
   useTranslate,
 } from "@refinedev/core";
-import { Edit, getValueFromEvent, useForm } from "@refinedev/antd";
 import {
+  Avatar,
+  Card,
+  Col,
+  DatePicker,
   Form,
   Input,
-  Avatar,
-  Row,
-  Col,
-  Typography,
-  Space,
-  Radio,
-  InputProps,
-  Select,
   InputNumber,
+  Radio,
+  Row,
+  Select,
+  Space,
+  Typography,
   Upload,
   message,
-  DatePicker,
-  Card,
-  Flex,
-  Button,
 } from "antd";
-import InputMask from "react-input-mask";
 
-import { ICustomer, IVoucher } from "../../interfaces";
+import { ColumnsType } from "antd/es/table";
 import {
   RcFile,
   UploadChangeParam,
   UploadFile,
   UploadProps,
 } from "antd/es/upload";
-import { useEffect, useState } from "react";
 import dayjs from "dayjs";
-import Table, { ColumnsType } from "antd/es/table";
-import { confirmDialog } from "primereact/confirmdialog";
+import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
+import { CustomerVoucherTable } from "../../components";
+import { getVouccherStatusOptions } from "../../constants";
+import { ICustomer, IVoucher } from "../../interfaces";
+import { formatTimestamp, getBase64Image } from "../../utils";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
-
-const getBase64 = (img: RcFile, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
 
 export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
@@ -57,10 +49,6 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   const [successFlag, setSuccessFlag] = useState(true);
   const [loadingImage, setLoadingImage] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-  const [selectedEligibleCustomerIds, setselectedEligibleCustomerIds] =
-    useState<React.Key[]>([]);
-  const [selectedInEligibleCustomerIds, setselectedInEligibleCustomerIds] =
-    useState<React.Key[]>([]);
 
   const [eligibleCustomers, setEligibleCustomers] = useState<ICustomer[]>([]);
   const [inEligibleCustomers, setInEligibleCustomers] = useState<ICustomer[]>(
@@ -107,8 +95,6 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
 
   useEffect(() => {
     if (successFlag) {
-      setEligibleCustomers([]);
-      setInEligibleCustomers([]);
       refetchEligibleCustomer();
       refetchInEligibleCustomer();
       setSuccessFlag(false);
@@ -133,7 +119,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  function handleInEligibleCustomerVoucher() {
+  function handleInEligibleCustomerVoucher(
+    selectedIds: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ) {
     setLoadingInEligible(true);
     try {
       mutateCreate(
@@ -141,14 +130,14 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
           resource: "customerVoucher",
           values: {
             voucher: [id],
-            customer: selectedInEligibleCustomerIds,
+            customer: selectedIds,
           },
         },
         {
           onSuccess: () => {
             setSuccessFlag(true);
             setLoadingInEligible(false);
-            setselectedInEligibleCustomerIds([]);
+            setSelectedIds([]);
           },
         }
       );
@@ -158,14 +147,17 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     }
   }
 
-  function handleEligibleCustomerVoucher() {
+  function handleEligibleCustomerVoucher(
+    selectedIds: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ) {
     setLoadingEligible(true);
     try {
       mutateDelete(
         {
           resource: "customerVoucher",
           values: {
-            customer: selectedEligibleCustomerIds,
+            customer: selectedIds,
           },
           id: id as any,
         },
@@ -173,7 +165,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
           onSuccess: () => {
             setSuccessFlag(true);
             setLoadingEligible(false);
-            setselectedEligibleCustomerIds([]);
+            setSelectedIds([]);
           },
         }
       );
@@ -191,7 +183,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       return;
     }
     if (info.file.status === "done") {
-      getBase64(info.file.originFileObj as RcFile, (url) => {
+      getBase64Image(info.file.originFileObj as RcFile, (url) => {
         setLoadingImage(false);
         formProps.form?.setFieldValue("image", url);
       });
@@ -284,47 +276,17 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       render: (_, record) => {
-        const dob = dayjs(new Date(record.dateOfBirth));
-        const formattedDate = dob.format("YYYY-MM-DD"); // Định dạng ngày tháng ở đây
-        return <>{formattedDate}</>;
+        return <>{formatTimestamp(record.dateOfBirth).dateFormat}</>;
       },
-    },
-    {
-      title: t("customers.fields.status"),
-      key: "status",
-      dataIndex: "status",
-      width: "1px",
-      align: "center",
-      render: (_, { status }) => <></>,
     },
   ];
 
   const [loadingEligible, setLoadingEligible] = useState(false);
   const [loadingInEligible, setLoadingInEligible] = useState(false);
 
-  const onEligibleSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setselectedEligibleCustomerIds(newSelectedRowKeys);
-  };
-
-  const onInEligibleSelectChange = (newSelectedRowKeys: React.Key[]) => {
-    setselectedInEligibleCustomerIds(newSelectedRowKeys);
-  };
-
-  const eligibleRowSelection = {
-    selectedEligibleCustomerIds,
-    onChange: onEligibleSelectChange,
-  };
-
-  const inEligibleRowSelection = {
-    selectedInEligibleCustomerIds,
-    onChange: onInEligibleSelectChange,
-  };
-
-  const hasEligibleSelected = selectedEligibleCustomerIds.length > 0;
-  const hasInEligibleSelected = selectedInEligibleCustomerIds.length > 0;
-
   return (
     <>
+      {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={8}>
           <Edit
@@ -488,22 +450,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Select
-                      options={[
-                        {
-                          label: t("enum.vouchersStatuses.ACTIVE"),
-                          value: "ACTIVE",
-                        },
-                        {
-                          label: t("enum.vouchersStatuses.IN_ACTIVE"),
-                          value: "IN_ACTIVE",
-                        },
-                        {
-                          label: t("enum.vouchersStatuses.EXPIRED"),
-                          value: "EXPIRED",
-                        },
-                      ]}
-                    />
+                    <Select options={getVouccherStatusOptions(t)} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -517,122 +464,19 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
               size="middle"
               style={{ display: "flex" }}
             >
-              <Table
-                loading={isLoadingEligibleCustomer}
-                rowSelection={eligibleRowSelection}
-                bordered
-                title={() => {
-                  return (
-                    <Flex justify={"space-between"} align={"center"}>
-                      <Title level={5}>
-                        List of customers eligible for voucher (
-                        {eligibleCustomers.length})
-                      </Title>
-                      {hasEligibleSelected && (
-                        <Space>
-                          <Button
-                            type="primary"
-                            loading={loadingEligible}
-                            onClick={() =>
-                              confirmDialog({
-                                message: t("confirmDialog.edit.message"),
-                                header: t("confirmDialog.edit.header"),
-                                icon: "pi pi-exclamation-triangle",
-                                acceptLabel: t(
-                                  "confirmDialog.edit.acceptLabel"
-                                ),
-                                rejectLabel: t(
-                                  "confirmDialog.edit.rejectLabel"
-                                ),
-                                acceptClassName: "p-button-warning",
-                                accept: () => {
-                                  handleEligibleCustomerVoucher();
-                                },
-                                reject: () => {},
-                              })
-                            }
-                          >
-                            {t("actions.remove")}
-                          </Button>
-                          <span style={{ marginLeft: 8 }}>
-                            Selected {selectedEligibleCustomerIds.length} items
-                          </span>
-                        </Space>
-                      )}
-                    </Flex>
-                  );
-                }}
-                pagination={{
-                  // ...pagination,
-                  showTotal: (total: number, range: [number, number]) => (
-                    <div>
-                      {range[0]} - {range[1]} of {total} items
-                    </div>
-                  ),
-                }}
-                dataSource={eligibleCustomers}
-                rowKey="id"
+              <CustomerVoucherTable
                 columns={columns}
-                //   onChange={(pagination) => setPagination(pagination)}
+                customers={eligibleCustomers}
+                isLoading={isLoadingEligibleCustomer || loadingEligible}
+                handleCustomerVoucher={handleEligibleCustomerVoucher}
+                title="eligible"
               />
-              <Table
-                loading={isLoadingInEligibleCustomer}
-                rowSelection={inEligibleRowSelection}
-                bordered
-                title={() => {
-                  return (
-                    <Flex justify={"space-between"} align={"center"}>
-                      <Title level={5}>
-                        List of customers ineligible for voucher (
-                        {inEligibleCustomers.length})
-                      </Title>
-                      {hasInEligibleSelected && (
-                        <Space>
-                          <Button
-                            type="primary"
-                            loading={loadingInEligible}
-                            onClick={() =>
-                              confirmDialog({
-                                message: t("confirmDialog.edit.message"),
-                                header: t("confirmDialog.edit.header"),
-                                icon: "pi pi-exclamation-triangle",
-                                acceptLabel: t(
-                                  "confirmDialog.edit.acceptLabel"
-                                ),
-                                rejectLabel: t(
-                                  "confirmDialog.edit.rejectLabel"
-                                ),
-                                acceptClassName: "p-button-warning",
-                                accept: () => {
-                                  handleInEligibleCustomerVoucher();
-                                },
-                                reject: () => {},
-                              })
-                            }
-                          >
-                            {t("actions.apply")}
-                          </Button>
-                          <span style={{ marginLeft: 8 }}>
-                            Selected {selectedInEligibleCustomerIds.length}{" "}
-                            items
-                          </span>
-                        </Space>
-                      )}
-                    </Flex>
-                  );
-                }}
-                pagination={{
-                  // ...pagination,
-                  showTotal: (total: number, range: [number, number]) => (
-                    <div>
-                      {range[0]} - {range[1]} of {total} items
-                    </div>
-                  ),
-                }}
-                dataSource={inEligibleCustomers}
-                rowKey="id"
+              <CustomerVoucherTable
                 columns={columns}
-                //   onChange={(pagination) => setPagination(pagination)}
+                customers={inEligibleCustomers}
+                isLoading={isLoadingInEligibleCustomer || loadingInEligible}
+                handleCustomerVoucher={handleInEligibleCustomerVoucher}
+                title="ineligible"
               />
             </Space>
           </Card>

@@ -1,62 +1,58 @@
 import {
-  IResourceComponentsProps,
-  useTranslate,
-  HttpError,
-  useCreate,
-} from "@refinedev/core";
-import {
   Create,
   SaveButton,
   getValueFromEvent,
-  useStepsForm,
   useSimpleList,
+  useStepsForm,
 } from "@refinedev/antd";
 import {
-  Form,
-  Select,
-  Upload,
-  Input,
+  HttpError,
+  IResourceComponentsProps,
+  useCreate,
+  useTranslate,
+} from "@refinedev/core";
+import {
+  List as AntdList,
+  Avatar,
   Button,
+  Checkbox,
+  Col,
+  DatePicker,
+  Form,
+  Input,
+  InputNumber,
+  Radio,
+  Row,
+  Space,
   Steps,
   Typography,
-  Space,
-  Avatar,
-  Row,
-  Col,
-  List as AntdList,
+  Upload,
   message,
-  Radio,
-  InputNumber,
-  DatePicker,
-  Checkbox,
 } from "antd";
 
-import {
-  IVoucher,
-  ICustomer,
-  ICustomerFilterVariables,
-} from "../../interfaces";
 import {
   RcFile,
   UploadChangeParam,
   UploadFile,
   UploadProps,
 } from "antd/es/upload";
-import { useState } from "react";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
+import { useContext, useState } from "react";
+import {
+  ICustomer,
+  ICustomerFilterVariables,
+  IVoucher,
+} from "../../interfaces";
+import { getBase64Image } from "../../utils";
+import { ColorModeContext } from "../../contexts/color-mode";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
 
-const getBase64 = (img: RcFile, callback: (url: string) => void) => {
-  const reader = new FileReader();
-  reader.addEventListener("load", () => callback(reader.result as string));
-  reader.readAsDataURL(img);
-};
-
 export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
+  const { mode } = useContext(ColorModeContext);
   const [messageApi, contextHolder] = message.useMessage();
   const [loadingImage, setLoadingImage] = useState(false);
   const [selectedCustomerIds, setselectedCustomerIds] = useState<string[]>([]);
@@ -73,7 +69,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
       const data = {
         code: `${values.code}`,
         name: `${values.name}`,
-        status: `${values.status}`,
+        status: `ACTIVE`,
         type: `${values.type}`,
         value: `${values.value}`,
         constraint: `${values.constraint}`,
@@ -122,20 +118,6 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  function handleCustomerVoucher(id: string) {
-    try {
-      mutate({
-        resource: "customerVoucher",
-        values: {
-          voucher: [id],
-          customer: selectedCustomerIds,
-        },
-      });
-    } catch (error) {
-      console.error("Creation failed", error);
-    }
-  }
-
   const handleChange: UploadProps["onChange"] = (
     info: UploadChangeParam<UploadFile>
   ) => {
@@ -144,7 +126,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
       return;
     }
     if (info.file.status === "done") {
-      getBase64(info.file.originFileObj as RcFile, (url) => {
+      getBase64Image(info.file.originFileObj as RcFile, (url) => {
         setLoadingImage(false);
         formProps.form?.setFieldValue("image", url);
       });
@@ -162,195 +144,165 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
   }, 500);
 
   const formList = [
-    <>
-      {contextHolder}
-      <Row gutter={20}>
-        <Col xs={24} lg={8}>
-          <Form.Item
-            name="image"
-            valuePropName="file"
-            getValueFromEvent={getValueFromEvent}
-            noStyle
+    <Row gutter={20}>
+      <Col xs={24} lg={8}>
+        <Form.Item
+          name="image"
+          valuePropName="file"
+          getValueFromEvent={getValueFromEvent}
+          noStyle
+        >
+          <Upload.Dragger
+            name="file"
+            beforeUpload={beforeUpload}
+            onChange={handleChange}
+            showUploadList={false}
+            customRequest={({ onSuccess, onError, file }) => {
+              if (onSuccess) {
+                try {
+                  onSuccess("ok");
+                } catch (error) {}
+              }
+            }}
+            maxCount={1}
+            multiple
+            style={{
+              border: "none",
+              width: "100%",
+              background: "none",
+            }}
           >
-            <Upload.Dragger
-              name="file"
-              beforeUpload={beforeUpload}
-              onChange={handleChange}
-              showUploadList={false}
-              customRequest={({ onSuccess, onError, file }) => {
-                if (onSuccess) {
-                  try {
-                    onSuccess("ok");
-                  } catch (error) {}
-                }
-              }}
-              maxCount={1}
-              multiple
-              style={{
-                border: "none",
-                width: "100%",
-                background: "none",
-              }}
-            >
-              <Space direction="vertical" size={2}>
-                {imageUrl ? (
-                  <Avatar
-                    shape="square"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      maxWidth: "200px",
-                    }}
-                    src={imageUrl}
-                    alt="Product cover"
-                  />
-                ) : (
-                  <Avatar
-                    shape="square"
-                    style={{
-                      width: "100%",
-                      height: "100%",
-                      maxWidth: "200px",
-                    }}
-                    src="/images/product-default-img.jpg"
-                    alt="Default product image"
-                  />
-                )}
-                <Text
+            <Space direction="vertical" size={2}>
+              {imageUrl ? (
+                <Avatar
+                  shape="square"
                   style={{
-                    fontWeight: 800,
-                    fontSize: "16px",
-                    marginTop: "8px",
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "200px",
                   }}
-                >
-                  {t("vouchers.fields.images.description")}
-                </Text>
-                <Text style={{ fontSize: "12px" }}>
-                  {t("vouchers.fields.images.validation")}
-                </Text>
-              </Space>
-            </Upload.Dragger>
-          </Form.Item>
-        </Col>
-        <Col xs={24} lg={16}>
-          <Row gutter={10}>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label={t("vouchers.fields.name")}
-                name="name"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label={t("vouchers.fields.code")}
-                name="code"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <Input />
-              </Form.Item>
-              <Form.Item
-                label={t("vouchers.fields.value")}
-                name="value"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <InputNumber width={100} style={{ width: "100%" }} />
-              </Form.Item>
-              <Form.Item
-                label={t("vouchers.fields.constraint")}
-                name="constraint"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <InputNumber width={100} style={{ width: "100%" }} />
-              </Form.Item>
-            </Col>
-            <Col xs={24} lg={12}>
-              <Form.Item
-                label={t("vouchers.fields.quantity")}
-                name="quantity"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <InputNumber width={100} style={{ width: "100%" }} />
-              </Form.Item>
-              <Form.Item
-                label={t("vouchers.fields.voucherRange")}
-                name="voucherRange"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-              >
-                <RangePicker
-                  showTime={{ format: "HH:mm:ss" }}
-                  format="YYYY-MM-DD HH:mm"
-                  style={{ width: "100%" }}
+                  src={imageUrl}
+                  alt="Product cover"
                 />
-              </Form.Item>
-              <Form.Item
-                label={t("vouchers.fields.type")}
-                name="type"
-                initialValue={"CASH"}
-              >
-                <Radio.Group>
-                  <Radio value={"PERCENTAGE"}>
-                    {t("vouchers.type.PERCENTAGE")}
-                  </Radio>
-                  <Radio value={"CASH"}>{t("vouchers.type.CASH")}</Radio>
-                </Radio.Group>
-              </Form.Item>
-              <Form.Item
-                label={t("vouchers.fields.status")}
-                name="status"
-                rules={[
-                  {
-                    required: true,
-                  },
-                ]}
-                initialValue={"ACTIVE"}
-              >
-                <Select
-                  options={[
-                    {
-                      label: t("enum.vouchersStatuses.ACTIVE"),
-                      value: "ACTIVE",
-                    },
-                    {
-                      label: t("enum.vouchersStatuses.IN_ACTIVE"),
-                      value: "IN_ACTIVE",
-                    },
-                    {
-                      label: t("enum.vouchersStatuses.EXPIRED"),
-                      value: "EXPIRED",
-                    },
-                  ]}
+              ) : (
+                <Avatar
+                  shape="square"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    maxWidth: "200px",
+                  }}
+                  src="/images/product-default-img.jpg"
+                  alt="Default product image"
                 />
-              </Form.Item>
-            </Col>
-          </Row>
-        </Col>
-      </Row>
-    </>,
+              )}
+              <Text
+                style={{
+                  fontWeight: 800,
+                  fontSize: "16px",
+                  marginTop: "8px",
+                }}
+              >
+                {t("vouchers.fields.images.description")}
+              </Text>
+              <Text style={{ fontSize: "12px" }}>
+                {t("vouchers.fields.images.validation")}
+              </Text>
+            </Space>
+          </Upload.Dragger>
+        </Form.Item>
+      </Col>
+      <Col xs={24} lg={16}>
+        <Row gutter={10}>
+          <Col xs={24} lg={12}>
+            <Form.Item
+              label={t("vouchers.fields.name")}
+              name="name"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label={t("vouchers.fields.code")}
+              name="code"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <Input />
+            </Form.Item>
+            <Form.Item
+              label={t("vouchers.fields.value")}
+              name="value"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <InputNumber width={100} style={{ width: "100%" }} />
+            </Form.Item>
+            <Form.Item
+              label={t("vouchers.fields.constraint")}
+              name="constraint"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <InputNumber width={100} style={{ width: "100%" }} />
+            </Form.Item>
+          </Col>
+          <Col xs={24} lg={12}>
+            <Form.Item
+              label={t("vouchers.fields.quantity")}
+              name="quantity"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <InputNumber width={100} style={{ width: "100%" }} />
+            </Form.Item>
+            <Form.Item
+              label={t("vouchers.fields.voucherRange")}
+              name="voucherRange"
+              rules={[
+                {
+                  required: true,
+                },
+              ]}
+            >
+              <RangePicker
+                showTime={{ format: "HH:mm:ss" }}
+                format="YYYY-MM-DD HH:mm"
+                style={{ width: "100%" }}
+              />
+            </Form.Item>
+            <Form.Item
+              label={t("vouchers.fields.type")}
+              name="type"
+              initialValue={"CASH"}
+            >
+              <Radio.Group>
+                <Radio value={"PERCENTAGE"}>
+                  {t("vouchers.type.PERCENTAGE")}
+                </Radio>
+                <Radio value={"CASH"}>{t("vouchers.type.CASH")}</Radio>
+              </Radio.Group>
+            </Form.Item>
+          </Col>
+        </Row>
+      </Col>
+    </Row>,
     <Row key="relations" gutter={[16, 24]}>
       <Col span={24}>
         <Title level={5}>
@@ -383,7 +335,8 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
                 onClick={() => handleRowClick(id)}
                 style={{
                   cursor: "pointer",
-                  backgroundColor: isChecked ? "#fff2e8" : "white",
+                  backgroundColor:
+                    mode === "light" && isChecked ? "#fff2e8" : undefined,
                 }}
               >
                 <AntdList.Item.Meta
@@ -407,8 +360,23 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
     }
   };
 
+  function handleCustomerVoucher(id: string) {
+    try {
+      mutate({
+        resource: "customerVoucher",
+        values: {
+          voucher: [id],
+          customer: selectedCustomerIds,
+        },
+      });
+    } catch (error) {
+      console.error("Creation failed", error);
+    }
+  }
+
   return (
     <>
+      {contextHolder}
       <Create
         isLoading={queryResult?.isFetching}
         footerButtons={
@@ -441,14 +409,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
           <Steps.Step title={t("vouchers.steps.content")} />
           <Steps.Step title={t("vouchers.steps.relations")} />
         </Steps>
-        <Form
-          {...formProps}
-          style={{ marginTop: 30 }}
-          layout="vertical"
-          initialValues={{
-            isActive: true,
-          }}
-        >
+        <Form {...formProps} style={{ marginTop: 30 }} layout="vertical">
           {formList[current]}
         </Form>
       </Create>

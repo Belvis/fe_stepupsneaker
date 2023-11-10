@@ -1,5 +1,5 @@
 import { useTranslate } from "@refinedev/core";
-import { Modal, ModalProps, Form, FormProps, Input, Select, Grid } from "antd";
+import { Form, FormProps, Grid, Input, Modal, ModalProps } from "antd";
 
 type CreatePaymentMethodProps = {
   modalProps: ModalProps;
@@ -25,14 +25,7 @@ export const CreatePaymentMethod: React.FC<CreatePaymentMethodProps> = ({
       width={breakpoint.sm ? "500px" : "100%"}
       zIndex={1001}
     >
-      <Form
-        {...formProps}
-        layout="vertical"
-        onFinish={onFinishHandler}
-        initialValues={{
-          isActive: true,
-        }}
-      >
+      <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
           label={t("paymentMethods.fields.name")}
           name="name"

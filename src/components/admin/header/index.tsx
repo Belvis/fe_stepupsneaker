@@ -55,7 +55,7 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
           <Avatar size={16} src={`/images/flags/${lang}.svg`} />
         </span>
       ),
-      label: lang === "en" ? "English" : "German",
+      label: lang === "en" ? "English" : "Tiếng Việt",
     }));
 
   const headerStyles: React.CSSProperties = {
@@ -76,13 +76,6 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   return (
     <AntdLayout.Header style={headerStyles}>
       <Space>
-        <Tooltip title="Point Of Sales">
-          <Link to="/point-of-sales">
-            <Button type="primary" shape="round" icon={<AppstoreOutlined />}>
-              {t("buttons.pos")}
-            </Button>
-          </Link>
-        </Tooltip>
         <Dropdown
           menu={{
             items: menuItems,
@@ -92,7 +85,7 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
           <Button type="text">
             <Space>
               <Avatar size={16} src={`/images/flags/${currentLocale}.svg`} />
-              {currentLocale === "en" ? "English" : "German"}
+              {currentLocale === "en" ? "English" : "Tiếng Việt"}
               <DownOutlined />
             </Space>
           </Button>
