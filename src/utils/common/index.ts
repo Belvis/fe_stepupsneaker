@@ -1,4 +1,4 @@
-export * from "./colorConvertter";
+export * from "./colorConverter";
 export * from "./confirmHelper";
-export * from "./timestampFormatter";
-export * from "./imageConvertter";
+export * from "./timestampFormater";
+export * from "./imageConverter";

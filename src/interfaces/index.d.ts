@@ -117,6 +117,21 @@ export interface IWard {
   WardCode: number;
 }
 
+export interface IOrderConvertedPayload {
+  id: string;
+  customer: string | null;
+  employee: string | null;
+  voucher: string | null;
+  address: string | null;
+  phoneNumber: string;
+  fullName: string;
+  totalMoney: number;
+  shippingMoney: number;
+  type: OrderType;
+  note: string;
+  code: string;
+  status: OrderStatus;
+}
 export interface IProductDetailConvertedPayload {
   product: string;
   tradeMark: string;

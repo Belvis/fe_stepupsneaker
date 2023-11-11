@@ -11,17 +11,6 @@ export const PRODUCT_STATUS_OPTIONS = [
   },
 ];
 
-export const USER_STATUS_OPTIONS = [
-  {
-    label: "Active",
-    value: "ACTIVE",
-  },
-  {
-    label: "Inactive",
-    value: "INACTIVE",
-  },
-];
-
 export const getProductStatusOptions = (t: TranslateFunction) => [
   {
     label: t("enum.productStatuses.ACTIVE"),
@@ -60,5 +49,55 @@ export const getVouccherStatusOptions = (t: TranslateFunction) => [
   {
     label: t("enum.userStatuses.BLOCKED"),
     value: "BLOCKED",
+  },
+];
+
+export const getOrderTypeOptions = (t: TranslateFunction) => [
+  {
+    label: t("orders.fields.type.OFFLINE"),
+    value: "OFFLINE",
+  },
+  {
+    label: t("orders.fields.type.ONLINE"),
+    value: "ONLINE",
+  },
+];
+
+export const getOrderStatusOptions = (t: TranslateFunction) => [
+  {
+    label: t("enum.orderStatuses.PENDING"),
+    value: "PENDING",
+  },
+  {
+    label: t("enum.orderStatuses.WAIT_FOR_CONFIRMATION"),
+    value: "WAIT_FOR_CONFIRMATION",
+  },
+  {
+    label: t("enum.orderStatuses.WAIT_FOR_DELIVERY"),
+    value: "WAIT_FOR_DELIVERY",
+  },
+  {
+    label: t("enum.orderStatuses.DELIVERING"),
+    value: "DELIVERING",
+  },
+  {
+    label: t("enum.orderStatuses.COMPLETED"),
+    value: "COMPLETED",
+  },
+  {
+    label: t("enum.orderStatuses.CANCELED"),
+    value: "CANCELED",
+  },
+  {
+    label: t("enum.orderStatuses.EXPIRED"),
+    value: "EXPIRED",
+  },
+  {
+    label: t("enum.orderStatuses.RETURNED"),
+    value: "RETURNED",
+  },
+  {
+    label: t("enum.orderStatuses.EXCHANGED"),
+    value: "EXCHANGED",
   },
 ];

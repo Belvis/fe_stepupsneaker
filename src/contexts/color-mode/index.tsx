@@ -61,8 +61,9 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
             Table: {
               headerBg: mode === "light" ? "#fb5231" : "#141414",
               headerColor: mode === "light" ? "#ffffff" : undefined,
-              // borderColor: mode === "light" ? "#ffffff" : undefined,
+              headerSplitColor: mode === "light" ? "#ffffff" : undefined,
               rowHoverBg: mode === "light" ? "#fff2e8" : undefined,
+              headerSortActiveBg: mode === "light" ? "#bfbfbf" : undefined,
             },
           },
         }}

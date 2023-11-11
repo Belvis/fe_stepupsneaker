@@ -7,6 +7,7 @@ import LocalizedFormat from "dayjs/plugin/localizedFormat";
 
 import App from "./App";
 import dayjs from "dayjs";
+import "dayjs/locale/vi";
 import "./i18n";
 import "./global.css";
 

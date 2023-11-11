@@ -124,7 +124,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
   }, [selectedColor, selectedSize]);
 
   const handleFinish = () => {
-    if (selectedProductDetail)
+    if (selectedProductDetail) {
       mutateCreate(
         {
           resource: "order-details",
@@ -162,6 +162,12 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
           },
         }
       );
+    } else {
+      messageApi.open({
+        type: "error",
+        content: "No suitable products were found.",
+      });
+    }
   };
 
   return (
@@ -169,7 +175,6 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
       title={t("productDetails.productDetails")}
       width={breakpoint.sm ? "1000px" : "100%"}
       zIndex={1001}
-      onOk={handleFinish}
       onCancel={handleCancel}
       open={open}
       footer={(_, { OkBtn }) => <></>}

@@ -1,4 +1,5 @@
 import {
+  AppstoreOutlined,
   CloseOutlined,
   FilterOutlined,
   PictureOutlined,
@@ -37,6 +38,7 @@ import {
   TextContainer,
   UserIcon,
 } from "./styled";
+import { PosFilter } from "../filterDrawer";
 const { useToken } = theme;
 const { Text, Title } = Typography;
 
@@ -61,6 +63,9 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
   const { token } = useToken();
   const [messageApi, contextHolder] = message.useMessage();
   const [value, setValue] = useState<string>("");
+  const [pLayout, setpLayout] = useState<"horizontal" | "vertical">(
+    "horizontal"
+  );
   const [customerOptions, setCustomerOptions] = useState<IOption[]>([]);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
@@ -68,23 +73,33 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
     pageSize: 5,
   });
 
+  const [brandFilter, setBrandFilter] = useState("  ");
+  const [MaterialFilter, setMaterialFilter] = useState("");
+  const [SoleFilter, setSoleFilter] = useState("");
+  const [StyleFilter, setStyleFilter] = useState("");
+  const [TradeMarkFilter, setTradeMarkFilter] = useState("");
+  const [ColorFilter, setColorFilter] = useState("");
+  const [SizeFilter, setSizeFilter] = useState("");
+
   const { mutate: mutateUpdate } = useUpdate();
   const {
     data,
     isLoading: isLoadingProduct,
-    isError,
     refetch,
   } = useList<IProduct, HttpError>({
     resource: "products",
-    config: {
-      filters: [
-        {
-          field: "minQuantity",
-          operator: "eq",
-          value: 1,
-        },
-      ],
-    },
+    filters: [
+      {
+        field: "minQuantity",
+        operator: "eq",
+        value: 1,
+      },
+      {
+        field: "brands",
+        operator: "eq",
+        value: brandFilter,
+      },
+    ],
     pagination: pagination,
   });
   const { refetch: refetchCustomer } = useList<ICustomer>({
@@ -144,14 +159,30 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
     setProductDetailModalVisible(true);
   };
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const [checkOutDrawerOpen, setCheckOutDrawerOpen] = useState(false);
 
-  const showDrawer = () => {
-    setDrawerOpen(true);
+  const showCheckOutDrawer = () => {
+    setCheckOutDrawerOpen(true);
   };
 
-  const onDrawerClose = () => {
-    setDrawerOpen(false);
+  const onCheckOutDrawerClose = () => {
+    setCheckOutDrawerOpen(false);
+  };
+
+  const [filterDrawerOpen, setFilterDrawerOpen] = useState(false);
+
+  const showFilterDrawer = () => {
+    setFilterDrawerOpen(true);
+  };
+
+  const onFilterDrawerClose = () => {
+    setFilterDrawerOpen(false);
+  };
+
+  const handleToggleLayout = () => {
+    setpLayout((prevLayout) =>
+      prevLayout === "horizontal" ? "vertical" : "horizontal"
+    );
   };
 
   function editOrderNote(value: string): void {
@@ -234,18 +265,14 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
           justifyContent: orderDetails.length ? "space-between" : "flex-end",
         }}
       >
-        <Space
-          direction="vertical"
-          style={{
-            overflow: "auto",
-            width: "100%",
-            maxHeight: "350px",
-          }}
-        >
-          <Skeleton
-            active
-            loading={isLoadingOrderCreate}
-            paragraph={{ rows: 9 }}
+        <Skeleton active loading={isLoadingOrderCreate} paragraph={{ rows: 9 }}>
+          <Space
+            direction="vertical"
+            style={{
+              overflow: "auto",
+              width: "100%",
+              maxHeight: "350px",
+            }}
           >
             {orderDetails.map((orderItem) => (
               <OrderItem
@@ -255,8 +282,8 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                 isLoading={isLoadingOrderCreate}
               />
             ))}
-          </Skeleton>
-        </Space>
+          </Space>
+        </Skeleton>
         <Card style={{ background: token.colorPrimaryBg }}>
           <Row gutter={[16, 24]} style={{ height: "100%" }}>
             <Col span={14}>
@@ -295,7 +322,6 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
         <Card
           style={{ background: token.colorPrimaryBg, height: "100%" }}
           bodyStyle={{ height: "100%" }}
-          loading={isLoadingProduct}
         >
           <Row
             gutter={[16, 24]}
@@ -364,11 +390,19 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                       shape="circle"
                       type="text"
                       icon={<FilterOutlined />}
+                      onClick={showFilterDrawer}
                     />
                     <Button
                       shape="circle"
                       type="text"
-                      icon={<PictureOutlined />}
+                      icon={
+                        pLayout === "horizontal" ? (
+                          <AppstoreOutlined />
+                        ) : (
+                          <PictureOutlined />
+                        )
+                      }
+                      onClick={handleToggleLayout}
                     />
                   </Space>
                 </Col>
@@ -377,21 +411,23 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
             <Col
               span={24}
               style={{
-                maxHeight: "300px",
                 overflow: "auto",
-                minHeight: "300px",
+                height: "300px",
               }}
             >
               {/* Content */}
-              <Row gutter={[16, 24]}>
-                {products.map((product) => (
-                  <ProductItem
-                    key={product.id}
-                    product={product}
-                    onClickFunction={handleProductClick}
-                  />
-                ))}
-              </Row>
+              <Skeleton active loading={isLoadingProduct}>
+                <Row gutter={[16, 24]}>
+                  {products.map((product) => (
+                    <ProductItem
+                      layout={pLayout}
+                      key={product.id}
+                      product={product}
+                      onClickFunction={handleProductClick}
+                    />
+                  ))}
+                </Row>
+              </Skeleton>
             </Col>
             <Col span={24}>
               {/* Footer */}
@@ -422,7 +458,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                     type="primary"
                     size={"large"}
                     style={{ width: "100%", fontWeight: "500" }}
-                    onClick={showDrawer}
+                    onClick={showCheckOutDrawer}
                   >
                     {t("actions.proceedPay")}
                   </Button>
@@ -433,9 +469,14 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
         </Card>
       </Col>
       <CheckOutDrawer
-        open={drawerOpen}
-        onClose={onDrawerClose}
+        open={checkOutDrawerOpen}
+        onClose={onCheckOutDrawerClose}
         order={order}
+        callBack={callBack}
+      />
+      <PosFilter
+        open={filterDrawerOpen}
+        onClose={onFilterDrawerClose}
         callBack={callBack}
       />
     </Row>

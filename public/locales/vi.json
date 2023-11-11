@@ -374,9 +374,9 @@
           "label": "Giới tính",
           "placeholder": "Chọn giới tính",
           "options": {
-            "male": "Nam",
-            "female": "Nữ",
-            "other": "Khác"
+            "Male": "Nam",
+            "Female": "Nữ",
+            "Other": "Khác"
           }
         },
         "role": "Chức vụ",
@@ -457,9 +457,9 @@
           "label": "Giới tính",
           "placeholder": "Chọn giới tính",
           "options": {
-            "male": "Nam",
-            "female": "Nữ",
-            "other": "Khác"
+            "Male": "Nam",
+            "Female": "Nữ",
+            "Other": "Khác"
           }
         },
         "status": "Trạng thái",
@@ -530,7 +530,7 @@
         }
       },
       "recentOrders": {
-        "title": "Đơn đặt hàng gần đây"
+        "title": "Đơn đơn hàng gần đây"
       },
       "trendingMenus": {
         "title": "Xu hướng hàng ngày"
@@ -570,7 +570,7 @@
         "show": "Chi tiết Đơn Hàng"
       },
       "fields": {
-        "code": "Mã",
+        "code": "Mã đơn hàng",
         "id": "ID",
         "status": "Trạng thái",
         "customer": "Khách hàng",
@@ -593,9 +593,13 @@
           "label": "Tìm kiếm",
           "placeholder": "Mã đơn hàng, Người dùng, v.v."
         },
+        "type": {
+          "label": "Loại",
+          "placeholder": "Loại đơn hàng"
+        },
         "status": {
           "label": "Trạng thái",
-          "placeholder": "Tình trạng đặt hàng"
+          "placeholder": "Tình trạng đơn hàng"
         },
         "createdAt": {
           "label": "Được tạo lúc"
@@ -606,11 +610,15 @@
         "deliverables": "Chi tiết đơn hàng",
         "fields": {
           "items": "Sản phẩm",
+          "paymentMethod": "Phương thức thanh toán",
+          "payment": "Thanh toán",
+          "shipping": "Phí ship",
           "quantity": "Số lượng",
           "price": "Giá",
           "total": "Tổng cộng"
         },
-        "mainTotal": "TỔNG TIỀN HÀNG"
+        "mainTotal": "TỔNG TIỀN HÀNG",
+        "receipt": "Biên lai chính thức"
       },
       "tab": {
         "label": "Đơn Hàng",
@@ -655,7 +663,7 @@
         },
         "status": {
           "label": "Trạng thái",
-          "placeholder": "Tình trạng đặt hàng"
+          "placeholder": "Tình trạng đơn hàng"
         },
         "createdAt": {
           "label": "Được tạo tại"
@@ -663,7 +671,7 @@
         "submit": "Lọc"
       },
       "tab": {
-        "label": "Đặt hàng",
+        "label": "đơn hàng",
         "discount": "Giảm giá",
         "amountDue": "Khách cần trả",
         "retailCustomer": "Khách lẻ",

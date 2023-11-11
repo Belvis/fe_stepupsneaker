@@ -22,6 +22,7 @@ import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { ColorModeContext } from "../../../contexts/color-mode";
 import { Link } from "react-router-dom";
+import dayjs from "dayjs";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -44,12 +45,16 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   const { mode, setMode } = useContext(ColorModeContext);
 
   const currentLocale = locale();
+  dayjs.locale(currentLocale);
 
   const menuItems: MenuProps["items"] = [...(i18n.languages || [])]
     .sort()
     .map((lang: string) => ({
       key: lang,
-      onClick: () => changeLanguage(lang),
+      onClick: () => {
+        changeLanguage(lang);
+        dayjs.locale(lang);
+      },
       icon: (
         <span style={{ marginRight: 8 }}>
           <Avatar size={16} src={`/images/flags/${lang}.svg`} />

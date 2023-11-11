@@ -8,11 +8,12 @@ import {
   HttpError,
   useParsed,
 } from "@refinedev/core";
-import { List, NumberField } from "@refinedev/antd";
+import { DateField, List, NumberField } from "@refinedev/antd";
 import {
   CheckCircleOutlined,
   CloseCircleOutlined,
   LoadingOutlined,
+  MailOutlined,
   MobileOutlined,
 } from "@ant-design/icons";
 import {
@@ -27,6 +28,9 @@ import {
   Card,
   Table,
   Skeleton,
+  DescriptionsProps,
+  Descriptions,
+  Badge,
 } from "antd";
 import dayjs from "dayjs";
 
@@ -119,7 +123,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
               if (canceledReturnedOrExchangedOrder) {
                 return {
                   ...event,
-                  status: canceledReturnedOrExchangedOrder.actionStatus, // Thay thế trạng thái COMPLETED
+                  status: canceledReturnedOrExchangedOrder.actionStatus,
                   date: canceledReturnedOrExchangedOrder.createdAt,
                 };
               }
@@ -179,13 +183,13 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       return "finish";
     };
 
-    const handleMutate = (status: { id: number; text: string }) => {
+    const handleMutate = (status: string) => {
       if (record) {
         mutate({
           resource: "orders",
-          id: record.id.toString(),
+          id: record.id,
           values: {
-            status,
+            status: status,
           },
         });
       }
@@ -198,19 +202,14 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         ghost={false}
         onBack={() => window.history.back()}
         title={t("orders.fields.code")}
-        subTitle={`#${record?.code ?? ""}`}
+        subTitle={`#${record?.code.toUpperCase() ?? ""}`}
         extra={[
           <Button
             disabled={!canAcceptOrder}
             key="accept"
             icon={<CheckCircleOutlined />}
             type="primary"
-            onClick={() =>
-              handleMutate({
-                id: 2,
-                text: "Ready",
-              })
-            }
+            onClick={() => handleMutate("WAIT_FOR_DELIVERY")}
           >
             {t("buttons.accept")}
           </Button>,
@@ -219,35 +218,34 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             key="reject"
             danger
             icon={<CloseCircleOutlined />}
-            onClick={() =>
-              handleMutate({
-                id: 5,
-                text: "Cancelled",
-              })
-            }
+            onClick={() => handleMutate("CANCELED")}
           >
             {t("buttons.reject")}
           </Button>,
         ]}
       >
-        <Steps
-          direction={
-            currentBreakPoints.includes("lg") ? "horizontal" : "vertical"
-          }
-          current={events.findIndex((el) => el.status === record?.status)}
-        >
-          {events.map((event: IEvent, index: number) => (
-            <Steps.Step
-              status={stepStatus(event, index)}
-              key={index}
-              title={t(`enum.orderStatuses.${event.status}`)}
-              icon={notFinishedCurrentStep(event, index) && <LoadingOutlined />}
-              description={
-                event.date && dayjs(new Date(event.date)).format("L LT")
-              }
-            />
-          ))}
-        </Steps>
+        {record && (
+          <Steps
+            direction={
+              currentBreakPoints.includes("lg") ? "horizontal" : "vertical"
+            }
+            current={events.findIndex((el) => el.status === record?.status)}
+          >
+            {events.map((event: IEvent, index: number) => (
+              <Steps.Step
+                status={stepStatus(event, index)}
+                key={index}
+                title={t(`enum.orderStatuses.${event.status}`)}
+                icon={
+                  notFinishedCurrentStep(event, index) && <LoadingOutlined />
+                }
+                description={
+                  event.date && dayjs(new Date(event.date)).format("L LT")
+                }
+              />
+            ))}
+          </Steps>
+        )}
         {!record && <Skeleton paragraph={{ rows: 1 }} />}
       </PageHeader>
     );
@@ -264,7 +262,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
   );
 
   const renderEmployeeInfo = () => (
-    <Card>
+    <Card loading={!record}>
       <Row justify="center">
         <Col xl={12} lg={10}>
           <Employee>
@@ -292,9 +290,9 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                   : "N/A"}
               </Text>
               <Text>
-                ID #
-                {record && record.employee && record.employee.id
-                  ? record.employee.id
+                Role:{" "}
+                {record && record.employee && record.employee.role
+                  ? record.employee.role.name
                   : "N/A"}
               </Text>
             </EmployeeInfoText>
@@ -303,16 +301,18 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
 
         <EmployeeBoxContainer xl={12} lg={14} md={24}>
           {employeeInfoBox(
-            t("employees.fields.email"),
+            t("employees.fields.phoneNumber"),
             <MobileOutlined style={{ color: "#ffff", fontSize: 32 }} />,
-            record && record.employee && record.employee.email
-              ? record.employee.email
+            record && record.employee && record.employee.phoneNumber
+              ? record.employee.phoneNumber
               : "N/A"
           )}
           {employeeInfoBox(
-            t("employees.fields.dateOfBirth"),
-            <BikeWhiteIcon style={{ color: "#ffff", fontSize: 32 }} />,
-            "15:05"
+            t("employees.fields.email"),
+            <MailOutlined style={{ color: "#ffff", fontSize: 32 }} />,
+            record && record.employee && record.employee.email
+              ? record.employee.email
+              : "N/A"
           )}
         </EmployeeBoxContainer>
       </Row>
@@ -350,7 +350,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
               <Text style={{ fontSize: 22, fontWeight: 800 }}>
                 {record.productDetail.product.name}
               </Text>
-              <Text>#{record.id}</Text>
+              <Text>#{record.productDetail.product.code}</Text>
             </ProductText>
           </Product>
         );
@@ -414,6 +414,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       <Table
         pagination={false}
         dataSource={record?.orderDetails}
+        loading={!record}
         columns={columns}
         footer={(_data) => (
           <ProductFooter>
@@ -430,6 +431,240 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         )}
       />
     </List>
+  );
+
+  const items: DescriptionsProps["items"] = [
+    {
+      key: "1",
+      label: t("orders.deliverables.fields.items"),
+      span: 2,
+      children: (
+        <ul>
+          {record?.orderDetails.map((orderDetail) => (
+            <li key={orderDetail.id}>
+              {orderDetail.productDetail.product.name} -{" "}
+              {orderDetail.productDetail.color.name} -{" "}
+              {orderDetail.productDetail.size.name} - x{orderDetail.quantity}
+            </li>
+          ))}
+        </ul>
+      ),
+    },
+    {
+      key: "2",
+      label: t("orders.fields.status"),
+      span: 1,
+      children: (
+        <Badge
+          status="processing"
+          text={t(`enum.orderStatuses.${record?.status}`)}
+        />
+      ),
+    },
+    {
+      key: "3",
+      label: t("orders.fields.type.title"),
+      span: 1,
+      children: "Offline",
+    },
+    {
+      key: "4",
+      label: t("orders.fields.createdAt"),
+      children: (
+        <DateField
+          value={dayjs(new Date(record?.createdAt || 0))}
+          format="LLL"
+        />
+      ),
+    },
+    {
+      key: "5",
+      label: t("orders.fields.code"),
+      span: 1,
+      children: record?.code,
+    },
+    {
+      key: "6",
+      label: t("orders.fields.note"),
+      span: 2,
+      children: record?.note,
+    },
+    {
+      key: "7",
+      label: t("orders.deliverables.fields.total"),
+      children: (
+        <NumberField
+          options={{
+            currency: "VND",
+            style: "currency",
+          }}
+          value={record?.totalMoney as ReactChild}
+        />
+      ),
+    },
+    {
+      key: "8",
+      label: t("orders.tab.discount"),
+      children: (
+        <NumberField
+          options={{
+            currency: "VND",
+            style: "currency",
+          }}
+          value={0}
+        />
+      ),
+    },
+    {
+      key: "9",
+      label: t("orders.tab.shippingMoney"),
+      children: (
+        <NumberField
+          options={{
+            currency: "VND",
+            style: "currency",
+          }}
+          value={0}
+        />
+      ),
+    },
+    {
+      key: "10",
+      label: t("orders.deliverables.receipt"),
+      children: (
+        <NumberField
+          options={{
+            currency: "VND",
+            style: "currency",
+          }}
+          value={record?.totalMoney as ReactChild}
+        />
+      ),
+    },
+    {
+      key: "11",
+      label: t("orders.deliverables.fields.payment"),
+      span: 3,
+      children: (
+        <>
+          đ100,000 - Tiền mặt - 9 tháng 11 năm 2023 11:17
+          <br />
+          đ100,000 - Chuyển khoản - 9 tháng 11 năm 2023 11:17 - Mã giao dịch:
+          HCNNAMC9
+          <br />
+        </>
+      ),
+    },
+    {
+      key: "12",
+      label: t("orders.deliverables.fields.paymentMethod"),
+      children: "Tiền mặt, Chuyển khoản",
+    },
+
+    {
+      key: "11",
+      label: t("orders.fields.customer"),
+      span: 2,
+      children: (
+        <>
+          {record?.customer && (
+            <>
+              <div>
+                <strong>{t("customers.fields.fullName")}</strong>:{" "}
+                {record.customer.fullName}
+              </div>
+              <div>
+                <strong>{t("customers.fields.email")}</strong>:{" "}
+                {record.customer.email}
+              </div>
+              <div>
+                <strong>{t("customers.fields.dateOfBirth")}</strong>:{" "}
+                <DateField
+                  value={dayjs(new Date(record.customer.dateOfBirth))}
+                  format="LL"
+                />
+              </div>
+              <div>
+                <strong>{t("customers.fields.status")}</strong>:{" "}
+                {t(`enum.userStatuses.${record.customer.status}`)}
+              </div>
+              <div>
+                <strong>{t("customers.fields.gender.label")}</strong>:{" "}
+                {t(`customers.fields.gender.options.${record.customer.gender}`)}
+              </div>
+              <div>
+                {record.customer.addressList.length > 0 ? (
+                  <>
+                    <strong>{t("customers.fields.address")}</strong>:{" "}
+                    {record.customer.addressList.map((address) => (
+                      <span key={address.id}>
+                        {address.isDefault && (
+                          <>
+                            {address.more}, {address.wardName},{" "}
+                            {address.districtName}, {address.provinceName}
+                          </>
+                        )}
+                      </span>
+                    ))}
+                  </>
+                ) : (
+                  "N/A"
+                )}
+              </div>
+            </>
+          )}
+        </>
+      ),
+    },
+    {
+      key: "12",
+      label: t("orders.fields.employee"),
+      span: 2,
+      children: (
+        <>
+          {record?.employee && (
+            <>
+              <div>
+                <strong>{t("employees.fields.fullName")}</strong>:{" "}
+                {record.employee.fullName}
+              </div>
+              <div>
+                <strong>{t("employees.fields.email")}</strong>:{" "}
+                {record.employee.email}
+              </div>
+              <div>
+                <strong>{t("employees.fields.phoneNumber")}</strong>:{" "}
+                {record.employee.phoneNumber}
+              </div>
+              <div>
+                <strong>{t("employees.fields.status")}</strong>:{" "}
+                {t(`enum.userStatuses.${record.employee.status}`)}
+              </div>
+              <div>
+                <strong>{t("employees.fields.gender.label")}</strong>:{" "}
+                {t(`employees.fields.gender.options.${record.employee.gender}`)}
+              </div>
+              <div>
+                <strong>{t("employees.fields.address")}</strong>:{" "}
+                {record.employee.address}
+              </div>
+            </>
+          )}
+        </>
+      ),
+    },
+  ];
+
+  const renderOrderInfor = () => (
+    <Skeleton loading={!record} active paragraph>
+      <Descriptions
+        title="Thông tin đơn hàng"
+        bordered
+        column={4}
+        layout="vertical"
+        items={items}
+      />
+    </Skeleton>
   );
 
   return (
@@ -467,8 +702,9 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           </Map>
         </div> */}
         {renderEmployeeInfo()}
+        {renderDeliverables()}
+        {renderOrderInfor()}
       </Space>
-      {renderDeliverables()}
     </>
   );
 };

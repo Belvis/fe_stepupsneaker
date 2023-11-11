@@ -1,58 +1,50 @@
 import {
-  useTranslate,
-  IResourceComponentsProps,
   CrudFilters,
-  useExport,
-  useNavigation,
   HttpError,
+  IResourceComponentsProps,
   getDefaultFilter,
+  useNavigation,
+  useTranslate,
 } from "@refinedev/core";
 
-import {
-  List,
-  TextField,
-  useTable,
-  getDefaultSortOrder,
-  DateField,
-  NumberField,
-  useSelect,
-  ExportButton,
-} from "@refinedev/antd";
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { DateField, List, NumberField, useTable } from "@refinedev/antd";
 import {
-  Table,
-  Popover,
-  Card,
-  Input,
-  Form,
-  DatePicker,
-  Select,
   Button,
-  FormProps,
-  Row,
+  Card,
   Col,
+  Form,
+  Input,
+  Popover,
+  Row,
+  Select,
   Space,
-  Avatar,
+  Table,
   Typography,
-  Tooltip,
 } from "antd";
-import dayjs from "dayjs";
-
-import { IOrder, IOrderFilterVariables } from "../../../interfaces";
 import { ColumnsType } from "antd/es/table";
-import { OrderActions, OrderStatus } from "../../../components";
+import dayjs from "dayjs";
 import { debounce } from "lodash";
-import { tablePaginationSettings } from "../../../constants";
+import { OrderActions, OrderStatus, OrderType } from "../../../components";
+import {
+  getOrderStatusOptions,
+  getOrderTypeOptions,
+  tablePaginationSettings,
+} from "../../../constants";
+import { IOrder, IOrderFilterVariables } from "../../../interfaces";
 
-const { RangePicker } = DatePicker;
-const { Text, Title } = Typography;
+const { Text } = Typography;
 
 export const OrderList: React.FC<IResourceComponentsProps> = () => {
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IOrder,
-    HttpError,
-    IOrderFilterVariables
-  >({
+  const {
+    tableProps,
+    searchFormProps,
+    filters,
+    current,
+    pageSize,
+    tableQueryResult: { refetch },
+    overtime,
+  } = useTable<IOrder, HttpError, IOrderFilterVariables>({
     onSearch: (params) => {
       const filters: CrudFilters = [];
       const { q, status } = params;
@@ -64,8 +56,8 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
       });
 
       filters.push({
-        field: "status.text",
-        operator: "in",
+        field: "status",
+        operator: "eq",
         value: status,
       });
 
@@ -91,7 +83,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
       width: "10%",
       align: "center",
       render: (_, { code }) => {
-        return <Text>{code ? code : "N/A"}</Text>;
+        return <Text>{code ? code.toUpperCase() : "N/A"}</Text>;
       },
     },
     {
@@ -101,7 +93,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
       width: "10%",
       align: "center",
       render: (_, { type }) => {
-        return <Text>{t(`orders.fields.type.${type}`)}</Text>;
+        return <OrderType type={type} />;
       },
     },
     {
@@ -144,6 +136,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
       title: t("orders.fields.orderDetails"),
       key: "orderDetails",
       dataIndex: "orderDetails",
+      align: "center",
       render: (_, record) => {
         const orderDetails = record?.orderDetails || [];
         const totalQuantity = orderDetails.reduce((total, orderDetail) => {
@@ -178,6 +171,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
       title: t("orders.fields.createdAt"),
       key: "createdAt",
       dataIndex: "createdAt",
+      align: "right",
       render: (_, { createdAt }) => (
         <DateField value={dayjs(new Date(createdAt))} format="LLL" />
       ),
@@ -188,80 +182,98 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
       key: "actions",
       width: "10%",
       align: "center",
-      render: (_, record) => <OrderActions record={record} />,
+      render: (_, record) => (
+        <OrderActions record={record} callBack={refetch} />
+      ),
     },
   ];
 
   const handleClearFilters = () => {
-    searchFormProps.form?.setFieldValue("q", "");
-    searchFormProps.form?.setFieldValue("status", "");
+    searchFormProps.form?.setFieldValue("q", null);
+    searchFormProps.form?.setFieldValue("status", null);
     searchFormProps.form?.submit();
   };
 
   return (
     <List>
-      <Form
-        {...searchFormProps}
-        onValuesChange={debounce(() => {
-          searchFormProps.form?.submit();
-        }, 500)}
-        initialValues={{
-          q: getDefaultFilter("q", filters, "eq"),
-          status: getDefaultFilter("status", filters, "eq"),
-        }}
-      >
-        <Space wrap style={{ marginBottom: "16px" }}>
-          <Text style={{ fontSize: "18px" }} strong>
-            {t("orders.filters.title")}
-          </Text>
-          <Form.Item name="q" noStyle>
-            <Input
-              style={{
-                width: "400px",
+      <Row gutter={[8, 12]}>
+        <Col span={24}>
+          <Card>
+            <Form
+              {...searchFormProps}
+              onValuesChange={debounce(() => {
+                searchFormProps.form?.submit();
+              }, 500)}
+              initialValues={{
+                q: getDefaultFilter("q", filters, "eq"),
+                status: getDefaultFilter("status", filters, "eq"),
               }}
-              placeholder={t("orders.filters.search.placeholder")}
-              suffix={<SearchOutlined />}
-            />
-          </Form.Item>
-          <Form.Item noStyle label={t("orders.fields.status")} name="status">
-            <Select
-              placeholder={t("orders.filters.status.placeholder")}
-              style={{
-                width: "200px",
-              }}
-              options={[
-                {
-                  label: t("enum.orderStatuses.ACTIVE"),
-                  value: "ACTIVE",
+            >
+              <Space wrap>
+                <Text style={{ fontSize: "18px" }} strong>
+                  {t("orders.filters.title")}
+                </Text>
+                <Form.Item name="q" noStyle>
+                  <Input
+                    style={{
+                      width: "400px",
+                    }}
+                    placeholder={t("orders.filters.search.placeholder")}
+                    suffix={<SearchOutlined />}
+                  />
+                </Form.Item>
+                <Form.Item
+                  noStyle
+                  label={t("orders.fields.status")}
+                  name="status"
+                >
+                  <Select
+                    placeholder={t("orders.filters.status.placeholder")}
+                    style={{
+                      width: "200px",
+                    }}
+                    options={getOrderStatusOptions(t)}
+                  />
+                </Form.Item>
+                <Form.Item noStyle label={t("orders.fields.type")} name="type">
+                  <Select
+                    placeholder={t("orders.filters.type.placeholder")}
+                    style={{
+                      width: "200px",
+                    }}
+                    options={getOrderTypeOptions(t)}
+                  />
+                </Form.Item>
+                <Button
+                  icon={<UndoOutlined />}
+                  onClick={() => handleClearFilters()}
+                >
+                  {t("actions.clear")}
+                </Button>
+              </Space>
+            </Form>
+          </Card>
+        </Col>
+        <Col span={24}>
+          <Table
+            {...tableProps}
+            pagination={{
+              ...tableProps.pagination,
+              ...tablePaginationSettings,
+            }}
+            rowKey="id"
+            columns={columns}
+            onRow={(record) => {
+              return {
+                onDoubleClick: () => {
+                  show("orders", record.id);
                 },
-                {
-                  label: t("enum.orderStatuses.IN_ACTIVE"),
-                  value: "IN_ACTIVE",
-                },
-              ]}
-            />
-          </Form.Item>
-          <Button icon={<UndoOutlined />} onClick={() => handleClearFilters()}>
-            {t("actions.clear")}
-          </Button>
-        </Space>
-      </Form>
-      <Table
-        {...tableProps}
-        pagination={{
-          ...tableProps.pagination,
-          ...tablePaginationSettings,
-        }}
-        rowKey="id"
-        columns={columns}
-        onRow={(record) => {
-          return {
-            onDoubleClick: () => {
-              show("orders", record.id);
-            },
-          };
-        }}
-      />
+              };
+            }}
+            loading={overtime.elapsedTime != undefined}
+          />
+        </Col>
+      </Row>
     </List>
   );
 };

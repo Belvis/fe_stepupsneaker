@@ -5,7 +5,6 @@ import {
   ErrorComponent,
   ThemedLayoutV2,
   ThemedSiderV2,
-  ThemedTitleV2,
   useNotificationProvider,
 } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
@@ -39,6 +38,7 @@ import {
   DashboardOutlined,
   DollarOutlined,
   ForkOutlined,
+  MenuOutlined,
   ReadOutlined,
   SafetyOutlined,
   ShopOutlined,
@@ -79,6 +79,7 @@ import {
   VoucherEdit,
   VoucherList,
 } from "./pages/admin";
+import { ThemedTitleV2 } from "./components/admin/title";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 // const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
@@ -342,11 +343,7 @@ function App() {
                       // To do: customized sider
                       Sider={(props) => <ThemedSiderV2 {...props} fixed />}
                       Title={({ collapsed }) => (
-                        <ThemedTitleV2
-                          collapsed={collapsed}
-                          text="SUNSneaker"
-                          icon={<AppIcon />}
-                        />
+                        <ThemedTitleV2 collapsed={collapsed} />
                       )}
                     >
                       <Outlet />

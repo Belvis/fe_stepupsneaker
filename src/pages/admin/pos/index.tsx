@@ -1,3 +1,5 @@
+import { SearchOutlined } from "@ant-design/icons";
+import { useThemedLayoutContext } from "@refinedev/antd";
 import {
   HttpError,
   IResourceComponentsProps,
@@ -7,27 +9,22 @@ import {
   useTranslate,
 } from "@refinedev/core";
 import {
-  Tabs,
-  theme,
-  type TabsProps,
-  Typography,
-  Button,
   AutoComplete,
-  Input,
-  Card,
-  Space,
-  Row,
   Avatar,
+  Button,
+  Card,
+  Input,
+  Row,
+  Tabs,
+  Typography,
   message,
+  theme,
 } from "antd";
-import StickyBox from "react-sticky-box";
-import "./style.css";
-import React, { useEffect, useRef, useState } from "react";
-import { SearchOutlined } from "@ant-design/icons";
-import { useThemedLayoutContext } from "@refinedev/antd";
+import { debounce } from "lodash";
+import React, { useEffect, useState } from "react";
 import { ProductDetail, TabContent } from "../../../components";
 import { IOption, IOrder, IProduct } from "../../../interfaces";
-import { debounce } from "lodash";
+import "./style.css";
 
 const { Text } = Typography;
 const { useToken } = theme;

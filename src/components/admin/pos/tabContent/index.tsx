@@ -36,11 +36,6 @@ export const TabContent: React.FC<TabContentProps> = ({
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IProduct>();
 
-  const handleProductClick = (product: IProduct) => {
-    setSelectedProduct(product);
-    setIsModalVisible(true);
-  };
-
   const handleModalOk = () => {
     setIsModalVisible(false);
   };
