@@ -104,11 +104,6 @@ export const ColorList: React.FC<IResourceComponentsProps> = () => {
       render: (text, record, index) => (current - 1) * pageSize + index + 1,
     },
     {
-      title: t("colors.fields.name"),
-      dataIndex: "name",
-      key: "name",
-    },
-    {
       title: t("colors.fields.code"),
       dataIndex: "code",
       key: "code",
@@ -116,6 +111,11 @@ export const ColorList: React.FC<IResourceComponentsProps> = () => {
       render: (_, { code }) => (
         <ColorPicker style={colorPickerStyles} value={code} showText disabled />
       ),
+    },
+    {
+      title: t("colors.fields.name"),
+      dataIndex: "name",
+      key: "name",
     },
     {
       title: t("colors.fields.status"),

@@ -21,7 +21,15 @@ export const CreateTradeMark: React.FC<CreateTradeMarkProps> = ({
       name: values.name,
       status: "ACTIVE",
     };
-    onFinish(submitData);
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(submitData);
+        },
+        reject: () => {},
+      },
+      t: t,
+    });
   };
 
   return (

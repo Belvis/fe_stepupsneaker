@@ -1,6 +1,7 @@
 import { useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps } from "antd";
 import { ISole } from "../../../../interfaces";
+import { showWarningConfirmDialog } from "../../../../utils";
 
 type CreateSoleProps = {
   modalProps: ModalProps;
@@ -21,7 +22,15 @@ export const CreateSole: React.FC<CreateSoleProps> = ({
       name: values.name,
       status: "ACTIVE",
     };
-    onFinish(submitData);
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(submitData);
+        },
+        reject: () => {},
+      },
+      t: t,
+    });
   };
 
   return (
