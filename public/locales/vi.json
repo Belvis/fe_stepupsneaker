@@ -217,11 +217,11 @@
       }
     },
     "materials": {
-      "materials": "Vật Liệu",
+      "materials": "Chất Liệu",
       "titles": {
-        "create": "Tạo Vật Liệu",
-        "list": "Vật Liệu",
-        "edit": "Chỉnh sửa Vật Liệu"
+        "create": "Tạo Chất Liệu",
+        "list": "Chất Liệu",
+        "edit": "Chỉnh sửa Chất Liệu"
       },
       "fields": {
         "id": "ID",
@@ -313,11 +313,11 @@
       }
     },
     "vouchers": {
-      "vouchers": "Khuyễn Mãi",
+      "vouchers": "Khuyến Mãi",
       "titles": {
-        "create": "Tạo Khuyễn Mãi",
-        "list": "Khuyễn Mãi",
-        "edit": "Chỉnh sửa Khuyễn Mãi"
+        "create": "Tạo Khuyến Mãi",
+        "list": "Khuyến Mãi",
+        "edit": "Chỉnh sửa Khuyến Mãi"
       },
       "fields": {
         "id": "ID",
@@ -331,7 +331,7 @@
         "startDate": "Ngày bắt đầu",
         "endDate": "Ngày kết thúc",
         "images": {
-          "description": "Thêm hình ảnh Khuyễn Mãi",
+          "description": "Thêm hình ảnh Khuyến Mãi",
           "validation": "phải là 1080x1080 px"
         },
         "voucherRange": "Ngày"
@@ -575,7 +575,7 @@
         "status": "Trạng thái",
         "customer": "Khách hàng",
         "employee": "Nhân viên",
-        "voucher": "Khuyễn mãi",
+        "voucher": "Khuyến mãi",
         "orderDetails": "Chi tiết đơn hàng",
         "createdAt": "Tạo lúc",
         "totalPrice": "Tổng cộng",
@@ -584,7 +584,7 @@
         "type": {
           "title": "Loại",
           "ONLINE": "Trực tuyến",
-          "OFFLINE": "Ngoại tuyến"
+          "OFFLINE": "Tại quầy"
         }
       },
       "filters": {
@@ -691,7 +691,7 @@
           "validation": "phải là 1080x1080 px"
         },
         "createdAt": "Tạo lúc",
-        "quantity": "Số lượng tồn",
+        "quantity": "SL tồn",
         "status": "Trạng thái",
         "color": "Màu sắc",
         "size": "Kích cỡ"
@@ -735,8 +735,8 @@
           "placeholder": "Lọc theo màu"
         },
         "material": {
-          "label": "Vật liệu",
-          "placeholder": "Lọc theo vật liệu"
+          "label": "Chất liệu",
+          "placeholder": "Lọc theo chất liệu"
         },
         "size": {
           "label": "Kích cỡ",
@@ -792,7 +792,7 @@
     "userSelect": {
       "product": {
         "brand": "Thương hiệu",
-        "material": "Vật liệu",
+        "material": "Chất liệu",
         "sole": "Đế",
         "style": "Kiểu dáng",
         "tradeMark": "Nhãn hiệu",
