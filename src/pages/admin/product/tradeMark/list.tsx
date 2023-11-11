@@ -186,24 +186,24 @@ export const TradeMarkList: React.FC<IResourceComponentsProps> = () => {
             >
               <Space wrap>
                 <Text style={{ fontSize: "18px" }} strong>
-                  {t("tradeMarks.filters.title")}
+                  {t("trade-marks.filters.title")}
                 </Text>
                 <Form.Item name="q" noStyle>
                   <Input
                     style={{
                       width: "400px",
                     }}
-                    placeholder={t("tradeMarks.filters.search.placeholder")}
+                    placeholder={t("trade-marks.filters.search.placeholder")}
                     suffix={<SearchOutlined />}
                   />
                 </Form.Item>
                 <Form.Item
                   noStyle
-                  label={t("tradeMarks.fields.status")}
+                  label={t("trade-marks.fields.status")}
                   name="status"
                 >
                   <Select
-                    placeholder={t("tradeMarks.filters.status.placeholder")}
+                    placeholder={t("trade-marks.filters.status.placeholder")}
                     style={{
                       width: "200px",
                     }}

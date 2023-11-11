@@ -1,6 +1,7 @@
 import { useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps } from "antd";
 import { IStyle } from "../../../../interfaces";
+import { showWarningConfirmDialog } from "../../../../utils";
 
 type CreateStyleProps = {
   modalProps: ModalProps;
@@ -21,7 +22,15 @@ export const CreateStyle: React.FC<CreateStyleProps> = ({
       name: values.name,
       status: "ACTIVE",
     };
-    onFinish(submitData);
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(submitData);
+        },
+        reject: () => {},
+      },
+      t: t,
+    });
   };
 
   return (

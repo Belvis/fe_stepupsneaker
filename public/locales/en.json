@@ -221,6 +221,7 @@
         }
     },
     "materials": {
+      "materials": "Materials",
         "styles": "materials",
         "titles": {
             "create": "Create Material",
@@ -244,7 +245,7 @@
             }
         }
     },
-    "tradeMarks": {
+    "trade-marks": {
         "trade-marks": "Trade Mark",
         "titles": {
             "create": "Create Trade Mark",
@@ -450,6 +451,25 @@
             }
         }
     },
+    "payment-methods": {
+        "payment-methods": "Payment methods",
+        "titles": {
+          "create": "Create Payment Method",
+          "list": "Payment Method",
+          "edit": "Edit Payment Method"
+        },
+        "fields": {
+          "id": "ID",
+          "name": "Name"
+        },
+        "filters": {
+          "title": "Filters",
+          "search": {
+            "label": "Name",
+            "placeholder": "Search by name"
+          }
+        }
+      },
     "customers": {
         "customers": "Customers",
         "addresses": "Addresses",
@@ -857,5 +877,14 @@
             "acceptLabel": "Yes",
             "rejectLabel": "No"
         }
+    },
+    "pos": {
+        "title": "Point of sales"
+    },
+    "shop": {
+        "title": "Shop"
+    },
+    "transactions": {
+        "title": "Transactions"
     }
 }
