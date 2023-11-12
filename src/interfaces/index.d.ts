@@ -376,6 +376,7 @@ export interface ISoleFilterVariables {
 export interface IVoucherFilterVariables {
   q?: string;
   status: VoucherStatus;
+  customer: string;
   type: VoucherType;
   value: number;
   constraint: number;

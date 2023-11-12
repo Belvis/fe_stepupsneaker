@@ -20,13 +20,13 @@ import { BrowserRouter, Outlet, Route, Routes } from "react-router-dom";
 import { dataProvider } from "./api/dataProvider";
 import {
   AdminHeader,
-  AppIcon,
   ColorIcon,
   MaterialIcon,
   ProductIcon,
   SizeIcon,
   SoleIcon,
   StyleIcon,
+  ThemedTitleV2,
   TradeMarkIcon,
 } from "./components";
 import { ColorModeContextProvider } from "./contexts/color-mode";
@@ -38,7 +38,6 @@ import {
   DashboardOutlined,
   DollarOutlined,
   ForkOutlined,
-  MenuOutlined,
   ReadOutlined,
   SafetyOutlined,
   ShopOutlined,
@@ -52,6 +51,8 @@ import {
 
 import { PointOfSaleIcon } from "./components/icons/icon-pos";
 import {
+  BrandList,
+  ColorList,
   CustomerCreate,
   CustomerEdit,
   CustomerList,
@@ -59,64 +60,27 @@ import {
   EmployeeCreate,
   EmployeeEdit,
   EmployeeList,
+  MaterialList,
   OrderList,
   OrderShow,
-  PaymentMethodList,
   PaymentList,
+  PaymentMethodList,
   PointOfSales,
-  BrandList,
-  ColorList,
-  MaterialList,
   ProductCreate,
   ProductList,
   ProductShow,
+  RoleList,
   SizeList,
   SoleList,
   StyleList,
   TradeMarkList,
-  RoleList,
   VoucherCreate,
   VoucherEdit,
   VoucherList,
 } from "./pages/admin";
-import { ThemedTitleV2 } from "./components/admin/title";
 
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 // const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
-
-const capitalizeFirstLetter = (inputString: string): string => {
-  return inputString.charAt(0).toUpperCase() + inputString.slice(1);
-};
-
-const titleHandler = ({
-  resource,
-  action,
-  params,
-}: {
-  resource?: IResourceItem;
-  action?: Action;
-  params?: Record<string, string | undefined>;
-}): string => {
-  if (resource && action && params) {
-    const resourceName = capitalizeFirstLetter(resource.name).slice(0, -1);
-    switch (action) {
-      case "list":
-        return `${resourceName} | SUNS`;
-      case "edit":
-        return `Edit ${resourceName} | SUNS`;
-      case "show":
-        return `Show ${resourceName} | SUNS`;
-      case "create":
-        return `Create new ${resourceName} | SUNS`;
-      case "clone":
-        return `Clone ${resourceName} | SUNS`;
-      default:
-        return "SUNS";
-    }
-  } else {
-    return "SUNS";
-  }
-};
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -125,6 +89,44 @@ function App() {
     translate: (key: string, params: object) => t(key, params),
     changeLocale: (lang: string) => i18n.changeLanguage(lang),
     getLocale: () => i18n.language,
+  };
+
+  const titleHandler = ({
+    resource,
+    action,
+    params,
+  }: {
+    resource?: IResourceItem;
+    action?: Action;
+    params?: Record<string, string | undefined>;
+  }): string => {
+    if (resource && action && params) {
+      const resourceName = resource.name;
+      switch (action) {
+        case "list":
+          return `${t(`${resourceName}.${resourceName}`)} | SUNS`;
+        case "edit":
+          return `${t(`actions.edit`)} ${t(
+            `${resourceName}.${resourceName}`
+          )} | SUNS`;
+        case "show":
+          return `${t(`actions.show`)} ${t(
+            `${resourceName}.${resourceName}`
+          )} | SUNS`;
+        case "create":
+          return `${t(`actions.create`)} ${t(
+            `${resourceName}.${resourceName}`
+          )} | SUNS`;
+        case "clone":
+          return `${t(`actions.clone`)} ${t(
+            `${resourceName}.${resourceName}`
+          )} | SUNS`;
+        default:
+          return "SUNS";
+      }
+    } else {
+      return "SUNS";
+    }
   };
 
   return (
@@ -140,7 +142,7 @@ function App() {
               routerProvider={routerBindings}
               resources={[
                 {
-                  name: "dashboards",
+                  name: "dashboard",
                   list: "/",
                   meta: {
                     label: t("dashboard.title"),
@@ -148,7 +150,7 @@ function App() {
                   },
                 },
                 {
-                  name: "Point Of Sales",
+                  name: "pos",
                   list: "/point-of-sales",
                   meta: {
                     label: t("pos.title"),

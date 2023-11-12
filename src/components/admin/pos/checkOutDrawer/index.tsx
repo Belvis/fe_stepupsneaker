@@ -29,6 +29,7 @@ import {
   Row,
   Select,
   Space,
+  Spin,
   Typography,
   message,
   theme,
@@ -52,6 +53,7 @@ import {
   UserIcon,
 } from "../deliverySales/styled";
 import { PaymentModal } from "../paymentModal";
+import { DiscountModal } from "../discountModal";
 
 const { Text, Title } = Typography;
 const { useToken } = theme;
@@ -71,7 +73,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
 }) => {
   const t = useTranslate();
   const { token } = useToken();
-  const { mutate: mutateUpdate } = useUpdate();
+  const { mutate: mutateUpdate, isLoading: isLoadingOrderUpdate } = useUpdate();
   const { mutate: paymentMutateCreateMany } = useCreateMany();
   const { list } = useNavigation();
   const [messageApi, contextHolder] = message.useMessage();
@@ -86,13 +88,31 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
   }, 0);
 
   const initialPrice = orderDetails.length > 0 ? orderDetails[0].price : 0;
-  const [customerPaid, setCustomerPaid] = useState(initialPrice);
   const [change, setChange] = useState(initialPrice - totalPrice);
+  const [discount, setDiscount] = useState(0);
+  const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[]>();
+  const [payments, setPayments] = useState<IPayment[]>();
 
   useEffect(() => {
-    const changeAmount = customerPaid - totalPrice;
-    setChange(changeAmount);
-  }, [customerPaid, totalPrice]);
+    if (payments) {
+      const customerPaid = payments.reduce(
+        (acc, payment) => acc + payment.totalMoney,
+        0
+      );
+      const changeAmount = customerPaid - (totalPrice - discount);
+      setChange(changeAmount);
+    }
+  }, [payments, totalPrice]);
+
+  useEffect(() => {
+    if (order.voucher && order.voucher.type) {
+      if (order.voucher.type === "PERCENTAGE") {
+        setDiscount((order.voucher.value / 100) * totalPrice);
+      } else {
+        setDiscount(order.voucher.value);
+      }
+    }
+  }, [order.voucher]);
 
   const suggestedMoney = [0, 100000, 200000, 300000];
 
@@ -104,7 +124,20 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           size="large"
           shape="round"
           key={index}
-          onClick={() => setCustomerPaid(totalMoney)}
+          onClick={() => {
+            if (paymentMethods)
+              setPayments([
+                {
+                  id: "",
+                  order: order,
+                  paymentMethod: paymentMethods[0],
+                  transactionCode: "Cash",
+                  totalMoney: totalMoney,
+                  description: "Cash",
+                  createdAt: 0,
+                },
+              ]);
+          }}
           style={{ width: "100%" }}
         >
           {totalMoney.toLocaleString()}
@@ -113,7 +146,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
     );
   });
 
-  const { data, isLoading } = useList<IPaymentMethod, HttpError>({
+  const { data } = useList<IPaymentMethod, HttpError>({
     resource: "payment-methods",
     sorters: [
       {
@@ -152,21 +185,32 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
     refetchEmployees();
   }, [value]);
 
-  const [paymentMethods, setPaymentMethods] = useState<IPaymentMethod[]>();
-  const [payments, setPayments] = useState<IPayment[]>();
+  const [isPaymentModalVisible, setIsPaymentModalVisible] = useState(false);
 
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
-  const showModal = () => {
-    setIsModalVisible(true);
+  const showPaymentModal = () => {
+    setIsPaymentModalVisible(true);
   };
 
-  const handleModalOk = () => {
-    setIsModalVisible(false);
+  const handlePaymentModalOk = () => {
+    setIsPaymentModalVisible(false);
   };
 
-  const handleModalCancel = () => {
-    setIsModalVisible(false);
+  const handlePaymentModalCancel = () => {
+    setIsPaymentModalVisible(false);
+  };
+
+  const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
+
+  const showDiscountModal = () => {
+    setIsDiscountModalVisible(true);
+  };
+
+  const handleDiscountModalOk = () => {
+    setIsDiscountModalVisible(false);
+  };
+
+  const handleDiscountModalCancel = () => {
+    setIsDiscountModalVisible(false);
   };
 
   useEffect(() => {
@@ -210,7 +254,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           employee: order.employee ? order.employee.id : null,
           voucher: order.voucher ? order.voucher.id : null,
           address: order.address ? order.address.id : null,
-          totalMoney: totalPrice,
+          totalMoney: totalPrice - discount,
           status: "COMPLETED",
         },
         id: order.id,
@@ -256,6 +300,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
 
   const renderCashMethod = () => (
     <Row
+      key="cash-method"
       gutter={10}
       style={{
         background: "#f5f5f5",
@@ -461,48 +506,51 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
         <Col span={24}>
           <Row>
             <Col span={14}>
-              {order.employee == null && order.employee == undefined ? (
-                <AutoComplete
-                  style={{
-                    width: "100%",
-                  }}
-                  options={employeeOptions}
-                  onSelect={(_, option: any) => {
-                    editOrderEmployee(option.employee.id);
-                  }}
-                  filterOption={false}
-                  onSearch={debounce((value: string) => setValue(value), 300)}
-                >
-                  <Input
-                    placeholder={t("search.placeholder.employee")}
-                    suffix={<SearchOutlined />}
-                  />
-                </AutoComplete>
-              ) : (
-                <CustomerInfor span={24}>
-                  <TextContainer>
-                    <UserIcon color={token.colorBgMask} />
-                    <CustomerName color={token.colorPrimary}>
-                      {order.employee?.fullName} - {order.employee.phoneNumber}
-                    </CustomerName>
-                  </TextContainer>
-                  <CloseButtonWrapper>
-                    <Button
-                      shape="circle"
-                      type="link"
-                      icon={
-                        <CloseOutlined
-                          style={{
-                            fontSize: token.fontSize,
-                            color: token.colorBgMask,
-                          }}
-                        />
-                      }
-                      onClick={() => editOrderEmployee(null)}
+              <Spin spinning={isLoadingOrderUpdate}>
+                {order.employee == null && order.employee == undefined ? (
+                  <AutoComplete
+                    style={{
+                      width: "100%",
+                    }}
+                    options={employeeOptions}
+                    onSelect={(_, option: any) => {
+                      editOrderEmployee(option.employee.id);
+                    }}
+                    filterOption={false}
+                    onSearch={debounce((value: string) => setValue(value), 300)}
+                  >
+                    <Input
+                      placeholder={t("search.placeholder.employee")}
+                      suffix={<SearchOutlined />}
                     />
-                  </CloseButtonWrapper>
-                </CustomerInfor>
-              )}
+                  </AutoComplete>
+                ) : (
+                  <CustomerInfor span={24}>
+                    <TextContainer>
+                      <UserIcon color={token.colorBgMask} />
+                      <CustomerName color={token.colorPrimary}>
+                        {order.employee?.fullName} -{" "}
+                        {order.employee.phoneNumber}
+                      </CustomerName>
+                    </TextContainer>
+                    <CloseButtonWrapper>
+                      <Button
+                        shape="circle"
+                        type="link"
+                        icon={
+                          <CloseOutlined
+                            style={{
+                              fontSize: token.fontSize,
+                              color: token.colorBgMask,
+                            }}
+                          />
+                        }
+                        onClick={() => editOrderEmployee(null)}
+                      />
+                    </CloseButtonWrapper>
+                  </CustomerInfor>
+                )}
+              </Spin>
             </Col>
             <Col span={10} style={{ textAlign: "end" }}>
               <Space wrap>
@@ -548,15 +596,21 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           <Flex gap="middle" justify="space-between" align="center">
             <Space size="large" wrap>
               <Text>{t("orders.tab.discount")}</Text>
-              <Button
-                disabled={!order.customer}
-                type="text"
-                size="small"
-                icon={
-                  <PlusSquareFilled style={{ color: token.colorPrimary }} />
-                }
-                onClick={() => {}}
-              />
+              {order.voucher ? (
+                <Text strong style={{ fontSize: "18px" }}>
+                  #{order.voucher.code}
+                </Text>
+              ) : (
+                <Button
+                  disabled={!order.customer}
+                  type="text"
+                  size="small"
+                  icon={
+                    <PlusSquareFilled style={{ color: token.colorPrimary }} />
+                  }
+                  onClick={showDiscountModal}
+                />
+              )}
             </Space>
             <Title level={4}>
               <NumberField
@@ -564,7 +618,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   currency: "VND",
                   style: "currency",
                 }}
-                value={0}
+                value={discount}
               />
             </Title>
           </Flex>
@@ -581,7 +635,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   currency: "VND",
                   style: "currency",
                 }}
-                value={totalPrice}
+                value={totalPrice - discount}
               />
             </Title>
           </Flex>
@@ -596,7 +650,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                 icon={
                   <CreditCardFilled style={{ color: token.colorPrimary }} />
                 }
-                onClick={showModal}
+                onClick={showPaymentModal}
               />
             </Space>
             <Title level={4}>
@@ -642,16 +696,23 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
         </Col>
       </Row>
       <PaymentModal
-        open={isModalVisible}
-        handleOk={handleModalOk}
-        handleCancel={handleModalCancel}
+        open={isPaymentModalVisible}
+        handleOk={handlePaymentModalOk}
+        handleCancel={handlePaymentModalCancel}
         paymentMethods={paymentMethods}
         payments={payments}
         initialPrice={initialPrice}
         totalPrice={totalPrice}
         setPayments={setPayments}
-        setCustomerPaid={setCustomerPaid}
         order={order}
+      />
+      <DiscountModal
+        open={isDiscountModalVisible}
+        handleOk={handleDiscountModalOk}
+        handleCancel={handleDiscountModalCancel}
+        customer={order.customer}
+        order={order}
+        callBack={callBack}
       />
     </Drawer>
   );

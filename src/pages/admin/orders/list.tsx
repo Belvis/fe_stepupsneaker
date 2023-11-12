@@ -15,6 +15,7 @@ import {
   Col,
   Form,
   Input,
+  InputNumber,
   Popover,
   Row,
   Select,
@@ -47,7 +48,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
   } = useTable<IOrder, HttpError, IOrderFilterVariables>({
     onSearch: (params) => {
       const filters: CrudFilters = [];
-      const { q, status } = params;
+      const { q, status, priceMin, priceMax } = params;
 
       filters.push({
         field: "q",
@@ -59,6 +60,18 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
         field: "status",
         operator: "eq",
         value: status,
+      });
+
+      filters.push({
+        field: "priceMin",
+        operator: "eq",
+        value: priceMin ? priceMin : undefined,
+      });
+
+      filters.push({
+        field: "priceMax",
+        operator: "eq",
+        value: priceMax ? priceMax : undefined,
       });
 
       return filters;
@@ -83,14 +96,17 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
       width: "10%",
       align: "center",
       render: (_, { code }) => {
-        return <Text>{code ? code.toUpperCase() : "N/A"}</Text>;
+        return (
+          <Text strong style={{ color: "#fb5231" }}>
+            {code ? code.toUpperCase() : "N/A"}
+          </Text>
+        );
       },
     },
     {
       title: t("orders.fields.type.title"),
       key: "type",
       dataIndex: "type",
-      width: "10%",
       align: "center",
       render: (_, { type }) => {
         return <OrderType type={type} />;
@@ -100,7 +116,6 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
       title: t("orders.fields.status"),
       key: "status",
       dataIndex: "status",
-      width: "10%",
       align: "center",
       render: (_, { status }) => <OrderStatus status={status} />,
     },
@@ -191,6 +206,9 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
   const handleClearFilters = () => {
     searchFormProps.form?.setFieldValue("q", null);
     searchFormProps.form?.setFieldValue("status", null);
+    searchFormProps.form?.setFieldValue("type", null);
+    searchFormProps.form?.setFieldValue("priceMin", null);
+    searchFormProps.form?.setFieldValue("priceMax", null);
     searchFormProps.form?.submit();
   };
 
@@ -229,19 +247,51 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
                 >
                   <Select
                     placeholder={t("orders.filters.status.placeholder")}
-                    style={{
-                      width: "200px",
-                    }}
                     options={getOrderStatusOptions(t)}
                   />
                 </Form.Item>
                 <Form.Item noStyle label={t("orders.fields.type")} name="type">
                   <Select
                     placeholder={t("orders.filters.type.placeholder")}
-                    style={{
-                      width: "200px",
-                    }}
                     options={getOrderTypeOptions(t)}
+                  />
+                </Form.Item>
+                <Text>{t("productDetails.filters.priceMin.label")}</Text>
+                <Form.Item
+                  noStyle
+                  label={t("productDetails.filters.priceMin.label")}
+                  name="priceMin"
+                >
+                  <InputNumber
+                    formatter={(value) =>
+                      `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => {
+                      const parsedValue = parseInt(
+                        value!.replace(/₫\s?|(,*)/g, ""),
+                        10
+                      );
+                      return isNaN(parsedValue) ? 0 : parsedValue;
+                    }}
+                  />
+                </Form.Item>
+                <Text>{t("productDetails.filters.priceMax.label")}</Text>
+                <Form.Item
+                  noStyle
+                  label={t("productDetails.filters.priceMax.label")}
+                  name="priceMax"
+                >
+                  <InputNumber
+                    formatter={(value) =>
+                      `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                    }
+                    parser={(value) => {
+                      const parsedValue = parseInt(
+                        value!.replace(/₫\s?|(,*)/g, ""),
+                        10
+                      );
+                      return isNaN(parsedValue) ? 0 : parsedValue;
+                    }}
                   />
                 </Form.Item>
                 <Button

@@ -1,4 +1,4 @@
-import { CloseOutlined, DeleteOutlined } from "@ant-design/icons";
+import { CloseOutlined, DeleteOutlined, TagsOutlined } from "@ant-design/icons";
 import { useCheckboxGroup } from "@refinedev/antd";
 import { HttpError, useApiUrl, useList, useTranslate } from "@refinedev/core";
 import {
@@ -17,6 +17,14 @@ import {
 } from "antd";
 import { IColor, ISize } from "../../../../interfaces";
 import { useState } from "react";
+import {
+  ColorIcon,
+  MaterialIcon,
+  SizeIcon,
+  SoleIcon,
+  StyleIcon,
+  TradeMarkIcon,
+} from "../../../icons";
 
 const { Text, Title } = Typography;
 
@@ -112,7 +120,11 @@ export const PosFilter: React.FC<PosFilterProps> = ({
   const items: CollapseProps["items"] = [
     {
       key: "1",
-      label: t("brands.brands"),
+      label: (
+        <span>
+          <TagsOutlined /> {t("brands.brands")}
+        </span>
+      ),
       children: (
         <Checkbox.Group
           {...brandCheckboxGroupProps}
@@ -122,7 +134,11 @@ export const PosFilter: React.FC<PosFilterProps> = ({
     },
     {
       key: "2",
-      label: t("colors.colors"),
+      label: (
+        <span>
+          <ColorIcon /> {t("colors.colors")}
+        </span>
+      ),
       children: (
         <Space wrap>
           {colors.length > 0 && (
@@ -151,7 +167,11 @@ export const PosFilter: React.FC<PosFilterProps> = ({
     },
     {
       key: "3",
-      label: t("sizes.sizes"),
+      label: (
+        <span>
+          <SizeIcon /> {t("sizes.sizes")}
+        </span>
+      ),
       children: (
         <Space wrap>
           {sizes.length > 0 && (
@@ -180,7 +200,11 @@ export const PosFilter: React.FC<PosFilterProps> = ({
     },
     {
       key: "4",
-      label: t("materials.materials"),
+      label: (
+        <span>
+          <MaterialIcon /> {t("materials.materials")}
+        </span>
+      ),
       children: (
         <Checkbox.Group
           {...materialCheckboxGroupProps}
@@ -190,7 +214,11 @@ export const PosFilter: React.FC<PosFilterProps> = ({
     },
     {
       key: "5",
-      label: t("soles.soles"),
+      label: (
+        <span>
+          <SoleIcon /> {t("soles.soles")}
+        </span>
+      ),
       children: (
         <Checkbox.Group
           {...soleCheckboxGroupProps}
@@ -200,7 +228,11 @@ export const PosFilter: React.FC<PosFilterProps> = ({
     },
     {
       key: "6",
-      label: t("styles.styles"),
+      label: (
+        <span>
+          <StyleIcon /> {t("styles.styles")}
+        </span>
+      ),
       children: (
         <Checkbox.Group
           {...styleCheckboxGroupProps}
@@ -210,7 +242,11 @@ export const PosFilter: React.FC<PosFilterProps> = ({
     },
     {
       key: "7",
-      label: t("trade-marks.trade-marks"),
+      label: (
+        <span>
+          <TradeMarkIcon /> {t("trade-marks.trade-marks")}
+        </span>
+      ),
       children: (
         <Checkbox.Group
           {...tradeMarkCheckboxGroupProps}
@@ -248,7 +284,7 @@ export const PosFilter: React.FC<PosFilterProps> = ({
           <Button type="text" onClick={onClose} icon={<CloseOutlined />} />
         </Col>
         <Col span={24}>
-          <Collapse defaultActiveKey={["1"]} ghost items={items} />
+          <Collapse defaultActiveKey={["2", "3"]} ghost items={items} />
         </Col>
       </Row>
     </Drawer>

@@ -30,20 +30,24 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
   const [districts, setDistricts] = useState<IDistrict[]>([]);
   const [wards, setWards] = useState<IWard[]>([]);
 
-  const { formProps, saveButtonProps, onFinish } = useForm<IAddress>({
-    resource: "addresses",
-    action: "edit",
-    id: address?.id,
-    onMutationSuccess: (data, variables, context, isAutoSave) => {
-      refetch;
-    },
-  });
+  const { formProps, saveButtonProps, onFinish, formLoading } =
+    useForm<IAddress>({
+      resource: "addresses",
+      action: "edit",
+      id: address?.id,
+      onMutationSuccess: (data: any, variables, context, isAutoSave) => {
+        console.log(data.data.content.wardCode);
+
+        formProps.form?.resetFields();
+        refetch();
+      },
+    });
 
   const provinceId = Form.useWatch("provinceId", formProps.form);
   const districtId = Form.useWatch("districtId", formProps.form);
-  const [provinceName, setProvinceName] = useState("");
-  const [districtName, setDistrictName] = useState("");
-  const [wardName, setWardName] = useState("");
+  const [provinceName, setProvinceName] = useState(address?.provinceName);
+  const [districtName, setDistrictName] = useState(address?.districtName);
+  const [wardName, setWardName] = useState(address?.wardName);
 
   const handleProvinceChange = (value: number, option: any) => {
     setProvinceName(option.label);
@@ -169,7 +173,7 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
       goBack={false}
       resource="addresses"
     >
-      <Spin tip="Loading..." spinning={false}>
+      <Spin tip="Loading..." spinning={formLoading}>
         <Form
           {...formProps}
           layout="vertical"

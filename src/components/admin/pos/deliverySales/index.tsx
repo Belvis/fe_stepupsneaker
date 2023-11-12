@@ -65,6 +65,7 @@ import {
 } from "./styled";
 import { PaymentModal } from "../paymentModal";
 import { NumberField } from "@refinedev/antd";
+import { DiscountModal } from "../discountModal";
 const { useToken } = theme;
 const { Text, Title } = Typography;
 
@@ -80,7 +81,6 @@ const filterOption = (
 type DeliverySalesProps = {
   order: IOrder;
   callBack: () => void;
-  isLoadingOrderCreate: boolean;
   setProductDetailModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedProduct: React.Dispatch<
     React.SetStateAction<IProduct | undefined>
@@ -90,7 +90,6 @@ type DeliverySalesProps = {
 export const DeliverySales: React.FC<DeliverySalesProps> = ({
   order,
   callBack,
-  isLoadingOrderCreate,
 }) => {
   const t = useTranslate();
   const { token } = useToken();
@@ -291,8 +290,43 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
   const totalPrice = orderDetails.reduce((total, orderDetail) => {
     return total + orderDetail.totalPrice;
   }, 0);
-  const [customerPaid, setCustomerPaid] = useState(initialPrice);
   const [change, setChange] = useState(initialPrice - totalPrice);
+  const [discount, setDiscount] = useState(0);
+
+  const [isDiscountModalVisible, setIsDiscountModalVisible] = useState(false);
+
+  const showDiscountModal = () => {
+    setIsDiscountModalVisible(true);
+  };
+
+  const handleDiscountModalOk = () => {
+    setIsDiscountModalVisible(false);
+  };
+
+  const handleDiscountModalCancel = () => {
+    setIsDiscountModalVisible(false);
+  };
+
+  useEffect(() => {
+    if (payments) {
+      const customerPaid = payments.reduce(
+        (acc, payment) => acc + payment.totalMoney,
+        0
+      );
+      const changeAmount = customerPaid - (totalPrice - discount);
+      setChange(changeAmount);
+    }
+  }, [payments]);
+
+  useEffect(() => {
+    if (order.voucher && order.voucher.type) {
+      if (order.voucher.type === "PERCENTAGE") {
+        setDiscount((order.voucher.value / 100) * totalPrice);
+      } else {
+        setDiscount(order.voucher.value);
+      }
+    }
+  }, [order.voucher]);
 
   const handleProvinceChange = (value: number, option: any) => {
     setProvinceName(option.label);
@@ -488,7 +522,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
       fullName: form.getFieldValue("fullName"),
       shippingMoney: shippingMoney,
       type: "ONLINE",
-      totalMoney: totalPrice,
+      totalMoney: totalPrice - discount + shippingMoney,
       status: "WAIT_FOR_CONFIRMATION",
     };
 
@@ -541,20 +575,13 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
             maxHeight: "350px",
           }}
         >
-          <Skeleton
-            active
-            loading={isLoadingOrderCreate}
-            paragraph={{ rows: 9 }}
-          >
-            {orderDetails.map((orderItem) => (
-              <OrderItem
-                key={orderItem.id}
-                orderDetail={orderItem}
-                callBack={callBack}
-                isLoading={isLoadingOrderCreate}
-              />
-            ))}
-          </Skeleton>
+          {orderDetails.map((orderItem) => (
+            <OrderItem
+              key={orderItem.id}
+              orderDetail={orderItem}
+              callBack={callBack}
+            />
+          ))}
         </Space>
         <Card style={{ background: token.colorPrimaryBg }}>
           <Row gutter={[16, 24]} style={{ height: "100%" }}>
@@ -601,7 +628,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           style={{ color: token.colorPrimary }}
                         />
                       }
-                      onClick={() => {}}
+                      onClick={showDiscountModal}
                     />
                   </Space>
                   <Title level={5}>
@@ -610,7 +637,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                         currency: "VND",
                         style: "currency",
                       }}
-                      value={0}
+                      value={discount}
                     />
                   </Title>
                 </Flex>
@@ -642,7 +669,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                         currency: "VND",
                         style: "currency",
                       }}
-                      value={totalPrice + shippingMoney}
+                      value={totalPrice - discount + shippingMoney}
                     />
                   </Title>
                 </Flex>
@@ -1169,8 +1196,15 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         initialPrice={initialPrice}
         totalPrice={totalPrice}
         setPayments={setPayments}
-        setCustomerPaid={setCustomerPaid}
         order={order}
+      />
+      <DiscountModal
+        open={isDiscountModalVisible}
+        handleOk={handleDiscountModalOk}
+        handleCancel={handleDiscountModalCancel}
+        customer={order.customer}
+        order={order}
+        callBack={callBack}
       />
     </Row>
   );

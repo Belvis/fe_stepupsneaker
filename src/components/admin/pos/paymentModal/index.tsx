@@ -29,7 +29,6 @@ type PaymentModalProps = {
   initialPrice: number;
   totalPrice: number;
   setPayments: React.Dispatch<React.SetStateAction<IPayment[] | undefined>>;
-  setCustomerPaid: React.Dispatch<React.SetStateAction<number>>;
   order: IOrder;
 };
 
@@ -45,7 +44,6 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
   totalPrice,
   payments,
   setPayments,
-  setCustomerPaid,
   order,
 }) => {
   const t = useTranslate();

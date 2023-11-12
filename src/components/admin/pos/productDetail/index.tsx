@@ -63,7 +63,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
   const [selectedProductDetail, setSelectedProductDetail] =
     useState<IProductDetail>();
 
-  const { mutate: mutateCreate } = useCreate();
+  const { mutate: mutateCreate, isLoading } = useCreate();
 
   useEffect(() => {
     if (open) {
@@ -295,6 +295,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
               </Col>
               <Col span={12}>
                 <Button
+                  loading={isLoading}
                   type="primary"
                   onClick={handleFinish}
                   style={{ width: "100%" }}

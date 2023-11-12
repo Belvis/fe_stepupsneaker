@@ -15,6 +15,7 @@ import {
   Card,
   Input,
   Row,
+  Spin,
   Tabs,
   Typography,
   message,
@@ -152,13 +153,7 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
       const fetchedPendingOrder: IOrder[] = [...data.data];
       const items = fetchedPendingOrder.map((order, index) => ({
         label: `${tLabel} ${index + 1}`,
-        children: (
-          <TabContent
-            order={order}
-            callBack={refectOrder}
-            isLoading={isLoadingOrderCreate}
-          />
-        ),
+        children: <TabContent order={order} callBack={refectOrder} />,
         key: order.id,
       }));
       setItems(items);
@@ -258,18 +253,23 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
     <Card
       className="page-tab"
       bodyStyle={{ height: "100%", minHeight: "600px" }}
-      loading={isLoadingOrder}
     >
       {contextHolder}
-      <Tabs
-        tabBarExtraContent={OperationsSlot}
-        type="editable-card"
-        onChange={onChange}
-        activeKey={activeKey}
-        onEdit={onEdit}
-        items={items}
-        style={{ height: "100%" }}
-      />
+      <Spin
+        spinning={
+          isLoadingOrder || isLoadingOrderCreate || isLoadingOrderDelete
+        }
+      >
+        <Tabs
+          tabBarExtraContent={OperationsSlot}
+          type="editable-card"
+          onChange={onChange}
+          activeKey={activeKey}
+          onEdit={onEdit}
+          items={items}
+          style={{ height: "100%" }}
+        />
+      </Spin>
       {selectedProduct && (
         <ProductDetail
           open={isModalVisible}

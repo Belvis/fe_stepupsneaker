@@ -1,4 +1,5 @@
 export * from "./header";
+export * from "./title";
 export * from "./product/productStatus";
 export * from "./product/modal/create";
 export * from "./product/modal/edit";
@@ -16,3 +17,5 @@ export * from "./pos/productDetail";
 export * from "./pos/checkOutDrawer";
 export * from "./pos/productItem";
 export * from "./pos/filterDrawer";
+export * from "./pos/paymentModal";
+export * from "./pos/discountModal";

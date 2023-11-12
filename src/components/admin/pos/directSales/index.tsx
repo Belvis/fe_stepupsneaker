@@ -20,6 +20,7 @@ import {
   Row,
   Skeleton,
   Space,
+  Spin,
   TablePaginationConfig,
   Typography,
   message,
@@ -45,7 +46,6 @@ const { Text, Title } = Typography;
 type DirectSalesProps = {
   order: IOrder;
   callBack: () => void;
-  isLoadingOrderCreate: boolean;
   setProductDetailModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
   setSelectedProduct: React.Dispatch<
     React.SetStateAction<IProduct | undefined>
@@ -55,7 +55,6 @@ type DirectSalesProps = {
 export const DirectSales: React.FC<DirectSalesProps> = ({
   order,
   callBack,
-  isLoadingOrderCreate,
   setProductDetailModalVisible,
   setSelectedProduct,
 }) => {
@@ -81,7 +80,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
   const [ColorFilter, setColorFilter] = useState("");
   const [SizeFilter, setSizeFilter] = useState("");
 
-  const { mutate: mutateUpdate } = useUpdate();
+  const { mutate: mutateUpdate, isLoading: isLoadingOrderUpdate } = useUpdate();
   const {
     data,
     isLoading: isLoadingProduct,
@@ -265,25 +264,22 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
           justifyContent: orderDetails.length ? "space-between" : "flex-end",
         }}
       >
-        <Skeleton active loading={isLoadingOrderCreate} paragraph={{ rows: 9 }}>
-          <Space
-            direction="vertical"
-            style={{
-              overflow: "auto",
-              width: "100%",
-              maxHeight: "350px",
-            }}
-          >
-            {orderDetails.map((orderItem) => (
-              <OrderItem
-                key={orderItem.id}
-                orderDetail={orderItem}
-                callBack={callBack}
-                isLoading={isLoadingOrderCreate}
-              />
-            ))}
-          </Space>
-        </Skeleton>
+        <Space
+          direction="vertical"
+          style={{
+            overflow: "auto",
+            width: "100%",
+            maxHeight: "350px",
+          }}
+        >
+          {orderDetails.map((orderItem) => (
+            <OrderItem
+              key={orderItem.id}
+              orderDetail={orderItem}
+              callBack={callBack}
+            />
+          ))}
+        </Space>
         <Card style={{ background: token.colorPrimaryBg }}>
           <Row gutter={[16, 24]} style={{ height: "100%" }}>
             <Col span={14}>
@@ -333,51 +329,56 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
               {/* Header */}
               <Row gutter={[16, 24]} style={{ height: "100%" }}>
                 <Col span={18} style={{ height: "100%" }}>
-                  {order.customer == null && order.customer == undefined ? (
-                    <AutoComplete
-                      style={{
-                        width: "100%",
-                      }}
-                      options={customerOptions}
-                      onSelect={(_, option: any) => {
-                        editOrderCustomer(option.customer.id);
-                      }}
-                      filterOption={false}
-                      onSearch={debounce(
-                        (value: string) => setValue(value),
-                        300
-                      )}
-                    >
-                      <Input
-                        placeholder={t("search.placeholder.customer")}
-                        suffix={<SearchOutlined />}
-                      />
-                    </AutoComplete>
-                  ) : (
-                    <CustomerInfor span={24}>
-                      <TextContainer>
-                        <UserIcon color={token.colorBgMask} />
-                        <CustomerName color={token.colorPrimary}>
-                          {order.customer?.fullName} - {order.customer.email}
-                        </CustomerName>
-                      </TextContainer>
-                      <CloseButtonWrapper>
-                        <Button
-                          shape="circle"
-                          type="link"
-                          icon={
-                            <CloseOutlined
-                              style={{
-                                fontSize: token.fontSize,
-                                color: token.colorBgMask,
-                              }}
-                            />
-                          }
-                          onClick={() => editOrderCustomer(null)}
+                  <Spin
+                    spinning={isLoadingOrderUpdate}
+                    style={{ width: "100%" }}
+                  >
+                    {order.customer == null && order.customer == undefined ? (
+                      <AutoComplete
+                        style={{
+                          width: "100%",
+                        }}
+                        options={customerOptions}
+                        onSelect={(_, option: any) => {
+                          editOrderCustomer(option.customer.id);
+                        }}
+                        filterOption={false}
+                        onSearch={debounce(
+                          (value: string) => setValue(value),
+                          300
+                        )}
+                      >
+                        <Input
+                          placeholder={t("search.placeholder.customer")}
+                          suffix={<SearchOutlined />}
                         />
-                      </CloseButtonWrapper>
-                    </CustomerInfor>
-                  )}
+                      </AutoComplete>
+                    ) : (
+                      <CustomerInfor span={24}>
+                        <TextContainer>
+                          <UserIcon color={token.colorBgMask} />
+                          <CustomerName color={token.colorPrimary}>
+                            {order.customer?.fullName} - {order.customer.email}
+                          </CustomerName>
+                        </TextContainer>
+                        <CloseButtonWrapper>
+                          <Button
+                            shape="circle"
+                            type="link"
+                            icon={
+                              <CloseOutlined
+                                style={{
+                                  fontSize: token.fontSize,
+                                  color: token.colorBgMask,
+                                }}
+                              />
+                            }
+                            onClick={() => editOrderCustomer(null)}
+                          />
+                        </CloseButtonWrapper>
+                      </CustomerInfor>
+                    )}
+                  </Spin>
                 </Col>
                 <Col span={6} style={{ height: "100%" }}>
                   <Space>

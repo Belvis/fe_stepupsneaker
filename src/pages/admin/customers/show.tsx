@@ -1,50 +1,38 @@
+import { DateField, List, NumberField, useTable } from "@refinedev/antd";
 import {
-  useShow,
   HttpError,
   IResourceComponentsProps,
+  useShow,
   useTranslate,
 } from "@refinedev/core";
-import {
-  useTable,
-  List,
-  TextField,
-  getDefaultSortOrder,
-  NumberField,
-  DateField,
-  useForm,
-} from "@refinedev/antd";
 
 import {
-  UserOutlined,
-  PhoneOutlined,
   CalendarOutlined,
   CheckOutlined,
+  PhoneOutlined,
+  UserOutlined,
 } from "@ant-design/icons";
 import {
-  Typography,
   Avatar,
-  Row,
-  Col,
   Card,
-  Space,
-  Table,
+  Col,
   Grid,
   Popover,
+  Row,
+  Space,
+  Table,
+  Typography,
 } from "antd";
 
-import {
-  EditAddressForm,
-  OrderActions,
-  OrderStatus,
-} from "../../../components";
+import { ColumnsType } from "antd/es/table";
+import dayjs from "dayjs";
+import { EditAddressForm, OrderStatus } from "../../../components";
 import {
   IAddress,
   ICustomer,
   IOrder,
   IOrderFilterVariables,
 } from "../../../interfaces";
-import { ColumnsType } from "antd/es/table";
-import dayjs from "dayjs";
 import { formatTimestamp } from "../../../utils";
 
 const { useBreakpoint } = Grid;
@@ -274,7 +262,7 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
               expandable={{
                 expandedRowRender: (record) => (
                   <EditAddressForm
-                    callBack={refetchCustomer()}
+                    callBack={refetchCustomer}
                     address={record}
                   />
                 ),

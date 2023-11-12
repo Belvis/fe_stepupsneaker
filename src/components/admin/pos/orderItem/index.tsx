@@ -19,13 +19,11 @@ const { Text } = Typography;
 type OrderItemProps = {
   orderDetail: IOrderDetail;
   callBack: () => void;
-  isLoading: boolean;
 };
 
 export const OrderItem: React.FC<OrderItemProps> = ({
   orderDetail,
   callBack,
-  isLoading,
 }) => {
   const t = useTranslate();
   const { token } = useToken();
@@ -76,7 +74,6 @@ export const OrderItem: React.FC<OrderItemProps> = ({
         boxShadow: "0 4px 4px rgba(0, 0, 0, 0.1)",
       }}
       className="order-items"
-      loading={isLoading}
     >
       {contextHolder}
       <Row align="middle" justify="center">

@@ -1,6 +1,6 @@
 import { ClockCircleOutlined, PhoneFilled } from "@ant-design/icons";
 import { useTranslate } from "@refinedev/core";
-import { Card, Tabs, TabsProps, Typography, theme } from "antd";
+import { Card, Spin, Tabs, TabsProps, Typography, theme } from "antd";
 import { useEffect, useState } from "react";
 import { IOrder, IProduct } from "../../../../interfaces";
 import { DeliverySales } from "../deliverySales";
@@ -11,27 +11,10 @@ import "./style.css";
 type TabContentProps = {
   order: IOrder;
   callBack: () => void;
-  isLoading: boolean;
 };
 
-export const TabContent: React.FC<TabContentProps> = ({
-  order,
-  callBack,
-  isLoading: isLoadingOrder,
-}) => {
+export const TabContent: React.FC<TabContentProps> = ({ order, callBack }) => {
   const t = useTranslate();
-
-  const [controlledIsLoadingOrderCreate, setControlledIsLoadingOrderCreate] =
-    useState(false);
-
-  useEffect(() => {
-    if (isLoadingOrder) {
-      setControlledIsLoadingOrderCreate(true);
-    } else if (!isLoadingOrder) {
-      setControlledIsLoadingOrderCreate(true);
-      setTimeout(() => setControlledIsLoadingOrderCreate(false), 500);
-    }
-  }, [isLoadingOrder]);
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IProduct>();
@@ -55,7 +38,6 @@ export const TabContent: React.FC<TabContentProps> = ({
       ),
       children: (
         <DirectSales
-          isLoadingOrderCreate={controlledIsLoadingOrderCreate}
           order={order}
           setProductDetailModalVisible={setIsModalVisible}
           setSelectedProduct={setSelectedProduct}
@@ -74,7 +56,6 @@ export const TabContent: React.FC<TabContentProps> = ({
 
       children: (
         <DeliverySales
-          isLoadingOrderCreate={controlledIsLoadingOrderCreate}
           order={order}
           setProductDetailModalVisible={setIsModalVisible}
           setSelectedProduct={setSelectedProduct}
@@ -86,7 +67,9 @@ export const TabContent: React.FC<TabContentProps> = ({
 
   return (
     <Card bordered={false}>
-      <Tabs size="large" tabPosition="bottom" items={items} />
+      <Spin spinning={false}>
+        <Tabs size="large" tabPosition="bottom" items={items} />
+      </Spin>
       {selectedProduct && (
         <ProductDetail
           open={isModalVisible}
