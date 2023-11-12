@@ -79,8 +79,8 @@ import {
   VoucherList,
 } from "./pages/admin";
 
-// const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+// const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
 
 function App() {
   const { t, i18n } = useTranslation();
