@@ -44,7 +44,7 @@ import {
   ICustomerFilterVariables,
   IVoucher,
 } from "../../../interfaces";
-import { getBase64Image } from "../../../utils";
+import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { ColorModeContext } from "../../../contexts/color-mode";
 
 const { Text, Title } = Typography;
@@ -78,7 +78,15 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
         endDate: `${values.voucherRange[1].valueOf()}`,
         image: `${values.image}`,
       };
-      onFinish(data);
+      showWarningConfirmDialog({
+        options: {
+          accept: () => {
+            onFinish(data);
+          },
+          reject: () => {},
+        },
+        t: t,
+      });
     },
     onMutationSuccess: (data) => {
       if (selectedCustomerIds.length > 0) {

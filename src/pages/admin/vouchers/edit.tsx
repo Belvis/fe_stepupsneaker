@@ -37,7 +37,7 @@ import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
 import { CustomerVoucherTable } from "../../../components";
 import { getVouccherStatusOptions } from "../../../constants";
 import { ICustomer, IVoucher } from "../../../interfaces";
-import { formatTimestamp, getBase64Image } from "../../../utils";
+import { formatTimestamp, getBase64Image, showWarningConfirmDialog } from "../../../utils";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -75,7 +75,15 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       endDate: `${values.voucherRange[1].valueOf()}`,
       image: `${values.image}`,
     };
-    onFinish(data);
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(data);
+        },
+        reject: () => {},
+      },
+      t: t,
+    });
   };
 
   const imageUrl = Form.useWatch("image", formProps.form);
