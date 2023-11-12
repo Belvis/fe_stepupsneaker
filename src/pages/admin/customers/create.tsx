@@ -32,7 +32,7 @@ import { ICustomer, IDistrict, IProvince, IWard } from "../../../interfaces";
 import { getUserStatusOptions } from "../../../constants";
 import { parseQRCodeResult } from "../../../utils/common/qrCodeParser";
 import dayjs from "dayjs";
-import { getBase64Image } from "../../../utils";
+import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -104,13 +104,22 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
   ) : null;
 
   const handleOnFinish = (values: any) => {
-    onFinish({
+    const submitData = {
       fullName: `${values.fullName}`,
       email: `${values.email}`,
       dateOfBirth: `${values.dateOfBirth.valueOf()}`,
       status: "ACTIVE",
       gender: `${values.gender}`,
       image: `${values.image}`,
+    };
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(submitData);
+        },
+        reject: () => {},
+      },
+      t: t,
     });
   };
 

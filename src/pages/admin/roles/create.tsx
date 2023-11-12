@@ -1,5 +1,6 @@
 import { useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps } from "antd";
+import { showWarningConfirmDialog } from "../../../utils";
 
 type CreateRoleProps = {
   modalProps: ModalProps;
@@ -16,7 +17,15 @@ export const CreateRole: React.FC<CreateRoleProps> = ({
   const breakpoint = Grid.useBreakpoint();
 
   const onFinishHandler = (values: any) => {
-    onFinish(values);
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(values);
+        },
+        reject: () => {},
+      },
+      t: t,
+    });
   };
 
   return (

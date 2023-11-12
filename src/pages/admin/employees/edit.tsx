@@ -21,7 +21,7 @@ import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useEffect, useState } from "react";
 import { IEmployee, IRole } from "../../../interfaces";
-import { getBase64Image } from "../../../utils";
+import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { getUserStatusOptions } from "../../../constants";
 
 const { Text } = Typography;
@@ -46,7 +46,7 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
   const imageUrl = Form.useWatch("image", formProps.form);
 
   const handleOnFinish = (values: any) => {
-    onFinish({
+    const submitData = {
       fullName: `${values.fullName}`,
       email: `${values.email}`,
       status: "ACTIVE",
@@ -56,6 +56,15 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
       image: `${values.image}`,
       role: `${values.role.id}`,
       password: `password123`,
+    };
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(submitData);
+        },
+        reject: () => {},
+      },
+      t: t,
     });
   };
 

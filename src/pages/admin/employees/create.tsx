@@ -24,7 +24,7 @@ import { useState } from "react";
 import { QRScannerModal } from "../../../components";
 import { getUserStatusOptions } from "../../../constants";
 import { IEmployee, IRole } from "../../../interfaces";
-import { getBase64Image } from "../../../utils";
+import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { parseQRCodeResult } from "../../../utils/common/qrCodeParser";
 
 const { Text } = Typography;
@@ -79,7 +79,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
   ) : null;
 
   const handleOnFinish = (values: any) => {
-    onFinish({
+    const submitData = {
       fullName: `${values.fullName}`,
       email: `${values.email}`,
       status: "ACTIVE",
@@ -89,6 +89,15 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
       image: `${values.image}`,
       role: `${values.role}`,
       password: `password123`,
+    };
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(submitData);
+        },
+        reject: () => {},
+      },
+      t: t,
     });
   };
 

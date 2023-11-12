@@ -35,7 +35,7 @@ import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { ICustomer, IDistrict, IProvince, IWard } from "../../../interfaces";
 import { getUserStatusOptions } from "../../../constants";
-import { getBase64Image } from "../../../utils";
+import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -152,13 +152,22 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
   };
 
   const handleOnFinish = (values: any) => {
-    onFinish({
+    const submitData = {
       fullName: `${values.fullName}`,
       email: `${values.email}`,
       dateOfBirth: `${values.dob.valueOf()}`,
       status: "ACTIVE",
       gender: `${values.gender}`,
       image: `${values.image}`,
+    };
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          onFinish(submitData);
+        },
+        reject: () => {},
+      },
+      t: t,
     });
   };
   const { isLoading: isLoadingProvince, refetch: refetchProvince } = useCustom<
