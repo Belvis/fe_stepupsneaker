@@ -81,6 +81,7 @@ export interface IOrder {
   status: OrderStatus;
 }
 
+
 export interface IOrderDetail {
   id: string;
   order: IOrder;
@@ -249,6 +250,16 @@ export interface IVoucher {
   startDate: number;
   endDate: number;
   image: string;
+}
+
+export interface IVoucherHistory {
+  id: string;
+  voucher: IVoucher;
+  order: IOrder;
+  moneyBeforeReduction: number;
+  moneyAfterReduction: number;
+  moneyReduction: number;
+  createdAt: number;
 }
 
 export interface ICustomer {
