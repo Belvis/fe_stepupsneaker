@@ -35,7 +35,7 @@ import {
 import dayjs from "dayjs";
 
 // import { Map, MapMarker } from "../../components";
-import { BikeWhiteIcon } from "../../../components";
+import { BikeWhiteIcon, OrderHistoryTimeLine } from "../../../components";
 // import { useOrderCustomKbarActions } from "../../hooks";
 import {
   IEvent,
@@ -89,6 +89,20 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
   const record = data?.data;
 
   const { id } = useParsed();
+
+  const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const showModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleModalOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleModalCancel = () => {
+    setIsModalVisible(false);
+  };
 
   useEffect(() => {
     refetchOrderHistory();
@@ -410,6 +424,13 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           {t("orders.deliverables.deliverables")}
         </Text>
       }
+      headerButtons={() => (
+        <>
+          <Button type="primary" onClick={showModal}>
+            Xem lịch sử
+          </Button>
+        </>
+      )}
     >
       <Table
         pagination={false}
@@ -705,6 +726,12 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         {renderDeliverables()}
         {renderOrderInfor()}
       </Space>
+      <OrderHistoryTimeLine
+        orderHistories={record?.orderHistories || []}
+        open={isModalVisible}
+        handleOk={handleModalOk}
+        handleCancel={handleModalCancel}
+      />
     </>
   );
 };

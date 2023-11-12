@@ -78,6 +78,8 @@ export interface IOrder {
   note: string;
   code: string;
   orderDetails: IOrderDetail[];
+  orderHistories: IOrderHistory[];
+  orderPayments: IPayment[];
   status: OrderStatus;
 }
 
