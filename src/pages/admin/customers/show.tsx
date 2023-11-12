@@ -32,6 +32,7 @@ import {
   ICustomer,
   IOrder,
   IOrderFilterVariables,
+  IVoucherHistory,
 } from "../../../interfaces";
 import { formatTimestamp } from "../../../utils";
 
@@ -71,6 +72,23 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
     queryOptions: {
       enabled: customer !== undefined,
     },
+    syncWithLocation: false,
+  });
+
+  const {
+    tableProps:tablePropsVoucherHistory,
+    current: currentTableVoucherHistory,
+    pageSize: pageSizeTableVoucherHistory,
+    tableQueryResult: { refetch: refechVoucherHistory },
+  } = useTable<IVoucherHistory, HttpError>({
+    resource: "voucher-histories",
+    initialSorter: [
+      {
+        field: "createdAt",
+        order: "desc",
+      },
+    ],
+    initialPageSize: 5,
     syncWithLocation: false,
   });
 
@@ -168,6 +186,60 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
     },
   ];
 
+  const columnsVoucherHistory: ColumnsType<IVoucherHistory> = [
+    {
+      title: "#",
+      key: "index",
+      width: "1rem",
+      align: "center",
+      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+    },
+    {
+      title: "Mã voucher",
+      key: "voucherCode",
+      dataIndex: ['voucher', 'code'],
+      align: "center",
+    },
+    {
+      title: "Mã hoá đơn",
+      key: "orderCode",
+      dataIndex: ['order', 'code'],
+      align: "center",
+    },
+    {
+      title: "Tiền được giảm",
+      key: "moneyReduction",
+      dataIndex: "moneyReduction",
+      align: "center",
+    },
+    {
+      title: "Tiền trước khi giảm",
+      key: "moneyBeforeReduction",
+      dataIndex: "moneyBeforeReduction",
+      align: "center",
+    },
+    {
+      title: "Tiền sau khi giảm",
+      key: "moneyAfterReduction",
+      dataIndex: "moneyAfterReduction",
+      align: "center",
+    },
+    {
+      title: "Ngày áp dụng",
+      key: "createdAt",
+      dataIndex: "createdAt",
+      render: (_, record) => {
+        return (
+        <DateField
+        value={dayjs(new Date(record.createdAt || 0))}
+        format="LLL"
+        />
+      )
+      }
+    }
+  ];
+
+
   const columnsAddress: ColumnsType<IAddress> = [
     {
       title: t("customers.fields.address"),
@@ -243,6 +315,15 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
             }}
           >
             <Table {...tableProps} rowKey="id" columns={columnsOrder} />
+          </List>
+          <List
+            title="Lịch sử áp dụng Voucher"
+            headerProps={{
+              extra: <></>,
+            }}
+            breadcrumb={false}
+          >
+            <Table {...tablePropsVoucherHistory} rowKey="id" columns={columnsVoucherHistory} />
           </List>
           <List
             title={t("customers.addresses")}
