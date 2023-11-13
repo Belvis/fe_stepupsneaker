@@ -25,6 +25,7 @@ import { EditOutlined } from "@ant-design/icons";
 import { CreateAddress } from "./create";
 import { EditAddress } from "./edit";
 import { confirmDialog } from "primereact/confirmdialog";
+import { debounce } from "lodash";
 
 type AddressModalProps = {
   open: boolean;
@@ -44,6 +45,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
   const api = useApiUrl();
   const [addresses, setAddresses] = useState<IAddress[]>([]);
   const [selectedAddress, setSelectedAddress] = useState<IAddress>();
+  const [value, setValue] = useState<string>();
 
   const { mutate } = useCustomMutation<IAddress>();
 
@@ -151,6 +153,11 @@ export const AddressModal: React.FC<AddressModalProps> = ({
           operator: "eq",
           value: customer?.id,
         },
+        {
+          field: "q",
+          operator: "eq",
+          value: value,
+        },
       ],
     },
     queryOptions: {
@@ -161,6 +168,10 @@ export const AddressModal: React.FC<AddressModalProps> = ({
       },
     },
   });
+
+  useEffect(() => {
+    refetchAddress();
+  }, [value]);
 
   useEffect(() => {
     if (open) {
@@ -217,10 +228,16 @@ export const AddressModal: React.FC<AddressModalProps> = ({
         <Col span={24}>
           <Row gutter={[16, 24]}>
             <Col span={18}>
-              <Input placeholder="Search by keyword" />
+              <Input
+                placeholder="Search by keyword"
+                onChange={debounce((event) => {
+                  setValue(event.target.value);
+                }, 300)}
+              />
             </Col>
             <Col span={6}>
               <CreateButton
+                style={{ width: "100%" }}
                 onClick={() => {
                   createFormProps.form?.resetFields();
                   createModalShow();

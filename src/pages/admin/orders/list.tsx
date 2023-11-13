@@ -48,7 +48,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
   } = useTable<IOrder, HttpError, IOrderFilterVariables>({
     onSearch: (params) => {
       const filters: CrudFilters = [];
-      const { q, status, priceMin, priceMax } = params;
+      const { q, status, priceMin, priceMax, type } = params;
 
       filters.push({
         field: "q",
@@ -60,6 +60,12 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
         field: "status",
         operator: "eq",
         value: status,
+      });
+
+      filters.push({
+        field: "type",
+        operator: "eq",
+        value: type,
       });
 
       filters.push({
@@ -234,7 +240,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
                 <Form.Item name="q" noStyle>
                   <Input
                     style={{
-                      width: "400px",
+                      width: "300px",
                     }}
                     placeholder={t("orders.filters.search.placeholder")}
                     suffix={<SearchOutlined />}

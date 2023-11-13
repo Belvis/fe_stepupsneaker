@@ -16,3 +16,5 @@ export * from "./icon-material";
 export * from "./icon-sole";
 export * from "./icon-style";
 export * from "./icon-trade-mark";
+export * from "./icon-discount-order";
+export * from "./icon-discount-product";

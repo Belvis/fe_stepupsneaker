@@ -49,7 +49,7 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
   const customer = data?.data;
 
   const {
-    tableProps,
+    tableProps: tablePropsOrder,
     current,
     pageSize,
     tableQueryResult: { refetch: refetchOrder },
@@ -72,11 +72,10 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
     queryOptions: {
       enabled: customer !== undefined,
     },
-    syncWithLocation: false,
   });
 
   const {
-    tableProps:tablePropsVoucherHistory,
+    tableProps: tablePropsVoucherHistory,
     current: currentTableVoucherHistory,
     pageSize: pageSizeTableVoucherHistory,
     tableQueryResult: { refetch: refechVoucherHistory },
@@ -197,13 +196,13 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
     {
       title: "Mã voucher",
       key: "voucherCode",
-      dataIndex: ['voucher', 'code'],
+      dataIndex: ["voucher", "code"],
       align: "center",
     },
     {
       title: "Mã hoá đơn",
       key: "orderCode",
-      dataIndex: ['order', 'code'],
+      dataIndex: ["order", "code"],
       align: "center",
     },
     {
@@ -230,15 +229,14 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "createdAt",
       render: (_, record) => {
         return (
-        <DateField
-        value={dayjs(new Date(record.createdAt || 0))}
-        format="LLL"
-        />
-      )
-      }
-    }
+          <DateField
+            value={dayjs(new Date(record.createdAt || 0))}
+            format="LLL"
+          />
+        );
+      },
+    },
   ];
-
 
   const columnsAddress: ColumnsType<IAddress> = [
     {
@@ -314,7 +312,7 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
               extra: <></>,
             }}
           >
-            <Table {...tableProps} rowKey="id" columns={columnsOrder} />
+            <Table {...tablePropsOrder} rowKey="id" columns={columnsOrder} />
           </List>
           <List
             title="Lịch sử áp dụng Voucher"
@@ -323,7 +321,11 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
             }}
             breadcrumb={false}
           >
-            <Table {...tablePropsVoucherHistory} rowKey="id" columns={columnsVoucherHistory} />
+            <Table
+              {...tablePropsVoucherHistory}
+              rowKey="id"
+              columns={columnsVoucherHistory}
+            />
           </List>
           <List
             title={t("customers.addresses")}

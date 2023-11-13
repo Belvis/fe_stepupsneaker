@@ -21,6 +21,8 @@ import { dataProvider } from "./api/dataProvider";
 import {
   AdminHeader,
   ColorIcon,
+  DiscountOrderIcon,
+  DiscountProductIcon,
   MaterialIcon,
   ProductIcon,
   SizeIcon,
@@ -79,8 +81,8 @@ import {
   VoucherList,
 } from "./pages/admin";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
-// const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
+// const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -261,13 +263,32 @@ function App() {
                   },
                 },
                 {
+                  name: "discount",
+                  meta: {
+                    label: t("discount.title"),
+                    icon: <DollarOutlined />,
+                  },
+                },
+                {
                   name: "vouchers",
                   list: "/vouchers",
                   create: "/vouchers/create",
                   edit: "/vouchers/edit/:id",
                   show: "/vouchers/show/:id",
                   meta: {
-                    icon: <DollarOutlined />,
+                    parent: "discount",
+                    icon: <DiscountOrderIcon />,
+                  },
+                },
+                {
+                  name: "unknown",
+                  list: "/unknown",
+                  create: "/unknown/create",
+                  edit: "/unknown/edit/:id",
+                  show: "/unknown/show/:id",
+                  meta: {
+                    parent: "discount",
+                    icon: <DiscountProductIcon />,
                   },
                 },
                 {
