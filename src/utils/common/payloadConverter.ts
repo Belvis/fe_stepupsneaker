@@ -1,6 +1,8 @@
 import {
   IOrder,
   IOrderConvertedPayload,
+  IOrderDetail,
+  IOrderDetailConvertedPayload,
   IPayment,
   IPaymentConvertedPayload,
   IProductDetail,
@@ -23,6 +25,21 @@ export const productDetailToPayload = (
     image: detail.image,
     price: detail.price,
     quantity: detail.quantity,
+    status: detail.status,
+  }));
+};
+
+export const orderDetailToPayload = (
+  orderDetails: IOrderDetail[]
+): IOrderDetailConvertedPayload[] => {
+  if (!orderDetails) return [];
+  return orderDetails.map((detail) => ({
+    id: detail.id,
+    order: detail.id,
+    productDetail: detail.productDetail.id,
+    quantity: detail.quantity,
+    price: detail.price,
+    totalPrice: detail.totalPrice,
     status: detail.status,
   }));
 };

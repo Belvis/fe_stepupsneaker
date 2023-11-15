@@ -1,12 +1,27 @@
 import { ClockCircleOutlined, PhoneFilled } from "@ant-design/icons";
-import { useTranslate } from "@refinedev/core";
-import { Card, Spin, Tabs, TabsProps, Typography, theme } from "antd";
+import { useList, useTranslate } from "@refinedev/core";
+import {
+  Avatar,
+  Card,
+  Col,
+  Row,
+  Spin,
+  Tabs,
+  TabsProps,
+  Typography,
+  theme,
+} from "antd";
 import { useEffect, useState } from "react";
-import { IOrder, IProduct } from "../../../../interfaces";
+import { ICustomer, IOption, IOrder, IProduct } from "../../../../interfaces";
 import { DeliverySales } from "../deliverySales";
 import { DirectSales } from "../directSales";
 import { ProductDetail } from "../productDetail";
 import "./style.css";
+import { useModal } from "@refinedev/antd";
+import { CreateCustomerModal } from "../../customer/modal/create";
+import { EditCustomerModal } from "../../customer/modal/edit";
+
+const { Text, Title } = Typography;
 
 type TabContentProps = {
   order: IOrder;
@@ -15,6 +30,18 @@ type TabContentProps = {
 
 export const TabContent: React.FC<TabContentProps> = ({ order, callBack }) => {
   const t = useTranslate();
+
+  const {
+    show: showCustomerCreate,
+    close: closeCustomerCreate,
+    modalProps: customerCreateModalProps,
+  } = useModal();
+
+  const {
+    show: showCustomerEdit,
+    close: closeCustomerEdit,
+    modalProps: customerEditModalProps,
+  } = useModal();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<IProduct>();
@@ -27,13 +54,41 @@ export const TabContent: React.FC<TabContentProps> = ({ order, callBack }) => {
     setIsModalVisible(false);
   };
 
+  const [customerOptions, setCustomerOptions] = useState<IOption[]>([]);
+  const [customerSearch, setCustomerSearch] = useState<string>("");
+
+  const { refetch: refetchCustomer } = useList<ICustomer>({
+    resource: "customers",
+    config: {
+      filters: [{ field: "q", operator: "contains", value: customerSearch }],
+    },
+    pagination: {
+      pageSize: 1000,
+    },
+    queryOptions: {
+      enabled: false,
+      onSuccess: (data) => {
+        const customerOptions = data.data.map((item) =>
+          renderItem(`${item.fullName} - ${item.email}`, item.image, item)
+        );
+        if (customerOptions.length > 0) {
+          setCustomerOptions(customerOptions);
+        }
+      },
+    },
+  });
+
+  useEffect(() => {
+    refetchCustomer();
+  }, [customerSearch]);
+
   const items: TabsProps["items"] = [
     {
       key: "1",
       label: (
         <span>
           <ClockCircleOutlined />
-          Direct sales
+          {t("orders.tab.directSales")}
         </span>
       ),
       children: (
@@ -42,6 +97,10 @@ export const TabContent: React.FC<TabContentProps> = ({ order, callBack }) => {
           setProductDetailModalVisible={setIsModalVisible}
           setSelectedProduct={setSelectedProduct}
           callBack={callBack}
+          showCreateCustomerModal={showCustomerCreate}
+          showEditCustomerModal={showCustomerEdit}
+          customerOptions={customerOptions}
+          setCustomerSearch={setCustomerSearch}
         />
       ),
     },
@@ -50,7 +109,7 @@ export const TabContent: React.FC<TabContentProps> = ({ order, callBack }) => {
       label: (
         <span>
           <PhoneFilled />
-          Delivery sales
+          {t("orders.tab.deliverySales")}
         </span>
       ),
 
@@ -66,7 +125,7 @@ export const TabContent: React.FC<TabContentProps> = ({ order, callBack }) => {
   ];
 
   return (
-    <Card bordered={false}>
+    <>
       <Spin spinning={false}>
         <Tabs size="large" tabPosition="bottom" items={items} />
       </Spin>
@@ -80,6 +139,32 @@ export const TabContent: React.FC<TabContentProps> = ({ order, callBack }) => {
           callBack={callBack}
         />
       )}
-    </Card>
+      <CreateCustomerModal
+        close={closeCustomerCreate}
+        modalProps={customerCreateModalProps}
+        callBack={refetchCustomer}
+      />
+      <EditCustomerModal
+        close={closeCustomerEdit}
+        modalProps={customerEditModalProps}
+        callBack={refetchCustomer}
+        id={order.customer?.id}
+      />
+    </>
   );
 };
+
+const renderItem = (title: string, imageUrl: string, customer: ICustomer) => ({
+  value: title,
+  label: (
+    <Row style={{ display: "flex", alignItems: "center" }}>
+      <Col span={4}>
+        <Avatar size={48} src={imageUrl} style={{ minWidth: "48px" }} />
+      </Col>
+      <Col span={20}>
+        <Text style={{ marginLeft: "16px" }}>{title}</Text>
+      </Col>
+    </Row>
+  ),
+  customer: customer,
+});

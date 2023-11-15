@@ -34,7 +34,7 @@ import {
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { ICustomer, IDistrict, IProvince, IWard } from "../../../interfaces";
-import { getUserStatusOptions } from "../../../constants";
+import { getUserGenderOptions, getUserStatusOptions } from "../../../constants";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 
 const { Text } = Typography;
@@ -102,6 +102,9 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
             wardCode: defaultAddress.wardCode,
             more: defaultAddress.more,
           });
+          setProvinceName(defaultAddress.provinceName);
+          setDistrictName(defaultAddress.districtName);
+          setWardName(defaultAddress.wardName);
         }
       }
     } catch (error) {
@@ -112,9 +115,6 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
   const handleAddress = async (id: string) => {
     try {
       if (addressId) {
-        console.log(districtName);
-        console.log(provinceName);
-        console.log(wardName);
         mutateUpdate({
           resource: "addresses",
           values: {
@@ -156,7 +156,7 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
       fullName: `${values.fullName}`,
       email: `${values.email}`,
       dateOfBirth: `${values.dob.valueOf()}`,
-      status: "ACTIVE",
+      status: values.status,
       gender: `${values.gender}`,
       image: `${values.image}`,
     };
@@ -416,20 +416,40 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                   >
                     <DatePicker style={{ width: "100%" }} />
                   </Form.Item>
-                  <Form.Item
-                    label={t("customers.fields.gender.label")}
-                    name="gender"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                  >
-                    <Select
-                      placeholder={t("customers.fields.gender.placeholder")}
-                      options={getUserStatusOptions(t)}
-                    />
-                  </Form.Item>
+                  <Row gutter={10}>
+                    <Col span={12}>
+                      <Form.Item
+                        label={t("customers.fields.gender.label")}
+                        name="gender"
+                        rules={[
+                          {
+                            required: true,
+                          },
+                        ]}
+                      >
+                        <Select
+                          placeholder={t("customers.fields.gender.placeholder")}
+                          options={getUserGenderOptions(t)}
+                        />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item
+                        label={t("customers.fields.status")}
+                        name="status"
+                        rules={[
+                          {
+                            required: true,
+                          },
+                        ]}
+                      >
+                        <Select
+                          placeholder={t("customers.fields.status.placeholder")}
+                          options={getUserStatusOptions(t)}
+                        />
+                      </Form.Item>
+                    </Col>
+                  </Row>
                 </Col>
               </Row>
               <Divider orientation="left" style={{ color: "#000000" }}>

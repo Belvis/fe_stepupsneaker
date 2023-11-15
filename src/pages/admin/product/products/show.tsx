@@ -165,7 +165,6 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
         ...tableProps.dataSource,
       ];
       setProductDetails(fetchedProductDetails);
-      console.log(fetchedProductDetails);
     }
   }, [tableProps.dataSource]);
 
@@ -712,7 +711,7 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
             {t("actions.submit")}
           </Button>
         }
-        title="List"
+        title={t("productDetails.list")}
         style={{ marginTop: "0.5rem" }}
       >
         <Table

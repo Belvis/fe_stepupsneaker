@@ -1,8 +1,13 @@
-import { SearchOutlined } from "@ant-design/icons";
-import { useThemedLayoutContext } from "@refinedev/antd";
+import {
+  AppstoreAddOutlined,
+  QrcodeOutlined,
+  SearchOutlined,
+} from "@ant-design/icons";
+import { useModal, useThemedLayoutContext } from "@refinedev/antd";
 import {
   HttpError,
   IResourceComponentsProps,
+  useApiUrl,
   useCreate,
   useDelete,
   useList,
@@ -13,19 +18,29 @@ import {
   Avatar,
   Button,
   Card,
+  Flex,
   Input,
   Row,
+  Space,
   Spin,
   Tabs,
+  TabsProps,
   Typography,
   message,
   theme,
 } from "antd";
 import { debounce } from "lodash";
 import React, { useEffect, useState } from "react";
-import { ProductDetail, TabContent } from "../../../components";
+import {
+  AdvancedAddModal,
+  AppIcon,
+  ProductDetail,
+  QRScannerModal,
+  TabContent,
+} from "../../../components";
 import { IOption, IOrder, IProduct } from "../../../interfaces";
 import "./style.css";
+import { dataProvider } from "../../../api/dataProvider";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -40,8 +55,10 @@ type Tab = {
 };
 
 export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
+  const API_URL = useApiUrl();
   const t = useTranslate();
   const [messageApi, contextHolder] = message.useMessage();
+  const { getOne } = dataProvider(API_URL);
 
   const { setSiderCollapsed } = useThemedLayoutContext();
 
@@ -49,8 +66,8 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
     setSiderCollapsed(true);
   }, []);
 
-  const [activeKey, setActiveKey] = useState<string>("");
-  const [items, setItems] = useState<Tab[]>([]);
+  const [activeKey, setActiveKey] = useState<string>("1");
+  const [items, setItems] = useState<Tab[]>(initialItems);
 
   const { mutate: mutateCreate, isLoading: isLoadingOrderCreate } = useCreate();
   const { mutate: mutateDelete, isLoading: isLoadingOrderDelete } = useDelete();
@@ -68,6 +85,39 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
   const handleModalCancel = () => {
     setIsModalVisible(false);
   };
+
+  const [isScanOpen, setScanOpen] = useState(false);
+
+  const handleScanOpen = () => {
+    setScanOpen(!isScanOpen);
+  };
+
+  const handleScanClose = () => {
+    setScanOpen(false);
+  };
+
+  const handleScanSuccess = async (result: string) => {
+    const { data } = await getOne({ resource: "products", id: result });
+    if (data) {
+      setSelectedProduct(data as IProduct);
+      setIsModalVisible(true);
+    }
+  };
+
+  const qrScanner = isScanOpen ? (
+    <QRScannerModal
+      isScanOpen={isScanOpen}
+      handleScanOpen={handleScanOpen}
+      handleScanClose={handleScanClose}
+      onScanSuccess={handleScanSuccess}
+    />
+  ) : null;
+
+  const {
+    show: showAdvancedAdd,
+    close: closeAdvancedAdd,
+    modalProps: advancedAddModalProps,
+  } = useModal();
 
   const { refetch: refetchProducts } = useList<IProduct>({
     resource: "products",
@@ -107,7 +157,7 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
       <AutoComplete
         style={{
           width: "100%",
-          minWidth: "550px",
+          minWidth: "450px",
         }}
         options={productOptions}
         onSelect={(_, option: any) => {
@@ -123,7 +173,26 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
         />
       </AutoComplete>
     ),
-    right: <Button>Scan QR Code</Button>,
+    right: (
+      <Space>
+        <Button
+          icon={<AppstoreAddOutlined />}
+          type="primary"
+          onClick={() => handleAdvancedAddShow()}
+        >
+          {t("buttons.advancedAdd")}
+        </Button>
+        <Button
+          icon={<QrcodeOutlined />}
+          type="primary"
+          onClick={() => {
+            handleScanOpen();
+          }}
+        >
+          {t("buttons.scanQR")}
+        </Button>
+      </Space>
+    ),
   };
 
   const {
@@ -151,13 +220,18 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
     const tLabel = t("orders.tab.label");
     if (data && data.data && data.data.length > 0) {
       const fetchedPendingOrder: IOrder[] = [...data.data];
-      const items = fetchedPendingOrder.map((order, index) => ({
-        label: `${tLabel} ${index + 1}`,
-        children: <TabContent order={order} callBack={refectOrder} />,
-        key: order.id,
-      }));
+      const items = fetchedPendingOrder.map((order, index) => {
+        const customerName = order.customer
+          ? order.customer.fullName
+          : t("orders.tab.retailCustomer");
+        return {
+          label: `${tLabel} ${index + 1} - ${customerName}`,
+          children: <TabContent order={order} callBack={refectOrder} />,
+          key: order.id,
+        };
+      });
       setItems(items);
-      if (!activeKey) {
+      if (!activeKey || activeKey == "1") {
         setActiveKey(items[0].key);
       }
     }
@@ -185,7 +259,8 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
         onError: (error, variables, context) => {
           messageApi.open({
             type: "error",
-            content: "Failed to add new tab: " + error.message,
+            content:
+              t("orders.notification.tab.add.error") + " " + error.message,
           });
         },
         onSuccess: (data, variables, context) => {
@@ -193,7 +268,7 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
           setActiveKey(id as string);
           messageApi.open({
             type: "success",
-            content: "Added new tab successfully.",
+            content: t("orders.notification.tab.add.success"),
           });
         },
       }
@@ -222,17 +297,20 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
         onError: (error, variables, context) => {
           messageApi.open({
             type: "error",
-            content: "Failed to remove tab from cart.",
+            content: t("orders.notification.tab.remove.error"),
           });
         },
         onSuccess: (data, variables, context) => {
-          if (lastIndex == -1 && items.length == 1) setItems([]);
-
-          if (lastIndex != -1) setActiveKey(items[lastIndex].key);
-          messageApi.open({
-            type: "success",
-            content: "Removed tab from cart successfully.",
-          });
+          if (lastIndex == -1 && items.length == 1) {
+            setItems(initialItems);
+            setActiveKey("1");
+          } else {
+            setActiveKey(items[lastIndex].key);
+            messageApi.open({
+              type: "success",
+              content: t("orders.notification.tab.remove.success"),
+            });
+          }
         },
       }
     );
@@ -249,11 +327,18 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
     }
   };
 
+  const handleAdvancedAddShow = () => {
+    if (!activeKey || activeKey == "1") {
+      messageApi.open({
+        type: "error",
+        content: t("orders.notification.tab.advancedAdd.error"),
+      });
+    } else {
+      showAdvancedAdd();
+    }
+  };
   return (
-    <Card
-      className="page-tab"
-      bodyStyle={{ height: "100%", minHeight: "600px" }}
-    >
+    <Card style={{ height: "100%" }} bodyStyle={{ height: "100%" }}>
       {contextHolder}
       <Spin
         spinning={
@@ -267,7 +352,6 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
           activeKey={activeKey}
           onEdit={onEdit}
           items={items}
-          style={{ height: "100%" }}
         />
       </Spin>
       {selectedProduct && (
@@ -280,6 +364,13 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
           callBack={refectOrder}
         />
       )}
+      {qrScanner}
+      <AdvancedAddModal
+        orderId={activeKey}
+        modalProps={advancedAddModalProps}
+        close={closeAdvancedAdd}
+        callBack={refectOrder}
+      />
     </Card>
   );
 };
@@ -299,3 +390,15 @@ const renderItem = (title: string, imageUrl: string, product: IProduct) => ({
   ),
   product: product,
 });
+
+const initialItems: Tab[] = [
+  {
+    key: "1",
+    label: "Mẫu",
+    children: (
+      <Flex align="middle" justify="center">
+        <AppIcon width={500} height={500} />
+      </Flex>
+    ),
+  },
+];

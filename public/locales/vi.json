@@ -68,6 +68,7 @@
     "actions": {
       "list": "Danh sách",
       "create": "Tạo mới",
+      "add": "Thêm",
       "edit": "Chỉnh sửa",
       "show": "Chi tiết",
       "delete": "Xóa",
@@ -106,14 +107,24 @@
       "reject": "Từ chối",
       "rejectAll": "Từ chối tất cả",
       "nextStep": "Kế tiếp",
-      "previousStep": "Trước"
+      "previousStep": "Trước",
+      "scanQR": "Quét mã QR",
+      "advancedAdd": "Thêm nâng cao",
+      "checkSelected": "Xem lựa chọn của bạn",
+      "addAndGo": "Thêm và hoàn tất",
+      "go": "Hoàn tất",
+      "addAndContinue": "Xác nhận và tiếp tục"
     },
     "loading": "Đang tải",
     "tags": {
       "clone": "Clone"
     },
     "table": {
-      "actions": "Hành động"
+      "actions": "Hành động",
+      "pagination": {
+        "showTotal": "{{start}} - {{end}} của {{total}} mục"
+      },
+      "selection": "Đã chọn {{count}} mục"
     },
     "search": {
       "placeholder": {
@@ -628,11 +639,74 @@
         "customerPay": "Khách hàng thanh toán",
         "change": "Tiền thừa",
         "cod": "Thanh toán khi giao hàng",
-        "shippingMoney": "Tiền vận chuyển"
+        "shippingMoney": "Tiền vận chuyển",
+        "directSales": "Bán trực tiếp",
+        "deliverySales": "Bán giao hàng"
       },
       "transportAddress": {
         "name": "Tên người nhận",
         "phoneNumber": "Số điện thoại"
+      },
+      "notification": {
+        "product": {
+          "add": {
+            "success": "Thêm sản phẩm vào giỏ hàng thành công.",
+            "error": "Thêm sản phẩm vào giỏ hàng thất bại.",
+            "notFound": "Không tìm thấy sản phẩm phù hợp."
+          },
+          "edit": {
+            "success": "Chỉnh sửa đơn hàng thành công.",
+            "error": "Chỉnh sửa đơn hàng thất bại."
+          }
+  
+        },
+        "employee": {
+          "edit": {
+            "success": "Chỉnh sửa nhân viên trong đơn hàng thành công.",
+            "error": "Chỉnh sửa nhân viên trong đơn hàng thất bại."
+          }
+        },
+        "customer": {
+          "edit": {
+            "success": "Chỉnh sửa khách hàng trong đơn hàng thành công.",
+            "error": "Chỉnh sửa khách hàng trong đơn hàng thất bại."
+          }
+  
+        },
+        "note": {
+          "edit": {
+            "success": "Chỉnh sửa ghi chú đơn hàng thành công.",
+            "error": "Chỉnh sửa ghi chú đơn hàng thất bại."
+          }
+  
+        },
+        "voucher": {
+          "edit": {
+            "success": "Chỉnh sửa giảm giá đơn hàng thành công.",
+            "error": "Chỉnh sửa giảm giá đơn hàng thất bại.",
+            "notFound": "Vui lòng chọn giảm giá trước."
+          }
+  
+        },
+        "orderDetail": {
+          "remove": {
+            "success": "Xoá sản phẩm khỏi đơn hàng thành công.",
+            "error": "Xoá sản phẩm khỏi đơn hàng thất bại."
+          }
+        },
+        "tab": {
+          "add": {
+            "success": "Thêm đơn hàng mới thành công.",
+            "error": "Thêm đơn hàng mới thất bại."
+          },
+          "remove": {
+            "success": "Xoá đơn hàng thành công.",
+            "error": "Xoá đơn hàng thất bại."
+          },
+          "advancedAdd": {
+            "error": "Vui lòng thêm đơn hàng trước"
+          }
+        }
       }
     },
     "payments": {
@@ -679,6 +753,30 @@
         "change": "Tiền thừa"
       }
     },
+    "paymentMethods": {
+      "paymentMethods": "Phương thức thanh toán",
+      "titles": {
+        "list": "Phương thức thanh toán",
+        "show": "Chi tiết phương thức thanh toán"
+      },
+      "fields": {
+        "id": "ID",
+        "name": "Tên"
+      },
+      "filters": {
+        "title": "Bộ lọc",
+        "search": {
+          "label": "Tìm kiếm",
+          "placeholder": "Tìm kiếm theo từ khoá, v.v."
+        },
+        "submit": "Lọc"
+      },
+      "options": {
+        "Cash":"Tiền mặt",
+        "Transfer": "Chuyển khoản",
+        "Card": "Thẻ"
+      }
+    },
     "products": {
       "products": "Sản phẩm",
       "noProducts": "Không có sản phẩm",
@@ -718,6 +816,7 @@
     },
     "productDetails": {
       "productDetails": "Chi tiết sản phẩm",
+      "list": "Danh sách sản phẩm chi tiết",
       "fields": {
         "id": "Id",
         "name": "Tên",
@@ -730,6 +829,10 @@
       },
       "filters": {
         "title": "Bộ lọc",
+        "search": {
+          "title": "Tìm kiếm",
+          "placeholder": "Tìm kiếm theo từ khoá"
+        },
         "status": {
           "label": "Trạng thái",
           "placeholder": "Lọc theo trạng thái"

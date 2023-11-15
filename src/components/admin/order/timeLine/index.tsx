@@ -1,5 +1,5 @@
 import { useTranslate } from "@refinedev/core";
-import { Grid, Modal, Tag, Timeline } from "antd";
+import { Card, Grid, Modal, Tag, Timeline } from "antd";
 import { TimeLineItemProps } from "antd/es/timeline/TimelineItem";
 import { IOrderHistory, OrderStatus } from "../../../../interfaces";
 import dayjs from "dayjs";
@@ -23,7 +23,8 @@ export const OrderHistoryTimeLine: React.FC<OrderHistoryTimeLineProps> = ({
 
   const mapOrderHistoryToTimelineItem = (
     orderHistory: IOrderHistory
-  ): TimeLineItemProps => {
+  ): TimeLineItemProps | undefined => {
+    if (!orderHistory.actionStatus) return undefined;
     return {
       color: getColorBasedOnActionStatus(orderHistory.actionStatus), // Function to determine color based on actionStatus
       children: (
@@ -32,10 +33,13 @@ export const OrderHistoryTimeLine: React.FC<OrderHistoryTimeLineProps> = ({
           <p>{orderHistory.note}</p>
           <p>
             {
-              <DateField
-                value={dayjs(new Date(orderHistory.createdAt || 0))}
-                format="LLL"
-              />
+              <>
+                <DateField
+                  value={dayjs(new Date(orderHistory.createdAt || 0))}
+                  format="LLL"
+                />
+                {` bởi admin`}
+              </>
             }
           </p>
         </>
@@ -85,7 +89,9 @@ export const OrderHistoryTimeLine: React.FC<OrderHistoryTimeLineProps> = ({
       onCancel={handleCancel}
       open={open}
     >
-      <Timeline items={items} />
+      <Card>
+        <Timeline items={items.filter(Boolean) as TimeLineItemProps[]} />
+      </Card>
     </Modal>
   );
 };

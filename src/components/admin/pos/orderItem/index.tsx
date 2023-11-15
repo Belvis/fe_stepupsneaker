@@ -6,6 +6,7 @@ import {
   Card,
   Col,
   Flex,
+  InputNumber,
   Row,
   Typography,
   message,
@@ -13,17 +14,20 @@ import {
 } from "antd";
 import { IOrderDetail } from "../../../../interfaces";
 import { NumberField } from "@refinedev/antd";
+import "./style.css";
 const { useToken } = theme;
 const { Text } = Typography;
 
 type OrderItemProps = {
   orderDetail: IOrderDetail;
+  count: number;
   callBack: () => void;
 };
 
 export const OrderItem: React.FC<OrderItemProps> = ({
   orderDetail,
   callBack,
+  count,
 }) => {
   const t = useTranslate();
   const { token } = useToken();
@@ -47,23 +51,22 @@ export const OrderItem: React.FC<OrderItemProps> = ({
         onError: (error, variables, context) => {
           messageApi.open({
             type: "error",
-            content: "Failed to remove product from cart.",
+            content: t("orders.notification.orderDetail.remove.error"),
           });
         },
         onSuccess: (data, variables, context) => {
-          callBack();
-          success();
+          messageApi
+            .open({
+              type: "success",
+              content: t("orders.notification.orderDetail.remove.success"),
+              duration: 0.2,
+            })
+            .then(() => callBack());
         },
       }
     );
   }
 
-  const success = () => {
-    messageApi.open({
-      type: "success",
-      content: "Removed product from cart successfully.",
-    });
-  };
   const { quantity, productDetail, price, totalPrice } = orderDetail;
   const { product, color, size } = productDetail;
 
@@ -78,23 +81,36 @@ export const OrderItem: React.FC<OrderItemProps> = ({
       {contextHolder}
       <Row align="middle" justify="center">
         <Col span={2}>
-          <Text>{quantity}</Text>
+          <Text>{count + 1}</Text>
         </Col>
-        <Col span={4}>
-          <Avatar
-            shape="square"
-            size={48}
-            src={orderDetail.productDetail.image}
-          />
-        </Col>
-        <Col span={10}>
-          <Flex vertical>
-            <Text>{product.name}</Text>
-            <Text>Size: {size.name}</Text>
-            <Text>Color: {color.name}</Text>
+        <Col span={8}>
+          <Flex gap={15}>
+            <Avatar
+              shape="square"
+              size={64}
+              src={orderDetail.productDetail.image}
+            />
+            <Flex vertical>
+              <Text>{product.name}</Text>
+              <Text>Size: {size.name}</Text>
+              <Text>Color: {color.name}</Text>
+            </Flex>
           </Flex>
         </Col>
         <Col span={3}>
+          <InputNumber
+            className="order-tab-quantity"
+            bordered={false}
+            style={{
+              width: "100%",
+              borderBottom: `1px solid ${token.colorPrimary}`,
+              borderRadius: 0,
+            }}
+            value={quantity}
+            // onChange={(value) => handleQuantityChange(value as number, record)}
+          />
+        </Col>
+        <Col span={4} style={{ textAlign: "end" }}>
           <Text>
             <NumberField
               options={{
@@ -105,7 +121,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
             />
           </Text>
         </Col>
-        <Col span={3}>
+        <Col span={4} style={{ textAlign: "end" }}>
           <Text>
             <NumberField
               options={{
@@ -116,7 +132,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
             />
           </Text>
         </Col>
-        <Col span={2}>
+        <Col span={3} style={{ textAlign: "center" }}>
           <Button
             shape="circle"
             type="text"
