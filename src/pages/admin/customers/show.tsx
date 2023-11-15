@@ -341,12 +341,13 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
               loading={isLoading}
               pagination={false}
               dataSource={customer?.addressList}
+              rowKey="id"
               columns={columnsAddress}
               expandable={{
                 expandedRowRender: (record) => (
                   <EditAddressForm
                     callBack={refetchCustomer}
-                    address={record}
+                    addressId={record.id}
                   />
                 ),
               }}

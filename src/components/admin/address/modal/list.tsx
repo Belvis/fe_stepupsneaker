@@ -1,4 +1,4 @@
-import { CreateButton, useModalForm } from "@refinedev/antd";
+import { CreateButton, useModal, useModalForm } from "@refinedev/antd";
 import {
   useApiUrl,
   useCustom,
@@ -44,7 +44,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
   const breakpoint = Grid.useBreakpoint();
   const api = useApiUrl();
   const [addresses, setAddresses] = useState<IAddress[]>([]);
-  const [selectedAddress, setSelectedAddress] = useState<IAddress>();
+  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
   const [value, setValue] = useState<string>();
 
   const { mutate } = useCustomMutation<IAddress>();
@@ -114,8 +114,8 @@ export const AddressModal: React.FC<AddressModalProps> = ({
                 size="small"
                 icon={<EditOutlined />}
                 onClick={() => {
-                  setSelectedAddress(item);
-                  editModalShow(id);
+                  setSelectedAddressId(item.id);
+                  showEdit();
                 }}
               />
             </Tooltip>
@@ -197,18 +197,10 @@ export const AddressModal: React.FC<AddressModalProps> = ({
   });
 
   const {
+    show: showEdit,
+    close: closeEdit,
     modalProps: editModalProps,
-    show: editModalShow,
-    id: editId,
-  } = useModalForm<IAddress>({
-    resource: "addresses",
-    redirect: false,
-    action: "edit",
-    onMutationSuccess: () => {
-      refetchAddress();
-    },
-    warnWhenUnsavedChanges: true,
-  });
+  } = useModal();
 
   return (
     <Modal
@@ -262,7 +254,11 @@ export const AddressModal: React.FC<AddressModalProps> = ({
         formProps={createFormProps}
         customer={customer}
       />
-      <EditAddress address={selectedAddress} modalProps={editModalProps} />
+      <EditAddress
+        addressId={selectedAddressId}
+        modalProps={editModalProps}
+        callBack={refetchAddress}
+      />
     </Modal>
   );
 };
