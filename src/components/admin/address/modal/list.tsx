@@ -1,3 +1,4 @@
+import { EditOutlined } from "@ant-design/icons";
 import { CreateButton, useModal, useModalForm } from "@refinedev/antd";
 import {
   useApiUrl,
@@ -6,26 +7,23 @@ import {
   useTranslate,
 } from "@refinedev/core";
 import {
-  Modal,
-  Grid,
   List as AntdList,
-  Input,
-  Typography,
   Button,
-  Tag,
-  Row,
   Col,
+  Grid,
+  Input,
+  Modal,
+  Row,
   Space,
+  Tag,
   Tooltip,
-  Spin,
 } from "antd";
-import { IAddress, ICustomer } from "../../../../interfaces";
+import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { EditOutlined } from "@ant-design/icons";
+import { IAddress, ICustomer } from "../../../../interfaces";
+import { showWarningConfirmDialog } from "../../../../utils";
 import { CreateAddress } from "./create";
 import { EditAddress } from "./edit";
-import { confirmDialog } from "primereact/confirmdialog";
-import { debounce } from "lodash";
 
 type AddressModalProps = {
   open: boolean;
@@ -50,44 +48,41 @@ export const AddressModal: React.FC<AddressModalProps> = ({
   const { mutate } = useCustomMutation<IAddress>();
 
   function handleAddressSetDefault(id: string) {
-    confirmDialog({
-      message: t("confirmDialog.edit.message"),
-      header: t("confirmDialog.edit.header"),
-      icon: "pi pi-exclamation-triangle",
-      acceptLabel: t("confirmDialog.edit.acceptLabel"),
-      rejectLabel: t("confirmDialog.edit.rejectLabel"),
-      acceptClassName: "p-button-warning",
-      accept: () => {
-        mutate(
-          {
-            url: `${api}/addresses/set-default-address?address=${id}`,
-            method: "put",
-            values: {
-              address: id,
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          mutate(
+            {
+              url: `${api}/addresses/set-default-address?address=${id}`,
+              method: "put",
+              values: {
+                address: id,
+              },
+              successNotification: (data, values) => {
+                return {
+                  message: `Successfully set default.`,
+                  description: "Success with no errors",
+                  type: "success",
+                };
+              },
+              errorNotification: (data, values) => {
+                return {
+                  message: `Something went wrong when setting default address`,
+                  description: "Error",
+                  type: "error",
+                };
+              },
             },
-            successNotification: (data, values) => {
-              return {
-                message: `Successfully set default.`,
-                description: "Success with no errors",
-                type: "success",
-              };
-            },
-            errorNotification: (data, values) => {
-              return {
-                message: `Something went wrong when setting default address`,
-                description: "Error",
-                type: "error",
-              };
-            },
-          },
-          {
-            onSuccess: (data, variables, context) => {
-              refetchAddress();
-            },
-          }
-        );
+            {
+              onSuccess: (data, variables, context) => {
+                refetchAddress();
+              },
+            }
+          );
+        },
+        reject: () => {},
       },
-      reject: () => {},
+      t: t,
     });
   }
 
