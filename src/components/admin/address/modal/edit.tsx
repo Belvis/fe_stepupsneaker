@@ -5,11 +5,13 @@ import { IAddress } from "../../../../interfaces";
 type EditAddressProps = {
   modalProps: ModalProps;
   address: IAddress | undefined;
+  callBack: any;
 };
 
 export const EditAddress: React.FC<EditAddressProps> = ({
   modalProps,
   address,
+  callBack,
 }) => {
   const breakpoint = Grid.useBreakpoint();
 
@@ -21,7 +23,7 @@ export const EditAddress: React.FC<EditAddressProps> = ({
       footer={false}
       zIndex={1002}
     >
-      <EditAddressForm address={address} />
+      <EditAddressForm address={address} callBack={callBack}/>
     </Modal>
   );
 };

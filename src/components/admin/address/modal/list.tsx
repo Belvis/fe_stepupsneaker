@@ -25,6 +25,7 @@ import { EditOutlined } from "@ant-design/icons";
 import { CreateAddress } from "./create";
 import { EditAddress } from "./edit";
 import { confirmDialog } from "primereact/confirmdialog";
+import { showWarningConfirmDialog } from "../../../../utils";
 
 type AddressModalProps = {
   open: boolean;
@@ -48,44 +49,41 @@ export const AddressModal: React.FC<AddressModalProps> = ({
   const { mutate } = useCustomMutation<IAddress>();
 
   function handleAddressSetDefault(id: string) {
-    confirmDialog({
-      message: t("confirmDialog.edit.message"),
-      header: t("confirmDialog.edit.header"),
-      icon: "pi pi-exclamation-triangle",
-      acceptLabel: t("confirmDialog.edit.acceptLabel"),
-      rejectLabel: t("confirmDialog.edit.rejectLabel"),
-      acceptClassName: "p-button-warning",
-      accept: () => {
-        mutate(
-          {
-            url: `${api}/addresses/set-default-address?address=${id}`,
-            method: "put",
-            values: {
-              address: id,
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          mutate(
+            {
+              url: `${api}/addresses/set-default-address?address=${id}`,
+              method: "put",
+              values: {
+                address: id,
+              },
+              successNotification: (data, values) => {
+                return {
+                  message: `Successfully set default.`,
+                  description: "Success with no errors",
+                  type: "success",
+                };
+              },
+              errorNotification: (data, values) => {
+                return {
+                  message: `Something went wrong when setting default address`,
+                  description: "Error",
+                  type: "error",
+                };
+              },
             },
-            successNotification: (data, values) => {
-              return {
-                message: `Successfully set default.`,
-                description: "Success with no errors",
-                type: "success",
-              };
-            },
-            errorNotification: (data, values) => {
-              return {
-                message: `Something went wrong when setting default address`,
-                description: "Error",
-                type: "error",
-              };
-            },
-          },
-          {
-            onSuccess: (data, variables, context) => {
-              refetchAddress();
-            },
-          }
-        );
+            {
+              onSuccess: (data, variables, context) => {
+                refetchAddress();
+              },
+            }
+          );
+        },
+        reject: () => {},
       },
-      reject: () => {},
+      t: t
     });
   }
 
@@ -152,6 +150,12 @@ export const AddressModal: React.FC<AddressModalProps> = ({
           value: customer?.id,
         },
       ],
+      sorters: [
+        {
+          field: "isDefault",
+          order: "desc"
+        }
+      ]
     },
     queryOptions: {
       enabled: false,
@@ -245,7 +249,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
         formProps={createFormProps}
         customer={customer}
       />
-      <EditAddress address={selectedAddress} modalProps={editModalProps} />
+      <EditAddress address={selectedAddress} modalProps={editModalProps} callBack={refetchAddress} />
     </Modal>
   );
 };

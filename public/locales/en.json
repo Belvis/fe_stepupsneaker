@@ -483,6 +483,7 @@
             "fullName": "Full Name",
             "phone": "Phone",
             "address": "Address",
+            "defaultAddress": "Default Address",
             "email": "Email",
             "dateOfBirth": "Date of birth",
             "gender": {

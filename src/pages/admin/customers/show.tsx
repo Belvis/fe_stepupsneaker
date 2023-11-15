@@ -1,7 +1,11 @@
-import { DateField, List, NumberField, useTable } from "@refinedev/antd";
+import { CreateButton, DateField, List, NumberField, useModalForm, useTable } from "@refinedev/antd";
 import {
   HttpError,
   IResourceComponentsProps,
+  useApiUrl,
+  useCustom,
+  useCustomMutation,
+  useParsed,
   useShow,
   useTranslate,
 } from "@refinedev/core";
@@ -9,24 +13,29 @@ import {
 import {
   CalendarOutlined,
   CheckOutlined,
+  EditOutlined,
   PhoneOutlined,
   UserOutlined,
 } from "@ant-design/icons";
 import {
   Avatar,
+  Button,
   Card,
   Col,
+  Flex,
   Grid,
   Popover,
   Row,
   Space,
   Table,
+  Tag,
+  Tooltip,
   Typography,
 } from "antd";
 
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import { EditAddressForm, OrderStatus } from "../../../components";
+import { CreateAddress, EditAddress, EditAddressForm, OrderStatus } from "../../../components";
 import {
   IAddress,
   ICustomer,
@@ -34,19 +43,126 @@ import {
   IOrderFilterVariables,
   IVoucherHistory,
 } from "../../../interfaces";
-import { formatTimestamp } from "../../../utils";
+import { formatTimestamp, showWarningConfirmDialog } from "../../../utils";
+import { useEffect, useState } from "react";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
 
 export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
+  const { id:customerId } = useParsed();
+  const api = useApiUrl();
   const t = useTranslate();
   const { xl } = useBreakpoint();
   const {
     queryResult: { refetch: refetchCustomer, data, isLoading },
   } = useShow<ICustomer>();
 
+  const [selectedAddress, setSelectedAddress] = useState<IAddress>();
+  const [addresses, setAddresses] = useState<IAddress[]>([]);
+
   const customer = data?.data;
+  useEffect(() => {
+    refetchAddress();
+  }, [])
+
+  const { mutate } = useCustomMutation<IAddress>();
+  
+  function handleAddressSetDefault(id: string) {
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          mutate(
+            {
+              url: `${api}/addresses/set-default-address?address=${id}`,
+              method: "put",
+              values: {
+                address: id,
+              },
+              successNotification: (data, values) => {
+                return {
+                  message: `Successfully set default.`,
+                  description: "Success with no errors",
+                  type: "success",
+                };
+              },
+              errorNotification: (data, values) => {
+                return {
+                  message: `Something went wrong when setting default address`,
+                  description: "Error",
+                  type: "error",
+                };
+              },
+            },
+            {
+              onSuccess: (data, variables, context) => {
+                refetchAddress();
+              },
+            }
+          );
+        },
+        reject: () => {},
+      },
+      t: t
+    });
+  }
+
+  const { refetch: refetchAddress, isLoading:isLoadingAddresses } = useCustom<IAddress[]>({
+    url: `${api}/addresses`,
+    method: "get",
+    config: {
+      filters: [
+        {
+          field: "customer",
+          operator: "eq",
+          value: customerId,
+        },
+      ],
+      sorters: [
+        {
+          field: "isDefault",
+          order: "desc"
+        }
+      ]
+    },
+    queryOptions: {
+      enabled: false,
+      onSuccess: (data: any) => {
+        const response = data.response.content.data;
+        setAddresses(response);
+      },
+    },
+  });
+
+  const {
+    modalProps: editModalProps,
+    show: editModalShow,
+    id: editId,
+  } = useModalForm<IAddress>({
+    resource: "addresses",
+    redirect: false,
+    action: "edit",
+    onMutationSuccess: () => {
+      refetchAddress();
+    },
+    warnWhenUnsavedChanges: true,
+  });
+
+  const {
+    modalProps: createModalProps,
+    formProps: createFormProps,
+    show: createModalShow,
+    onFinish: createOnFinish,
+  } = useModalForm<IAddress>({
+    resource: "addresses",
+    onMutationSuccess: () => {
+      createFormProps.form?.resetFields();
+      refetchAddress();
+    },
+    action: "create",
+    redirect: false,
+    warnWhenUnsavedChanges: true,
+  });
 
   const {
     tableProps,
@@ -82,6 +198,13 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
     tableQueryResult: { refetch: refechVoucherHistory },
   } = useTable<IVoucherHistory, HttpError>({
     resource: "voucher-histories",
+    permanentFilter: [
+      {
+        field: "customer",
+        operator: "eq",
+        value: customerId,
+      },
+    ],
     initialSorter: [
       {
         field: "createdAt",
@@ -248,7 +371,35 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
         const fullAddress = record
           ? `${record.more}, ${record.wardName}, ${record.districtName}, ${record.provinceName}`
           : "N/A";
-        return <>{fullAddress}</>;
+        const defaultTag = record.isDefault ? <Tag color="green">Default</Tag> : null;
+        
+        return <Flex align="middle" justify="space-between">
+          <Space>
+          {fullAddress} {defaultTag} 
+          </Space>
+          <Space size="small" key={record.id}>
+            <Tooltip title={t("actions.edit")}>
+              <Button
+                style={{ color: "#52c41a", borderColor: "#52c41a" }}
+                size="small"
+                icon={<EditOutlined />}
+                onClick={() => {
+                  setSelectedAddress(record);
+                  editModalShow(record.id);
+                }}
+              />
+            </Tooltip>
+            <Button
+              disabled={record.isDefault}
+              size="small"
+              onClick={() => {
+                handleAddressSetDefault(record.id);
+              }}
+            >
+              {t("actions.setDefault")}
+            </Button>
+          </Space>
+        </Flex>;
       },
     },
   ];
@@ -329,7 +480,12 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
             title={t("customers.addresses")}
             breadcrumb={null}
             headerProps={{
-              extra: <></>,
+              extra: <CreateButton
+              onClick={() => {
+                createFormProps.form?.resetFields();
+                createModalShow();
+              }}
+            />,
               style: {
                 marginTop: "1em",
               },
@@ -338,7 +494,7 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
             <Table
               loading={isLoading}
               pagination={false}
-              dataSource={customer?.addressList}
+              dataSource={addresses}
               columns={columnsAddress}
               expandable={{
                 expandedRowRender: (record) => (
@@ -352,6 +508,13 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
           </List>
         </Col>
       </Row>
+      <CreateAddress
+        onFinish={createOnFinish}
+        modalProps={createModalProps}
+        formProps={createFormProps}
+        customer={customer}
+      />
+      <EditAddress address={selectedAddress} modalProps={editModalProps} callBack={refetchAddress} />
     </>
   );
 };
