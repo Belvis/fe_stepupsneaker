@@ -452,6 +452,7 @@
     "customers": {
       "customers": "Khách Hàng",
       "addresses": "Địa chỉ",
+      "defaultAddress": "Địa chỉ mặc định",
       "titles": {
         "create": "Tạo Khách Hàng",
         "list": "Khách Hàng",

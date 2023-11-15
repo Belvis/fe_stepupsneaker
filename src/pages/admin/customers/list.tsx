@@ -4,7 +4,7 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { EditButton, List, useTable } from "@refinedev/antd";
+import { EditButton, List, ShowButton, useTable } from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -182,6 +182,15 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
       align: "center",
       render: (_, record) => (
         <Space size="middle">
+          <Tooltip title="Show">
+            <ShowButton 
+            
+            size="small"
+             hideText  
+             recordItemId={record.id}
+              />
+          </Tooltip>
+
           <Tooltip title={t("actions.showAddress")}>
             <Button
               style={{ color: "#000000", borderColor: "#000000" }}
@@ -208,6 +217,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
               onClick={() => handleDelete(record.id)}
             />
           </Tooltip>
+
         </Space>
       ),
     },
@@ -276,13 +286,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
             }}
             rowKey="id"
             columns={columns}
-            onRow={(record) => {
-              return {
-                onDoubleClick: () => {
-                  show("customers", record.id);
-                },
-              };
-            }}
+            
           />
         </Col>
       </Row>
