@@ -830,6 +830,9 @@
     "shop": {
         "title": "Cửa hàng"
     },
+    "discount": {
+        "title": "Giảm giá"
+    },
     "transactions": {
         "title": "Giao dịch"
     }
