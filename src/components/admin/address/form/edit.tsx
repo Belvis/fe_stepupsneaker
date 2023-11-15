@@ -36,10 +36,11 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
       action: "edit",
       id: address?.id,
       onMutationSuccess: (data: any, variables, context, isAutoSave) => {
-        console.log(data.data.content.wardCode);
-
+        setProvinceName(data.data.content.provinceName);
+        setDistrictName(data.data.content.districtName);
+        setWardName(data.data.content.wardName);
         formProps.form?.resetFields();
-        refetch();
+        if (refetch) refetch();
       },
     });
 

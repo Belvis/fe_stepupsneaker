@@ -468,14 +468,14 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
         onError: (error, variables, context) => {
           messageApi.open({
             type: "error",
-            content: "Failed to edit order employee.",
+            content: t("orders.notification.employee.edit.error"),
           });
         },
         onSuccess: (data, variables, context) => {
           callBack();
           messageApi.open({
             type: "success",
-            content: "Edited order note employee.",
+            content: t("orders.notification.employee.edit.success"),
           });
         },
       }

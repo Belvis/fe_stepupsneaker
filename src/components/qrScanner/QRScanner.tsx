@@ -17,7 +17,6 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
   onScanSuccess,
 }) => {
   const videoElementRef = useRef<HTMLVideoElement | null>(null);
-  const [scanned, setScannedText] = useState<string>("");
 
   useEffect(() => {
     const video = videoElementRef.current;
@@ -27,7 +26,6 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
         video,
         (result: { data: string }) => {
           console.log("decoded qr code:", result);
-          setScannedText(result.data);
           onScanSuccess(result.data);
           handleScanClose();
         },
@@ -53,6 +51,7 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
       open={isScanOpen}
       onOk={handleScanOpen}
       onCancel={handleScanClose}
+      zIndex={2001}
       footer={[
         <Button key="submit" type="primary" onClick={handleScanClose}>
           OK
@@ -62,7 +61,6 @@ export const QRScannerModal: React.FC<QRScannerModalProps> = ({
       <div className="videoWrapper">
         <video className="qrVideo" ref={videoElementRef} />
       </div>
-      <p className="scannedText">SCANNED: {scanned}</p>
     </Modal>
   );
 };

@@ -149,7 +149,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
           onError: (error, variables, context) => {
             messageApi.open({
               type: "error",
-              content: "Failed to add product to cart.",
+              content: t("orders.notification.product.add.error"),
             });
           },
           onSuccess: (data, variables, context) => {
@@ -157,7 +157,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             callBack();
             messageApi.open({
               type: "success",
-              content: "Added product to cart successfully.",
+              content: t("orders.notification.product.add.success"),
             });
           },
         }
@@ -165,7 +165,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
     } else {
       messageApi.open({
         type: "error",
-        content: "No suitable products were found.",
+        content: t("orders.notification.product.add.notFound"),
       });
     }
   };

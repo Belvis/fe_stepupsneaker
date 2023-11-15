@@ -19,3 +19,4 @@ export * from "./pos/productItem";
 export * from "./pos/filterDrawer";
 export * from "./pos/paymentModal";
 export * from "./pos/discountModal";
+export * from "./pos/advancedAdd";

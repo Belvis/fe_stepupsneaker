@@ -31,6 +31,7 @@ import {
   DescriptionsProps,
   Descriptions,
   Badge,
+  Empty,
 } from "antd";
 import dayjs from "dayjs";
 
@@ -87,6 +88,19 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
   const { data } = queryResult;
   const { mutate } = useUpdate();
   const record = data?.data;
+  const [discount, setDiscount] = useState(0);
+  const [total, setTotal] = useState(0);
+
+  useEffect(() => {
+    if (record && record.voucher && record.voucher.type) {
+      if (record.voucher.type === "PERCENTAGE") {
+        setDiscount((record.voucher.value / 100) * record.totalMoney);
+      } else {
+        setDiscount(record.voucher.value);
+      }
+      setTotal(record.totalMoney + record.shippingMoney - discount);
+    }
+  }, [record]);
 
   const { id } = useParsed();
 
@@ -238,29 +252,31 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           </Button>,
         ]}
       >
-        {record && (
-          <Steps
-            direction={
-              currentBreakPoints.includes("lg") ? "horizontal" : "vertical"
-            }
-            current={events.findIndex((el) => el.status === record?.status)}
-          >
-            {events.map((event: IEvent, index: number) => (
-              <Steps.Step
-                status={stepStatus(event, index)}
-                key={index}
-                title={t(`enum.orderStatuses.${event.status}`)}
-                icon={
-                  notFinishedCurrentStep(event, index) && <LoadingOutlined />
-                }
-                description={
-                  event.date && dayjs(new Date(event.date)).format("L LT")
-                }
-              />
-            ))}
-          </Steps>
-        )}
-        {!record && <Skeleton paragraph={{ rows: 1 }} />}
+        <Card>
+          {record && (
+            <Steps
+              direction={
+                currentBreakPoints.includes("lg") ? "horizontal" : "vertical"
+              }
+              current={events.findIndex((el) => el.status === record?.status)}
+            >
+              {events.map((event: IEvent, index: number) => (
+                <Steps.Step
+                  status={stepStatus(event, index)}
+                  key={index}
+                  title={t(`enum.orderStatuses.${event.status}`)}
+                  icon={
+                    notFinishedCurrentStep(event, index) && <LoadingOutlined />
+                  }
+                  description={
+                    event.date && dayjs(new Date(event.date)).format("L LT")
+                  }
+                />
+              ))}
+            </Steps>
+          )}
+          {!record && <Skeleton paragraph={{ rows: 1 }} />}
+        </Card>
       </PageHeader>
     );
   };
@@ -437,6 +453,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         dataSource={record?.orderDetails}
         loading={!record}
         columns={columns}
+        rowKey="id"
         footer={(_data) => (
           <ProductFooter>
             <Text>{t("orders.deliverables.mainTotal")}</Text>
@@ -519,7 +536,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             currency: "VND",
             style: "currency",
           }}
-          value={record?.totalMoney as ReactChild}
+          value={total}
         />
       ),
     },
@@ -532,7 +549,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             currency: "VND",
             style: "currency",
           }}
-          value={0}
+          value={discount}
         />
       ),
     },
@@ -545,7 +562,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             currency: "VND",
             style: "currency",
           }}
-          value={0}
+          value={record?.shippingMoney as ReactChild}
         />
       ),
     },
@@ -568,27 +585,52 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       span: 3,
       children: (
         <>
-          đ100,000 - Tiền mặt - 9 tháng 11 năm 2023 11:17
-          <br />
-          đ100,000 - Chuyển khoản - 9 tháng 11 năm 2023 11:17 - Mã giao dịch:
-          HCNNAMC9
-          <br />
+          {record?.payments &&
+            record.payments.map((payment) => (
+              <div key={payment.id}>
+                <NumberField
+                  options={{
+                    currency: "VND",
+                    style: "currency",
+                  }}
+                  value={payment.totalMoney}
+                />
+                {` - `}
+                <DateField
+                  value={dayjs(new Date(payment.createdAt))}
+                  format="LLL"
+                />
+                {` - `}
+                {t("payments.fields.transactionCode")}
+                {`: ${payment.transactionCode}`}
+                <br />
+              </div>
+            ))}
         </>
       ),
     },
     {
       key: "12",
       label: t("orders.deliverables.fields.paymentMethod"),
-      children: "Tiền mặt, Chuyển khoản",
+      children: (
+        <>
+          {record?.payments &&
+            record.payments
+              .map((payment, index) =>
+                t(`paymentMethods.options.${payment.paymentMethod.name}`)
+              )
+              .join(", ")}
+        </>
+      ),
     },
 
     {
-      key: "11",
+      key: "13",
       label: t("orders.fields.customer"),
       span: 2,
       children: (
         <>
-          {record?.customer && (
+          {record?.customer ? (
             <>
               <div>
                 <strong>{t("customers.fields.fullName")}</strong>:{" "}
@@ -604,10 +646,6 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                   value={dayjs(new Date(record.customer.dateOfBirth))}
                   format="LL"
                 />
-              </div>
-              <div>
-                <strong>{t("customers.fields.status")}</strong>:{" "}
-                {t(`enum.userStatuses.${record.customer.status}`)}
               </div>
               <div>
                 <strong>{t("customers.fields.gender.label")}</strong>:{" "}
@@ -633,17 +671,21 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                 )}
               </div>
             </>
+          ) : (
+            <div>
+              <Empty />
+            </div>
           )}
         </>
       ),
     },
     {
-      key: "12",
+      key: "14",
       label: t("orders.fields.employee"),
       span: 2,
       children: (
         <>
-          {record?.employee && (
+          {record?.employee ? (
             <>
               <div>
                 <strong>{t("employees.fields.fullName")}</strong>:{" "}
@@ -658,10 +700,6 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                 {record.employee.phoneNumber}
               </div>
               <div>
-                <strong>{t("employees.fields.status")}</strong>:{" "}
-                {t(`enum.userStatuses.${record.employee.status}`)}
-              </div>
-              <div>
                 <strong>{t("employees.fields.gender.label")}</strong>:{" "}
                 {t(`employees.fields.gender.options.${record.employee.gender}`)}
               </div>
@@ -670,6 +708,10 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                 {record.employee.address}
               </div>
             </>
+          ) : (
+            <div>
+              <Empty />
+            </div>
           )}
         </>
       ),
