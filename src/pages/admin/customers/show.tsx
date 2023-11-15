@@ -1,8 +1,9 @@
 import {
+  CreateButton,
   DateField,
   List,
   NumberField,
-  useModal,
+  useModalForm,
   useTable,
 } from "@refinedev/antd";
 import {
@@ -17,7 +18,6 @@ import {
 import {
   CalendarOutlined,
   CheckOutlined,
-  EditOutlined,
   PhoneOutlined,
   UserOutlined,
 } from "@ant-design/icons";
@@ -33,13 +33,16 @@ import {
   Space,
   Table,
   Tag,
-  Tooltip,
   Typography,
 } from "antd";
 
 import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
-import { EditAddressForm, OrderStatus } from "../../../components";
+import {
+  CreateAddress,
+  EditAddressForm,
+  OrderStatus,
+} from "../../../components";
 import {
   IAddress,
   ICustomer,
@@ -48,7 +51,6 @@ import {
   IVoucherHistory,
 } from "../../../interfaces";
 import { formatTimestamp, showWarningConfirmDialog } from "../../../utils";
-import { useState } from "react";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -254,12 +256,20 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
   ];
 
   const {
-    show: showEdit,
-    close: closeEdit,
-    modalProps: editModalProps,
-  } = useModal();
-
-  const [selectedAddressId, setSelectedAddressId] = useState<string>("");
+    modalProps: createModalProps,
+    formProps: createFormProps,
+    show: createModalShow,
+    onFinish: createOnFinish,
+  } = useModalForm<IAddress>({
+    resource: "addresses",
+    onMutationSuccess: () => {
+      createFormProps.form?.resetFields();
+      refetchCustomer();
+    },
+    action: "create",
+    redirect: false,
+    warnWhenUnsavedChanges: true,
+  });
 
   const { mutate } = useCustomMutation<IAddress>();
 
@@ -320,17 +330,6 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
               {fullAddress} {defaultTag}
             </Space>
             <Space size="small" key={record.id}>
-              <Tooltip title={t("actions.edit")}>
-                <Button
-                  style={{ color: "#52c41a", borderColor: "#52c41a" }}
-                  size="small"
-                  icon={<EditOutlined />}
-                  onClick={() => {
-                    setSelectedAddressId(record.id);
-                    showEdit();
-                  }}
-                />
-              </Tooltip>
               <Button
                 disabled={record.isDefault}
                 size="small"
@@ -427,7 +426,14 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
             title={t("customers.addresses")}
             breadcrumb={null}
             headerProps={{
-              extra: <></>,
+              extra: (
+                <CreateButton
+                  onClick={() => {
+                    createFormProps.form?.resetFields();
+                    createModalShow();
+                  }}
+                />
+              ),
               style: {
                 marginTop: "1em",
               },
@@ -453,6 +459,12 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
           </List>
         </Col>
       </Row>
+      <CreateAddress
+        onFinish={createOnFinish}
+        modalProps={createModalProps}
+        formProps={createFormProps}
+        customer={customer}
+      />
     </>
   );
 };

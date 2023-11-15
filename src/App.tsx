@@ -79,6 +79,7 @@ import {
   VoucherCreate,
   VoucherEdit,
   VoucherList,
+  DashboardPage,
 } from "./pages/admin";
 
 // const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
@@ -373,6 +374,8 @@ function App() {
                     </ThemedLayoutV2>
                   }
                 >
+                  <Route index element={<DashboardPage />} />
+
                   <Route path="/orders">
                     <Route index element={<OrderList />} />
                     <Route path="show/:id" element={<OrderShow />} />
