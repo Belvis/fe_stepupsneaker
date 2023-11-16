@@ -4,3 +4,6 @@ export * from "./newCustomers";
 export * from "./orderTimeline";
 export * from "./trendingMenu";
 export * from "./recentOrders";
+export * from "./genderCustomersPie";
+export * from "./addressCustomersPie";
+export * from "./groupAgeCustomers";
