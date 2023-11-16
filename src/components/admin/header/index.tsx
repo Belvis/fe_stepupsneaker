@@ -1,4 +1,4 @@
-import { AppstoreOutlined, DownOutlined } from "@ant-design/icons";
+import { DownOutlined } from "@ant-design/icons";
 import type { RefineThemedLayoutV2HeaderProps } from "@refinedev/antd";
 import {
   useGetIdentity,
@@ -7,22 +7,20 @@ import {
   useTranslate,
 } from "@refinedev/core";
 import {
+  Layout as AntdLayout,
   Avatar,
   Button,
   Dropdown,
-  Layout as AntdLayout,
   MenuProps,
   Space,
   Switch,
-  theme,
   Typography,
-  Tooltip,
+  theme,
 } from "antd";
+import dayjs from "dayjs";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { ColorModeContext } from "../../../contexts/color-mode";
-import { Link } from "react-router-dom";
-import dayjs from "dayjs";
 
 const { Text } = Typography;
 const { useToken } = theme;

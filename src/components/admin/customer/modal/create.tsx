@@ -184,8 +184,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
     },
     queryOptions: {
       enabled: false,
-      onSuccess: (data) => {
-        setProvinces(data.data);
+      onSuccess: (data: any) => {
+        setProvinces(data.response.data);
       },
     },
   });
@@ -205,8 +205,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
     },
     queryOptions: {
       enabled: false,
-      onSuccess: (data) => {
-        setDistricts(data.data);
+      onSuccess: (data: any) => {
+        setDistricts(data.response.data);
       },
     },
   });
@@ -225,8 +225,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
       },
       queryOptions: {
         enabled: false,
-        onSuccess: (data) => {
-          setWards(data.data);
+        onSuccess: (data: any) => {
+          setWards(data.response.data);
         },
       },
     }

@@ -509,9 +509,17 @@
           "label": "Giới tính",
           "placeholder": "Tìm kiếm theo giới tính"
         }
+      },
+      "age": {
+        "UNDER_18": "Dưới 18",
+        "AGE_18_30": "18-30",
+        "AGE_31_50": "31-50",
+        "AGE_51_60": "51-60",
+        "OVER_60": "Trên 60"
       }
     },
     "dashboard": {
+      "dashboard": "Trang chủ",
       "title": "Trang chủ",
       "deliveryMap": {
         "title": "Bản đồ giao hàng"
@@ -523,13 +531,22 @@
         "title": "Tổng doanh thu"
       },
       "dailyRevenue": {
-        "title": "Thu nhập hàng ngày"
+        "title": "Doanh số hàng ngày"
       },
       "dailyOrders": {
         "title": "Đơn hàng hàng ngày"
       },
       "newCustomers": {
         "title": "Những khách hàng mới"
+      },
+      "groupAge": {
+        "title": "Biểu đồ Phân loại độ tuổi"
+      },
+      "addressCustomerPie": {
+        "title": "Biểu đồ Phân loại khu vực"
+      },
+      "genderCustomerPie": {
+        "title": "Biểu đồ Phân loại giới tính"
       },
       "timeline": {
         "title": "Mốc thời gian",

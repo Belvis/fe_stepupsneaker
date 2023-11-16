@@ -8,6 +8,9 @@ import {
   OrderTimeline,
   RecentOrders,
   TrendingMenu,
+  GenderCustomersPie,
+  AddressCustomersPie,
+  GroupAge,
 } from "../../../components";
 
 const { Text } = Typography;
@@ -75,13 +78,22 @@ export const DashboardPage: React.FC = () => {
             height: 550,
             padding: 0,
           }}
-          title={
-            <Text strong /* style={{ fontSize: 24, fontWeight: 800 }} */>
-              {t("dashboard.deliveryMap.title")}
-            </Text>
-          }
+          title={<Text strong>{t("dashboard.deliveryMap.title")}</Text>}
         >
-          {/* Empty */}
+          <Row>
+            <Col xl={12} lg={24} md={24} sm={24} xs={24}>
+              <GenderCustomersPie />
+            </Col>
+            <Col xl={12} lg={12} md={24} sm={24} xs={24}>
+              <AddressCustomersPie />
+            </Col>
+            <Col
+              span={24}
+              style={{ paddingLeft: "20px", paddingRight: "20px" }}
+            >
+              <GroupAge />
+            </Col>
+          </Row>
         </Card>
       </Col>
       <Col xl={7} lg={8} md={24} sm={24} xs={24}>

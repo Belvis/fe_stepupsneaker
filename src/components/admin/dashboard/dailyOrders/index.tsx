@@ -1,4 +1,4 @@
-import { useMemo } from "react";
+import { useContext, useMemo } from "react";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { Typography } from "antd";
 import { Column } from "@ant-design/charts";
@@ -8,17 +8,33 @@ import { IncreaseIcon, DecreaseIcon } from "../../../icons";
 
 import { DailyOrderWrapper, TitleAreNumber, TitleArea } from "./styled";
 import { ISalesChart } from "../../../../interfaces";
+import { DashboardContext } from "../../../../contexts/admin/dashboard";
 
 export const DailyOrders: React.FC = () => {
   const t = useTranslate();
   const API_URL = useApiUrl();
 
-  const url = `${API_URL}/dailyOrders`;
+  const { dateRange, setDateRange } = useContext(DashboardContext);
+
+  const [start, end] = dateRange;
+
+  const query = {
+    start,
+    end,
+  };
+
+  const url = `${API_URL}/statistic/daily-orders`;
   const { data, isLoading } = useCustom<{
     data: ISalesChart[];
     total: number;
     trend: number;
-  }>({ url, method: "get" });
+  }>({
+    url,
+    method: "get",
+    config: {
+      query,
+    },
+  });
 
   const { Text, Title } = Typography;
 

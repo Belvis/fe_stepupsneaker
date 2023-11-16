@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useContext, useMemo, useState } from "react";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { NumberField } from "@refinedev/antd";
 import { Typography } from "antd";
@@ -16,15 +16,14 @@ import {
   TitleAreaAmount,
   RangePicker,
 } from "./styled";
+import { DashboardContext } from "../../../../contexts/admin/dashboard";
 
 export const DailyRevenue: React.FC = () => {
   const t = useTranslate();
   const API_URL = useApiUrl();
 
-  const [dateRange, setDateRange] = useState<[Dayjs, Dayjs]>([
-    dayjs().subtract(7, "days").startOf("day"),
-    dayjs().startOf("day"),
-  ]);
+  const { dateRange, setDateRange } = useContext(DashboardContext);
+
   const [start, end] = dateRange;
 
   const query = {
@@ -32,7 +31,7 @@ export const DailyRevenue: React.FC = () => {
     end,
   };
 
-  const url = `${API_URL}/dailyRevenue`;
+  const url = `${API_URL}/statistic/daily-revenue`;
   const { data, isLoading } = useCustom<{
     data: ISalesChart[];
     total: number;
@@ -90,10 +89,11 @@ export const DailyRevenue: React.FC = () => {
               style={{ fontSize: 36 }}
               strong
               options={{
-                currency: "USD",
+                currency: "VND",
                 style: "currency",
                 notation: "compact",
               }}
+              locale="vi"
               value={data?.data.total ?? 0}
             />
             {(data?.data?.trend ?? 0) > 0 ? <IncreaseIcon /> : <DecreaseIcon />}
@@ -102,10 +102,10 @@ export const DailyRevenue: React.FC = () => {
 
         <RangePicker
           size="small"
-          value={dateRange}
+          value={[dayjs(new Date(dateRange[0])), dayjs(new Date(dateRange[1]))]}
           onChange={(values: any) => {
             if (values && values[0] && values[1]) {
-              setDateRange([values[0], values[1]]);
+              setDateRange([values[0].valueOf(), values[1].valueOf()]);
             }
           }}
           disabledDate={disabledDate}

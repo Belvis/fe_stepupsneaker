@@ -223,7 +223,7 @@ export const dataProvider = (
         break;
     }
 
-    const { data } = axiosResponse.data;
+    const data = axiosResponse.data.content;
     const response = axiosResponse.data;
 
     return Promise.resolve({ data, response });
