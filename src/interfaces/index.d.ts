@@ -253,6 +253,17 @@ export interface IVoucher {
   endDate: number;
   image: string;
 }
+export interface IPromotion {
+  id: string;
+  code: string;
+  name: string;
+  status: VoucherStatus;
+  value: number;
+  constraint: number;
+  startDate: number;
+  endDate: number;
+  image: string;
+}
 
 export interface IVoucherHistory {
   id: string;
