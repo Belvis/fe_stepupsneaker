@@ -3,6 +3,7 @@ import {
   CloseOutlined,
   FilterOutlined,
   PictureOutlined,
+  PlusOutlined,
   SearchOutlined,
   UnorderedListOutlined,
 } from "@ant-design/icons";
@@ -14,6 +15,7 @@ import {
   Button,
   Card,
   Col,
+  Flex,
   Input,
   Pagination,
   PaginationProps,
@@ -27,7 +29,14 @@ import {
   theme,
 } from "antd";
 import { debounce } from "lodash";
-import { useEffect, useState } from "react";
+import React, {
+  Dispatch,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { ICustomer, IOption, IOrder, IProduct } from "../../../../interfaces";
 import { CheckOutDrawer } from "../checkOutDrawer";
 import { OrderItem } from "../orderItem";
@@ -40,6 +49,8 @@ import {
   UserIcon,
 } from "./styled";
 import { PosFilter } from "../filterDrawer";
+import { ColorModeContext } from "../../../../contexts/color-mode";
+import ShoppingCartHeader from "../cartHeader";
 const { useToken } = theme;
 const { Text, Title } = Typography;
 
@@ -50,22 +61,29 @@ type DirectSalesProps = {
   setSelectedProduct: React.Dispatch<
     React.SetStateAction<IProduct | undefined>
   >;
+  showCreateCustomerModal: () => void;
+  showEditCustomerModal: () => void;
+  customerOptions: IOption[];
+  setCustomerSearch: Dispatch<SetStateAction<string>>;
 };
 
 export const DirectSales: React.FC<DirectSalesProps> = ({
   order,
+  customerOptions,
   callBack,
   setProductDetailModalVisible,
   setSelectedProduct,
+  showCreateCustomerModal,
+  showEditCustomerModal,
+  setCustomerSearch,
 }) => {
   const t = useTranslate();
   const { token } = useToken();
   const [messageApi, contextHolder] = message.useMessage();
-  const [value, setValue] = useState<string>("");
+  const { mode } = useContext(ColorModeContext);
   const [pLayout, setpLayout] = useState<"horizontal" | "vertical">(
     "horizontal"
   );
-  const [customerOptions, setCustomerOptions] = useState<IOption[]>([]);
   const [products, setProducts] = useState<IProduct[]>([]);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
@@ -101,26 +119,6 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
     ],
     pagination: pagination,
   });
-  const { refetch: refetchCustomer } = useList<ICustomer>({
-    resource: "customers",
-    config: {
-      filters: [{ field: "q", operator: "contains", value }],
-    },
-    pagination: {
-      pageSize: 1000,
-    },
-    queryOptions: {
-      enabled: false,
-      onSuccess: (data) => {
-        const customerOptions = data.data.map((item) =>
-          renderItem(`${item.fullName} - ${item.email}`, item.image, item)
-        );
-        if (customerOptions.length > 0) {
-          setCustomerOptions(customerOptions);
-        }
-      },
-    },
-  });
 
   useEffect(() => {
     if (pagination) {
@@ -134,11 +132,6 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
       setProducts(fetchedProduct);
     }
   }, [data]);
-
-  useEffect(() => {
-    setCustomerOptions([]);
-    refetchCustomer();
-  }, [value]);
 
   const orderDetails = order?.orderDetails || [];
   const totalQuantity = orderDetails.reduce((total, orderDetail) => {
@@ -205,14 +198,14 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
           onError: (error, variables, context) => {
             messageApi.open({
               type: "error",
-              content: "Failed to edit order note.",
+              content: t("orders.notification.editNote.error"),
             });
           },
           onSuccess: (data, variables, context) => {
             callBack();
             messageApi.open({
               type: "success",
-              content: "Edited order note successfully.",
+              content: t("orders.notification.editNote.success"),
             });
           },
         }
@@ -239,14 +232,14 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
         onError: (error, variables, context) => {
           messageApi.open({
             type: "error",
-            content: "Failed to edit order customer.",
+            content: t("orders.notification.editCustomer.error"),
           });
         },
         onSuccess: (data, variables, context) => {
           callBack();
           messageApi.open({
             type: "success",
-            content: "Edited order note customer.",
+            content: t("orders.notification.editCustomer.success"),
           });
         },
       }
@@ -261,7 +254,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: orderDetails.length ? "space-between" : "flex-end",
+          justifyContent: "space-between",
         }}
       >
         <Space
@@ -272,11 +265,13 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
             maxHeight: "350px",
           }}
         >
-          {orderDetails.map((orderItem) => (
+          <ShoppingCartHeader />
+          {orderDetails.map((orderItem, index) => (
             <OrderItem
               key={orderItem.id}
               orderDetail={orderItem}
               callBack={callBack}
+              count={index}
             />
           ))}
         </Space>
@@ -316,27 +311,32 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
       </Col>
       <Col span={10}>
         <Card
-          style={{ background: token.colorPrimaryBg, height: "100%" }}
-          bodyStyle={{ height: "100%" }}
+          style={{
+            background: token.colorPrimaryBg,
+            height: "100%",
+          }}
+          bodyStyle={{
+            height: "100%",
+          }}
         >
-          <Row
-            gutter={[16, 24]}
+          <Space
+            direction="vertical"
             style={{
               height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
             }}
           >
-            <Col span={24}>
-              {/* Header */}
-              <Row gutter={[16, 24]} style={{ height: "100%" }}>
-                <Col span={18} style={{ height: "100%" }}>
-                  <Spin
-                    spinning={isLoadingOrderUpdate}
-                    style={{ width: "100%" }}
-                  >
-                    {order.customer == null && order.customer == undefined ? (
+            {/* Header */}
+            <Row gutter={[16, 24]}>
+              <Col span={18}>
+                <Spin spinning={isLoadingOrderUpdate} style={{ width: "100%" }}>
+                  {order.customer == null && order.customer == undefined ? (
+                    <>
                       <AutoComplete
                         style={{
-                          width: "100%",
+                          width: "90%",
                         }}
                         options={customerOptions}
                         onSelect={(_, option: any) => {
@@ -344,129 +344,137 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                         }}
                         filterOption={false}
                         onSearch={debounce(
-                          (value: string) => setValue(value),
+                          (value: string) => setCustomerSearch(value),
                           300
                         )}
                       >
                         <Input
+                          prefix={<SearchOutlined />}
                           placeholder={t("search.placeholder.customer")}
-                          suffix={<SearchOutlined />}
                         />
                       </AutoComplete>
+                      <Button
+                        type="text"
+                        icon={<PlusOutlined />}
+                        shape="circle"
+                        onClick={showCreateCustomerModal}
+                      ></Button>
+                    </>
+                  ) : (
+                    <CustomerInfor
+                      color={mode === "light" ? "#f5f5f5" : ""}
+                      span={24}
+                    >
+                      <TextContainer>
+                        <UserIcon
+                          color={
+                            mode === "light" ? token.colorBgMask : "#ffffff"
+                          }
+                        />
+                        <CustomerName
+                          color={token.colorPrimary}
+                          onClick={showEditCustomerModal}
+                        >
+                          {order.customer?.fullName}
+                        </CustomerName>
+                      </TextContainer>
+                      <CloseButtonWrapper>
+                        <Button
+                          shape="circle"
+                          type="link"
+                          icon={
+                            <CloseOutlined
+                              style={{
+                                fontSize: token.fontSize,
+                                color:
+                                  mode == "light"
+                                    ? token.colorBgMask
+                                    : "#ffffff",
+                              }}
+                            />
+                          }
+                          onClick={() => editOrderCustomer(null)}
+                        />
+                      </CloseButtonWrapper>
+                    </CustomerInfor>
+                  )}
+                </Spin>
+              </Col>
+              <Col span={2}>
+                <Button
+                  shape="circle"
+                  type="text"
+                  icon={<UnorderedListOutlined />}
+                />
+              </Col>
+              <Col span={2}>
+                <Button
+                  shape="circle"
+                  type="text"
+                  icon={<FilterOutlined />}
+                  onClick={showFilterDrawer}
+                />
+              </Col>
+              <Col span={2}>
+                <Button
+                  shape="circle"
+                  type="text"
+                  icon={
+                    pLayout === "horizontal" ? (
+                      <AppstoreOutlined />
                     ) : (
-                      <CustomerInfor span={24}>
-                        <TextContainer>
-                          <UserIcon color={token.colorBgMask} />
-                          <CustomerName color={token.colorPrimary}>
-                            {order.customer?.fullName} - {order.customer.email}
-                          </CustomerName>
-                        </TextContainer>
-                        <CloseButtonWrapper>
-                          <Button
-                            shape="circle"
-                            type="link"
-                            icon={
-                              <CloseOutlined
-                                style={{
-                                  fontSize: token.fontSize,
-                                  color: token.colorBgMask,
-                                }}
-                              />
-                            }
-                            onClick={() => editOrderCustomer(null)}
-                          />
-                        </CloseButtonWrapper>
-                      </CustomerInfor>
-                    )}
-                  </Spin>
-                </Col>
-                <Col span={6} style={{ height: "100%" }}>
-                  <Space>
-                    <Button
-                      shape="circle"
-                      type="text"
-                      icon={<UnorderedListOutlined />}
-                    />
-                    <Button
-                      shape="circle"
-                      type="text"
-                      icon={<FilterOutlined />}
-                      onClick={showFilterDrawer}
-                    />
-                    <Button
-                      shape="circle"
-                      type="text"
-                      icon={
-                        pLayout === "horizontal" ? (
-                          <AppstoreOutlined />
-                        ) : (
-                          <PictureOutlined />
-                        )
-                      }
-                      onClick={handleToggleLayout}
-                    />
-                  </Space>
-                </Col>
-              </Row>
-            </Col>
-            <Col
-              span={24}
-              style={{
-                overflow: "auto",
-                height: "300px",
-              }}
-            >
-              {/* Content */}
-              <Skeleton active loading={isLoadingProduct}>
-                <Row gutter={[16, 24]}>
-                  {products.map((product) => (
-                    <ProductItem
-                      layout={pLayout}
-                      key={product.id}
-                      product={product}
-                      onClickFunction={handleProductClick}
-                    />
-                  ))}
-                </Row>
-              </Skeleton>
-            </Col>
-            <Col span={24}>
-              {/* Footer */}
-              <Row
-                gutter={[16, 24]}
+                      <PictureOutlined />
+                    )
+                  }
+                  onClick={handleToggleLayout}
+                />
+              </Col>
+            </Row>
+            {/* Content */}
+            <Row gutter={[16, 24]} style={{ height: "100%", overflow: "auto" }}>
+              <Col
+                span={24}
                 style={{
-                  height: "100%",
+                  maxHeight: "250px",
                 }}
               >
-                <Col
-                  span={10}
-                  style={{
-                    height: "100%",
-                    display: "flex",
-                    alignItems: "center",
-                  }}
+                <Skeleton active loading={isLoadingProduct}>
+                  <Row gutter={[16, 24]}>
+                    {products.map((product) => (
+                      <ProductItem
+                        layout={pLayout}
+                        key={product.id}
+                        product={product}
+                        onClickFunction={handleProductClick}
+                      />
+                    ))}
+                  </Row>
+                </Skeleton>
+              </Col>
+            </Row>
+            {/* Footer */}
+            <Row gutter={[16, 24]} align="middle" justify="center">
+              <Col span={8} flex="auto">
+                <Pagination
+                  current={pagination.current}
+                  onChange={onChange}
+                  pageSize={pagination.pageSize}
+                  total={data?.total}
+                  itemRender={itemRender}
+                />
+              </Col>
+              <Col span={16} style={{ padding: 0 }}>
+                <Button
+                  type="primary"
+                  size={"large"}
+                  style={{ width: "100%", fontWeight: "500" }}
+                  onClick={showCheckOutDrawer}
                 >
-                  <Pagination
-                    simple
-                    current={pagination.current}
-                    onChange={onChange}
-                    pageSize={pagination.pageSize}
-                    total={data?.total}
-                  />
-                </Col>
-                <Col span={14} style={{ padding: 0, height: "100%" }}>
-                  <Button
-                    type="primary"
-                    size={"large"}
-                    style={{ width: "100%", fontWeight: "500" }}
-                    onClick={showCheckOutDrawer}
-                  >
-                    {t("actions.proceedPay")}
-                  </Button>
-                </Col>
-              </Row>
-            </Col>
-          </Row>
+                  {t("actions.proceedPay")}
+                </Button>
+              </Col>
+            </Row>
+          </Space>
         </Card>
       </Col>
       <CheckOutDrawer
@@ -498,3 +506,16 @@ const renderItem = (title: string, imageUrl: string, customer: ICustomer) => ({
   ),
   customer: customer,
 });
+
+const itemRender = (
+  page: number,
+  type: "page" | "prev" | "next" | "jump-prev" | "jump-next",
+  element: ReactNode
+) => {
+  if (type === "prev") {
+    return element;
+  }
+  if (type === "next") {
+    return element;
+  }
+};

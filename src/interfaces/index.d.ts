@@ -79,10 +79,9 @@ export interface IOrder {
   code: string;
   orderDetails: IOrderDetail[];
   orderHistories: IOrderHistory[];
-  orderPayments: IPayment[];
+  payments: IPayment[];
   status: OrderStatus;
 }
-
 
 export interface IOrderDetail {
   id: string;
@@ -120,6 +119,15 @@ export interface IWard {
   WardCode: number;
 }
 
+export interface IOrderDetailConvertedPayload {
+  id?: string;
+  order: string;
+  productDetail: string;
+  quantity: number;
+  price: number;
+  totalPrice: number;
+  status: OrderStatus;
+}
 export interface IOrderConvertedPayload {
   id: string;
   customer: string | null;
@@ -415,6 +423,7 @@ export interface IProductFilterVariables {
 }
 
 export interface IProductDetailFilterVariables {
+  q?: string;
   tradeMark: string;
   style: string;
   size: string;

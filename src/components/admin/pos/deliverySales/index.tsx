@@ -66,6 +66,7 @@ import {
 import { PaymentModal } from "../paymentModal";
 import { NumberField } from "@refinedev/antd";
 import { DiscountModal } from "../discountModal";
+import ShoppingCartHeader from "../cartHeader";
 const { useToken } = theme;
 const { Text, Title } = Typography;
 
@@ -392,14 +393,14 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
           onError: (error, variables, context) => {
             messageApi.open({
               type: "error",
-              content: "Failed to edit order note.",
+              content: t("orders.notification.note.edit.error"),
             });
           },
           onSuccess: (data, variables, context) => {
             callBack();
             messageApi.open({
               type: "success",
-              content: "Edited order note successfully.",
+              content: t("orders.notification.note.edit.success"),
             });
           },
         }
@@ -428,14 +429,14 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         onError: (error, variables, context) => {
           messageApi.open({
             type: "error",
-            content: "Failed to edit customer.",
+            content: t("orders.notification.customer.edit.error"),
           });
         },
         onSuccess: (data, variables, context) => {
           callBack();
           messageApi.open({
             type: "success",
-            content: "Edited order customer.",
+            content: t("orders.notification.customer.edit.success"),
           });
         },
       }
@@ -464,14 +465,14 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         onError: (error, variables, context) => {
           messageApi.open({
             type: "error",
-            content: "Failed to edit order employee.",
+            content: t("orders.notification.employee.edit.error"),
           });
         },
         onSuccess: (data, variables, context) => {
           callBack();
           messageApi.open({
             type: "success",
-            content: "Edited order note employee.",
+            content: t("orders.notification.employee.edit.siccess"),
           });
         },
       }
@@ -564,7 +565,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         style={{
           display: "flex",
           flexDirection: "column",
-          justifyContent: orderDetails.length ? "space-between" : "flex-end",
+          justifyContent: "space-between",
         }}
       >
         <Space
@@ -575,11 +576,13 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
             maxHeight: "350px",
           }}
         >
-          {orderDetails.map((orderItem) => (
+          <ShoppingCartHeader />
+          {orderDetails.map((orderItem, index) => (
             <OrderItem
               key={orderItem.id}
               orderDetail={orderItem}
               callBack={callBack}
+              count={index}
             />
           ))}
         </Space>
@@ -683,508 +686,509 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
           style={{ background: token.colorPrimaryBg, height: "100%" }}
           bodyStyle={{ height: "100%" }}
         >
-          <Row
-            gutter={[16, 24]}
+          <Space
+            direction="vertical"
             style={{
               height: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
             }}
           >
-            <Col span={24}>
-              {/* Header */}
-              <Row gutter={[10, 10]} style={{ height: "100%" }}>
-                <Col span={24}>
-                  <Row>
-                    <Col span={16}>
-                      {order.employee == null && order.employee == undefined ? (
-                        <AutoComplete
-                          style={{
-                            width: "100%",
-                          }}
-                          options={employeeOptions}
-                          onSelect={(_, option: any) => {
-                            editOrderEmployee(option.employee.id);
-                          }}
-                          filterOption={false}
-                          onSearch={debounce(
-                            (value: string) => setValueEmployee(value),
-                            300
-                          )}
-                        >
-                          <Input
-                            placeholder={t("search.placeholder.employee")}
-                            suffix={<SearchOutlined />}
+            <Row gutter={[10, 10]} style={{ height: "100%" }}>
+              <Col span={24}>
+                <Row>
+                  <Col span={16}>
+                    {order.employee == null && order.employee == undefined ? (
+                      <AutoComplete
+                        style={{
+                          width: "100%",
+                        }}
+                        options={employeeOptions}
+                        onSelect={(_, option: any) => {
+                          editOrderEmployee(option.employee.id);
+                        }}
+                        filterOption={false}
+                        onSearch={debounce(
+                          (value: string) => setValueEmployee(value),
+                          300
+                        )}
+                      >
+                        <Input
+                          placeholder={t("search.placeholder.employee")}
+                          suffix={<SearchOutlined />}
+                        />
+                      </AutoComplete>
+                    ) : (
+                      <CustomerInfor span={24}>
+                        <TextContainer>
+                          <UserIcon color={token.colorBgMask} />
+                          <CustomerName color={token.colorPrimary}>
+                            {order.employee?.fullName} -{" "}
+                            {order.employee.phoneNumber}
+                          </CustomerName>
+                        </TextContainer>
+                        <CloseButtonWrapper>
+                          <Button
+                            shape="circle"
+                            type="link"
+                            icon={
+                              <CloseOutlined
+                                style={{
+                                  fontSize: token.fontSize,
+                                  color: token.colorBgMask,
+                                }}
+                              />
+                            }
+                            onClick={() => editOrderEmployee(null)}
                           />
-                        </AutoComplete>
-                      ) : (
-                        <CustomerInfor span={24}>
-                          <TextContainer>
-                            <UserIcon color={token.colorBgMask} />
-                            <CustomerName color={token.colorPrimary}>
-                              {order.employee?.fullName} -{" "}
-                              {order.employee.phoneNumber}
-                            </CustomerName>
-                          </TextContainer>
-                          <CloseButtonWrapper>
-                            <Button
-                              shape="circle"
-                              type="link"
-                              icon={
-                                <CloseOutlined
-                                  style={{
-                                    fontSize: token.fontSize,
-                                    color: token.colorBgMask,
-                                  }}
-                                />
-                              }
-                              onClick={() => editOrderEmployee(null)}
-                            />
-                          </CloseButtonWrapper>
-                        </CustomerInfor>
-                      )}
-                    </Col>
-                    <Col span={8} style={{ textAlign: "end" }}>
-                      <Space wrap>
-                        <Text>
-                          {formatTimestamp(order.createdAt).dateFormat}
-                        </Text>
-                        <Text>
-                          {formatTimestamp(order.createdAt).timeFormat}
-                        </Text>
-                      </Space>
-                    </Col>
-                  </Row>
-                </Col>
-                <Col span={24}>
-                  <Row>
-                    <Col span={16} style={{ height: "100%" }}>
-                      {order.customer == null && order.customer == undefined ? (
-                        <AutoComplete
-                          style={{
-                            width: "100%",
-                          }}
-                          options={customerOptions}
-                          onSelect={(_, option: any) => {
-                            editOrderCustomer(option.customer.id);
-                          }}
-                          filterOption={false}
-                          onSearch={debounce(
-                            (value: string) => setValue(value),
-                            300
-                          )}
-                        >
-                          <Input
-                            placeholder={t("search.placeholder.customer")}
-                            suffix={<SearchOutlined />}
+                        </CloseButtonWrapper>
+                      </CustomerInfor>
+                    )}
+                  </Col>
+                  <Col span={8} style={{ textAlign: "end" }}>
+                    <Space wrap>
+                      <Text>{formatTimestamp(order.createdAt).dateFormat}</Text>
+                      <Text>{formatTimestamp(order.createdAt).timeFormat}</Text>
+                    </Space>
+                  </Col>
+                </Row>
+              </Col>
+              <Col span={24}>
+                <Row>
+                  <Col span={16} style={{ height: "100%" }}>
+                    {order.customer == null && order.customer == undefined ? (
+                      <AutoComplete
+                        style={{
+                          width: "100%",
+                        }}
+                        options={customerOptions}
+                        onSelect={(_, option: any) => {
+                          editOrderCustomer(option.customer.id);
+                        }}
+                        filterOption={false}
+                        onSearch={debounce(
+                          (value: string) => setValue(value),
+                          300
+                        )}
+                      >
+                        <Input
+                          placeholder={t("search.placeholder.customer")}
+                          suffix={<SearchOutlined />}
+                        />
+                      </AutoComplete>
+                    ) : (
+                      <CustomerInfor span={24}>
+                        <TextContainer>
+                          <UserIcon color={token.colorBgMask} />
+                          <CustomerName color={token.colorPrimary}>
+                            {order.customer?.fullName}
+                          </CustomerName>
+                        </TextContainer>
+                        <CloseButtonWrapper>
+                          <Button
+                            shape="circle"
+                            type="link"
+                            icon={
+                              <CloseOutlined
+                                style={{
+                                  fontSize: token.fontSize,
+                                  color: token.colorBgMask,
+                                }}
+                              />
+                            }
+                            onClick={() => editOrderCustomer(null)}
                           />
-                        </AutoComplete>
-                      ) : (
-                        <CustomerInfor span={24}>
-                          <TextContainer>
-                            <UserIcon color={token.colorBgMask} />
-                            <CustomerName color={token.colorPrimary}>
-                              {order.customer?.fullName} -{" "}
-                              {order.customer.email}
-                            </CustomerName>
-                          </TextContainer>
-                          <CloseButtonWrapper>
-                            <Button
-                              shape="circle"
-                              type="link"
-                              icon={
-                                <CloseOutlined
-                                  style={{
-                                    fontSize: token.fontSize,
-                                    color: token.colorBgMask,
-                                  }}
-                                />
-                              }
-                              onClick={() => editOrderCustomer(null)}
-                            />
-                          </CloseButtonWrapper>
-                        </CustomerInfor>
-                      )}
-                    </Col>
-                  </Row>
-                </Col>
-              </Row>
-            </Col>
-            {/* Content */}
-            <Col
-              span={24}
+                        </CloseButtonWrapper>
+                      </CustomerInfor>
+                    )}
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row
+              gutter={[16, 24]}
               style={{
-                maxHeight: "300px",
-                overflow: "auto",
-                minHeight: "300px",
+                height: "100%",
               }}
             >
-              <Row gutter={[16, 24]}>
-                <Col span={24}>
-                  <Flex gap="middle" justify="space-between" align="center">
-                    <Space size="large" wrap>
-                      <Text strong>{t("orders.tab.customerPay")}</Text>
-                      <Button
-                        size="small"
-                        type="text"
-                        icon={
-                          <CreditCardFilled
-                            style={{ color: token.colorPrimary }}
+              {/* Content */}
+              <Col
+                span={24}
+                style={{
+                  maxHeight: "208.4px",
+                  overflow: "auto",
+                }}
+              >
+                <Row gutter={[16, 24]}>
+                  <Col span={24}>
+                    <Flex gap="middle" justify="space-between" align="center">
+                      <Space size="large" wrap>
+                        <Text strong>{t("orders.tab.customerPay")}</Text>
+                        <Button
+                          size="small"
+                          type="text"
+                          icon={
+                            <CreditCardFilled
+                              style={{ color: token.colorPrimary }}
+                            />
+                          }
+                          onClick={showModal}
+                        />
+                      </Space>
+                      <Title level={4}>
+                        {payments ? (
+                          <NumberField
+                            options={{
+                              currency: "VND",
+                              style: "currency",
+                            }}
+                            value={payments.reduce(
+                              (acc, payment) => acc + payment.totalMoney,
+                              0
+                            )}
                           />
-                        }
-                        onClick={showModal}
-                      />
-                    </Space>
-                    <Title level={4}>
-                      {payments ? (
+                        ) : (
+                          "Loading..."
+                        )}
+                      </Title>
+                    </Flex>
+                  </Col>
+                  <Col span={24}>
+                    <Flex gap="middle" justify="space-between" align="center">
+                      <Space size="large" wrap>
+                        <Text strong>{t("orders.tab.cod")}</Text>
+                        <Switch
+                          checkedChildren={<CheckOutlined />}
+                          unCheckedChildren={<CloseOutlined />}
+                          size="small"
+                        />
+                      </Space>
+                      <Text strong>
                         <NumberField
                           options={{
                             currency: "VND",
                             style: "currency",
                           }}
-                          value={payments.reduce(
-                            (acc, payment) => acc + payment.totalMoney,
-                            0
-                          )}
+                          value={0}
                         />
-                      ) : (
-                        "Loading..."
-                      )}
-                    </Title>
-                  </Flex>
-                </Col>
-                <Col span={24}>
-                  <Flex gap="middle" justify="space-between" align="center">
-                    <Space size="large" wrap>
-                      <Text strong>{t("orders.tab.cod")}</Text>
-                      <Switch
-                        checkedChildren={<CheckOutlined />}
-                        unCheckedChildren={<CloseOutlined />}
-                        size="small"
-                      />
-                    </Space>
-                    <Text strong>
-                      <NumberField
-                        options={{
-                          currency: "VND",
-                          style: "currency",
-                        }}
-                        value={0}
-                      />
-                    </Text>
-                  </Flex>
-                </Col>
-                <Col span={24}>
-                  <Flex gap="middle" justify="space-between" align="center">
-                    <Space size="large" wrap>
-                      <Text strong>{t("orders.tab.change")}</Text>
-                    </Space>
-                    <Text strong>
-                      <NumberField
-                        options={{
-                          currency: "VND",
-                          style: "currency",
-                        }}
-                        value={change}
-                      />
-                    </Text>
-                  </Flex>
-                </Col>
-                <Col span={24} style={{ padding: 0 }}>
-                  <Form form={form} layout="vertical" autoComplete="off">
-                    <Col span={24}>
-                      <Form.Item
-                        name="fullName"
-                        rules={[
-                          {
-                            required: true,
-                          },
-                        ]}
-                        style={{ width: "100%" }}
-                      >
-                        <Input
-                          placeholder="Recipient's name"
-                          bordered={false}
-                          style={{
-                            width: "100%",
-                            borderBottom: `1px solid ${token.colorPrimary}`,
-                            borderRadius: 0,
+                      </Text>
+                    </Flex>
+                  </Col>
+                  <Col span={24}>
+                    <Flex gap="middle" justify="space-between" align="center">
+                      <Space size="large" wrap>
+                        <Text strong>{t("orders.tab.change")}</Text>
+                      </Space>
+                      <Text strong>
+                        <NumberField
+                          options={{
+                            currency: "VND",
+                            style: "currency",
                           }}
+                          value={change}
                         />
-                      </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                      <Form.Item
-                        name="phoneNumber"
-                        rules={[
-                          {
-                            required: true,
-                          },
-                        ]}
-                      >
-                        <InputMask
-                          bordered={false}
-                          style={{
-                            width: "100%",
-                            borderBottom: `1px solid ${token.colorPrimary}`,
-                            borderRadius: 0,
-                          }}
-                          placeholder="Phone number"
-                          mask="(+84) 999 999 999"
-                          // value={phoneInputValue}
-                          // onChange={(e) => setPhoneInputValue(e.target.value)}
+                      </Text>
+                    </Flex>
+                  </Col>
+                  <Col span={24} style={{ padding: 0 }}>
+                    <Form form={form} layout="vertical" autoComplete="off">
+                      <Col span={24}>
+                        <Form.Item
+                          name="fullName"
+                          rules={[
+                            {
+                              required: true,
+                            },
+                          ]}
+                          style={{ width: "100%" }}
                         >
-                          {/* 
+                          <Input
+                            placeholder="Recipient's name"
+                            bordered={false}
+                            style={{
+                              width: "100%",
+                              borderBottom: `1px solid ${token.colorPrimary}`,
+                              borderRadius: 0,
+                            }}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          name="phoneNumber"
+                          rules={[
+                            {
+                              required: true,
+                            },
+                          ]}
+                        >
+                          <InputMask
+                            bordered={false}
+                            style={{
+                              width: "100%",
+                              borderBottom: `1px solid ${token.colorPrimary}`,
+                              borderRadius: 0,
+                            }}
+                            placeholder="Phone number"
+                            mask="(+84) 999 999 999"
+                            // value={phoneInputValue}
+                            // onChange={(e) => setPhoneInputValue(e.target.value)}
+                          >
+                            {/* 
                                     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
                                     // @ts-ignore */}
-                          {(props: InputProps) => <Input {...props} />}
-                        </InputMask>
-                      </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                      <Form.Item
-                        name="more"
-                        rules={[
-                          {
-                            required: true,
-                          },
-                        ]}
-                      >
-                        <TextArea
-                          bordered={false}
-                          style={{
-                            width: "100%",
-                            borderBottom: `1px solid ${token.colorPrimary}`,
-                            borderRadius: 0,
-                          }}
-                          rows={2}
-                          placeholder="Address line"
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                      <Form.Item
-                        name="provinceId"
-                        rules={[
-                          {
-                            required: true,
-                          },
-                        ]}
-                      >
-                        <Select
-                          showSearch
-                          bordered={false}
-                          style={{
-                            width: "100%",
-                            borderBottom: `1px solid ${token.colorPrimary}`,
-                            borderRadius: 0,
-                          }}
-                          placeholder={t(
-                            "customers.fields.province.placeholder"
-                          )}
-                          loading={isLoadingProvince}
-                          onChange={handleProvinceChange}
-                          filterOption={filterOption}
-                          options={provinces.map((province) => ({
-                            label: province.ProvinceName,
-                            value: province.ProvinceID,
-                          }))}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                      <Form.Item
-                        name="districtId"
-                        rules={[
-                          {
-                            required: true,
-                          },
-                        ]}
-                      >
-                        <Select
-                          showSearch
-                          bordered={false}
-                          style={{
-                            width: "100%",
-                            borderBottom: `1px solid ${token.colorPrimary}`,
-                            borderRadius: 0,
-                          }}
-                          placeholder={t(
-                            "customers.fields.district.placeholder"
-                          )}
-                          loading={isLoadingDistrict}
-                          onChange={handleDistrictChange}
-                          filterOption={filterOption}
-                          options={districts.map((district) => ({
-                            label: district.DistrictName,
-                            value: district.DistrictID,
-                          }))}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                      <Form.Item
-                        name="wardCode"
-                        rules={[
-                          {
-                            required: true,
-                          },
-                        ]}
-                      >
-                        <Select
-                          showSearch
-                          bordered={false}
-                          style={{
-                            width: "100%",
-                            borderBottom: `1px solid ${token.colorPrimary}`,
-                            borderRadius: 0,
-                          }}
-                          placeholder={t("customers.fields.ward.placeholder")}
-                          loading={isLoadingWard}
-                          onChange={handleWardChange}
-                          filterOption={filterOption}
-                          options={wards.map((ward) => ({
-                            label: ward.WardName,
-                            value: ward.WardCode,
-                          }))}
-                        />
-                      </Form.Item>
-                    </Col>
-                    <Col span={24}>
-                      <Row align="middle" gutter={5}>
-                        <Col span={4}>
-                          <Form.Item
-                            name="weight"
-                            rules={[
-                              {
-                                required: true,
-                              },
-                            ]}
-                            initialValue={900}
-                          >
-                            <InputNumber
-                              bordered={false}
-                              style={{
-                                width: "100%",
-                                borderBottom: `1px solid ${token.colorPrimary}`,
-                                borderRadius: 0,
-                              }}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={4}>
-                          <Form.Item
-                            name="weightUnit"
-                            rules={[
-                              {
-                                required: true,
-                              },
-                            ]}
-                            initialValue="gram"
-                          >
-                            <Select
-                              showSearch
-                              bordered={false}
-                              style={{
-                                width: "100%",
-                              }}
-                              options={[
-                                { value: "gram", label: "gram" },
-                                { value: "kg", label: "kg" },
+                            {(props: InputProps) => <Input {...props} />}
+                          </InputMask>
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          name="provinceId"
+                          rules={[
+                            {
+                              required: true,
+                            },
+                          ]}
+                        >
+                          <Select
+                            showSearch
+                            bordered={false}
+                            style={{
+                              width: "100%",
+                              borderBottom: `1px solid ${token.colorPrimary}`,
+                              borderRadius: 0,
+                            }}
+                            placeholder={t(
+                              "customers.fields.province.placeholder"
+                            )}
+                            loading={isLoadingProvince}
+                            onChange={handleProvinceChange}
+                            filterOption={filterOption}
+                            options={provinces.map((province) => ({
+                              label: province.ProvinceName,
+                              value: province.ProvinceID,
+                            }))}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          name="districtId"
+                          rules={[
+                            {
+                              required: true,
+                            },
+                          ]}
+                        >
+                          <Select
+                            showSearch
+                            bordered={false}
+                            style={{
+                              width: "100%",
+                              borderBottom: `1px solid ${token.colorPrimary}`,
+                              borderRadius: 0,
+                            }}
+                            placeholder={t(
+                              "customers.fields.district.placeholder"
+                            )}
+                            loading={isLoadingDistrict}
+                            onChange={handleDistrictChange}
+                            filterOption={filterOption}
+                            options={districts.map((district) => ({
+                              label: district.DistrictName,
+                              value: district.DistrictID,
+                            }))}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          name="wardCode"
+                          rules={[
+                            {
+                              required: true,
+                            },
+                          ]}
+                        >
+                          <Select
+                            showSearch
+                            bordered={false}
+                            style={{
+                              width: "100%",
+                              borderBottom: `1px solid ${token.colorPrimary}`,
+                              borderRadius: 0,
+                            }}
+                            placeholder={t("customers.fields.ward.placeholder")}
+                            loading={isLoadingWard}
+                            onChange={handleWardChange}
+                            filterOption={filterOption}
+                            options={wards.map((ward) => ({
+                              label: ward.WardName,
+                              value: ward.WardCode,
+                            }))}
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <Form.Item
+                          name="more"
+                          rules={[
+                            {
+                              required: true,
+                            },
+                          ]}
+                        >
+                          <TextArea
+                            bordered={false}
+                            style={{
+                              width: "100%",
+                              borderBottom: `1px solid ${token.colorPrimary}`,
+                              borderRadius: 0,
+                            }}
+                            placeholder="Address line"
+                          />
+                        </Form.Item>
+                      </Col>
+                      <Col span={24}>
+                        <Row align="middle" gutter={5}>
+                          <Col span={4}>
+                            <Form.Item
+                              name="weight"
+                              rules={[
+                                {
+                                  required: true,
+                                },
                               ]}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={3}>
-                          <Form.Item
-                            name="length"
-                            rules={[
-                              {
-                                required: true,
-                              },
-                            ]}
-                            initialValue={1}
-                          >
-                            <InputNumber
-                              bordered={false}
-                              style={{
-                                width: "100%",
-                                borderBottom: `1px solid ${token.colorPrimary}`,
-                                borderRadius: 0,
-                              }}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={3}>
-                          <Form.Item
-                            name="witdth"
-                            rules={[
-                              {
-                                required: true,
-                              },
-                            ]}
-                            initialValue={1}
-                          >
-                            <InputNumber
-                              bordered={false}
-                              style={{
-                                width: "100%",
-                                borderBottom: `1px solid ${token.colorPrimary}`,
-                                borderRadius: 0,
-                              }}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={3}>
-                          <Form.Item
-                            name="height"
-                            rules={[
-                              {
-                                required: true,
-                              },
-                            ]}
-                            initialValue={1}
-                          >
-                            <InputNumber
-                              bordered={false}
-                              style={{
-                                width: "100%",
-                                borderBottom: `1px solid ${token.colorPrimary}`,
-                                borderRadius: 0,
-                              }}
-                            />
-                          </Form.Item>
-                        </Col>
-                        <Col span={7} style={{ textAlign: "center" }}>
-                          <Text style={{ fontSize: "12px" }}>
-                            length x width x height (cm)
-                          </Text>
-                          <Button
-                            type="primary"
-                            size={"small"}
-                            style={{ width: "100%" }}
-                            onClick={calculateShippingFee}
-                          >
-                            {t("actions.calculateShipping")}
-                          </Button>
-                        </Col>
-                      </Row>
-                    </Col>
-                  </Form>
-                </Col>
-              </Row>
-            </Col>
-
-            <Col span={24}>
-              {/* Footer */}
-              <Button
-                type="primary"
-                size={"large"}
-                style={{ width: "100%", fontWeight: "500" }}
-                onClick={submitOrder}
-              >
-                {t("actions.pay")}
-              </Button>
-            </Col>
-          </Row>
+                              initialValue={900}
+                            >
+                              <InputNumber
+                                bordered={false}
+                                style={{
+                                  width: "100%",
+                                  borderBottom: `1px solid ${token.colorPrimary}`,
+                                  borderRadius: 0,
+                                }}
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col span={4}>
+                            <Form.Item
+                              name="weightUnit"
+                              rules={[
+                                {
+                                  required: true,
+                                },
+                              ]}
+                              initialValue="gram"
+                            >
+                              <Select
+                                showSearch
+                                bordered={false}
+                                style={{
+                                  width: "100%",
+                                }}
+                                options={[
+                                  { value: "gram", label: "gram" },
+                                  { value: "kg", label: "kg" },
+                                ]}
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col span={3}>
+                            <Form.Item
+                              name="length"
+                              rules={[
+                                {
+                                  required: true,
+                                },
+                              ]}
+                              initialValue={1}
+                            >
+                              <InputNumber
+                                bordered={false}
+                                style={{
+                                  width: "100%",
+                                  borderBottom: `1px solid ${token.colorPrimary}`,
+                                  borderRadius: 0,
+                                }}
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col span={3}>
+                            <Form.Item
+                              name="witdth"
+                              rules={[
+                                {
+                                  required: true,
+                                },
+                              ]}
+                              initialValue={1}
+                            >
+                              <InputNumber
+                                bordered={false}
+                                style={{
+                                  width: "100%",
+                                  borderBottom: `1px solid ${token.colorPrimary}`,
+                                  borderRadius: 0,
+                                }}
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col span={3}>
+                            <Form.Item
+                              name="height"
+                              rules={[
+                                {
+                                  required: true,
+                                },
+                              ]}
+                              initialValue={1}
+                            >
+                              <InputNumber
+                                bordered={false}
+                                style={{
+                                  width: "100%",
+                                  borderBottom: `1px solid ${token.colorPrimary}`,
+                                  borderRadius: 0,
+                                }}
+                              />
+                            </Form.Item>
+                          </Col>
+                          <Col span={7} style={{ textAlign: "center" }}>
+                            <Text style={{ fontSize: "12px" }}>
+                              length x width x height (cm)
+                            </Text>
+                            <Button
+                              type="primary"
+                              size={"small"}
+                              style={{ width: "100%" }}
+                              onClick={calculateShippingFee}
+                            >
+                              {t("actions.calculateShipping")}
+                            </Button>
+                          </Col>
+                        </Row>
+                      </Col>
+                    </Form>
+                  </Col>
+                </Row>
+              </Col>
+            </Row>
+            <Row gutter={[16, 24]}>
+              <Col span={24}>
+                {/* Footer */}
+                <Button
+                  type="primary"
+                  size={"large"}
+                  style={{ width: "100%", fontWeight: "500" }}
+                  onClick={submitOrder}
+                >
+                  {t("actions.pay")}
+                </Button>
+              </Col>
+            </Row>
+          </Space>
         </Card>
       </Col>
       <PaymentModal

@@ -108,6 +108,7 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     {
       title: t("products.fields.name"),
       dataIndex: "name",
+      width: "25%",
       key: "name",
       render: (_, { image, name }) => (
         <Space>
@@ -189,31 +190,11 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
       render: (_, { productDetails }) => {
         const prices = productDetails.map((detail) => detail.price);
         const lowestPrice = Math.min(...prices);
-        const highestPrice = Math.max(...prices);
-        const showMinMax = lowestPrice !== highestPrice;
 
         return (
           <Text>
             {prices.length > 0 ? (
-              showMinMax ? (
-                <>
-                  <NumberField
-                    options={{
-                      currency: "VND",
-                      style: "currency",
-                    }}
-                    value={lowestPrice}
-                  />
-                  ~
-                  <NumberField
-                    options={{
-                      currency: "VND",
-                      style: "currency",
-                    }}
-                    value={highestPrice}
-                  />
-                </>
-              ) : (
+              (
                 <NumberField
                   options={{
                     currency: "VND",
@@ -233,7 +214,6 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
       title: t("products.fields.quantity"),
       key: "quantity",
       dataIndex: "quantity",
-      width: "1rem",
       align: "center",
       render: (text, record) => {
         const totalQuantity = record.productDetails.reduce(
@@ -249,7 +229,6 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
       title: t("products.fields.status"),
       key: "status",
       dataIndex: "status",
-      width: "1rem",
       align: "center",
       render: (_, { status }) => <ProductStatus status={status} />,
     },

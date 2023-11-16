@@ -8,8 +8,8 @@ import { IAddress, IDistrict, IProvince, IWard } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 
 type EditAddressFormProps = {
-  callBack?: any;
-  address: IAddress | undefined;
+  callBack: any;
+  addressId: string;
 };
 
 const GHN_API_BASE_URL = import.meta.env.VITE_GHN_API_BASE_URL;
@@ -22,26 +22,47 @@ const filterOption = (
 
 export const EditAddressForm: React.FC<EditAddressFormProps> = ({
   callBack: refetch,
-  address,
+  addressId,
 }) => {
   const t = useTranslate();
   const [phoneInputValue, setPhoneInputValue] = useState("");
   const [provinces, setProvinces] = useState<IProvince[]>([]);
   const [districts, setDistricts] = useState<IDistrict[]>([]);
   const [wards, setWards] = useState<IWard[]>([]);
+  const [address, setAddress] = useState<IAddress>();
 
-  const { formProps, saveButtonProps, onFinish, formLoading } =
+  const { formProps, saveButtonProps, onFinish, formLoading, queryResult } =
     useForm<IAddress>({
+      id: addressId,
       resource: "addresses",
       action: "edit",
-      id: address?.id,
       onMutationSuccess: (data: any, variables, context, isAutoSave) => {
-        console.log(data.data.content.wardCode);
-
-        formProps.form?.resetFields();
         refetch();
       },
     });
+
+  const { data } = queryResult as any;
+
+  useEffect(() => {
+    if (data && data.data) {
+      setAddress(data.data);
+    }
+  }, [data]);
+
+  useEffect(() => {
+    if (address) {
+      formProps.form?.setFieldsValue({
+        phoneNumber: address.phoneNumber,
+        provinceId: Number(address.provinceId),
+        districtId: Number(address.districtId),
+        wardCode: address.wardCode,
+        more: address.more,
+      });
+      setProvinceName(address.provinceName);
+      setDistrictName(address.districtName);
+      setWardName(address.wardName);
+    }
+  }, [address, data]);
 
   const provinceId = Form.useWatch("provinceId", formProps.form);
   const districtId = Form.useWatch("districtId", formProps.form);
@@ -174,18 +195,7 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
       resource="addresses"
     >
       <Spin tip="Loading..." spinning={formLoading}>
-        <Form
-          {...formProps}
-          layout="vertical"
-          onFinish={onFinishHandler}
-          initialValues={{
-            phoneNumber: address?.phoneNumber,
-            provinceId: Number(address?.provinceId),
-            districtId: Number(address?.districtId),
-            wardCode: address?.wardCode,
-            more: address?.more,
-          }}
-        >
+        <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
           <Form.Item
             label={t("customers.fields.phoneNumber")}
             name="phoneNumber"

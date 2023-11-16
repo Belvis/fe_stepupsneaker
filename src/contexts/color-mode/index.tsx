@@ -1,6 +1,8 @@
 import { RefineThemes } from "@refinedev/antd";
 import { ConfigProvider, theme } from "antd";
-import { createContext, PropsWithChildren, useEffect, useState } from "react";
+import viVN from "antd/locale/vi_VN";
+import { PropsWithChildren, createContext, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 
 type ColorModeContextType = {
   mode: string;
@@ -14,6 +16,7 @@ export const ColorModeContext = createContext<ColorModeContextType>(
 export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
   children,
 }) => {
+  const { i18n } = useTranslation();
   const colorModeFromLocalStorage = localStorage.getItem("colorMode");
   const isSystemPreferenceDark = window?.matchMedia(
     "(prefers-color-scheme: dark)"
@@ -46,6 +49,7 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({
       }}
     >
       <ConfigProvider
+        locale={i18n.language == "vi" ? viVN : undefined}
         // you can change the theme colors here. example: ...RefineThemes.Magenta,
         theme={{
           ...RefineThemes.Orange,

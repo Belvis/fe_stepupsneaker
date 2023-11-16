@@ -56,8 +56,6 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
   }, [open]);
 
   const handleFinish = () => {
-    console.log("Hihihi");
-
     if (order && selectedVoucherId) {
       mutateUpdate(
         {
@@ -81,14 +79,14 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
           onError: (error, variables, context) => {
             messageApi.open({
               type: "error",
-              content: "Failed to edit order employee.",
+              content: t("orders.notification.voucher.edit.error"),
             });
           },
           onSuccess: (data, variables, context) => {
             callBack();
             messageApi.open({
               type: "success",
-              content: "Edited order note employee.",
+              content: t("orders.notification.voucher.edit.success"),
             });
             handleOk();
           },
@@ -97,7 +95,7 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
     } else {
       messageApi.open({
         type: "error",
-        content: "Choose voucher first.",
+        content: t("orders.notification.voucher.edit.notFound"),
       });
     }
   };

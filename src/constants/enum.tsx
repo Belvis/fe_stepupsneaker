@@ -22,6 +22,21 @@ export const getProductStatusOptions = (t: TranslateFunction) => [
   },
 ];
 
+export const getUserGenderOptions = (t: TranslateFunction) => [
+  {
+    label: t("customers.fields.gender.options.Male"),
+    value: "Male",
+  },
+  {
+    label: t("customers.fields.gender.options.Female"),
+    value: "Female",
+  },
+  {
+    label: t("customers.fields.gender.options.Other"),
+    value: "Other",
+  },
+];
+
 export const getUserStatusOptions = (t: TranslateFunction) => [
   {
     label: t("enum.userStatuses.ACTIVE"),

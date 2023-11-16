@@ -7,3 +7,4 @@ export * from "./pos";
 export * from "./product";
 export * from "./roles";
 export * from "./vouchers";
+export * from "./dashboard";

@@ -30,7 +30,7 @@ import { useEffect, useState } from "react";
 import { QRScannerModal } from "../../../components";
 import { ICustomer, IDistrict, IProvince, IWard } from "../../../interfaces";
 import { getUserStatusOptions } from "../../../constants";
-import { parseQRCodeResult } from "../../../utils/common/qrCodeParser";
+import { parseQRCodeResult } from "../../../utils";
 import dayjs from "dayjs";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 
@@ -76,7 +76,6 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
 
   const handleScanOpen = () => {
     setScanOpen(!isScanOpen);
-    console.log(isScanOpen);
   };
 
   const handleScanClose = () => {
