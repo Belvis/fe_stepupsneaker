@@ -147,7 +147,7 @@ function App() {
               resources={[
                 {
                   name: "dashboard",
-                  list: "/admin",
+                  list: "/",
                   meta: {
                     label: t("dashboard.title"),
                     icon: <DashboardOutlined />,
@@ -155,7 +155,7 @@ function App() {
                 },
                 {
                   name: "pos",
-                  list: "admin/point-of-sales",
+                  list: "/point-of-sales",
                   meta: {
                     label: t("pos.title"),
                     icon: <PointOfSaleIcon />,
@@ -163,8 +163,8 @@ function App() {
                 },
                 {
                   name: "orders",
-                  list: "admin/orders",
-                  show: "admin/orders/show/:id",
+                  list: "/orders",
+                  show: "/orders/show/:id",
                   meta: {
                     icon: <ShoppingOutlined />,
                   },
@@ -178,10 +178,10 @@ function App() {
                 },
                 {
                   name: "products",
-                  list: "admin/shop/products",
-                  create: "admin/shop/products/create",
-                  edit: "admin/shop/products/edit/:id",
-                  show: "admin/shop/products/show/:id",
+                  list: "/shop/products",
+                  create: "/shop/products/create",
+                  edit: "/shop/products/edit/:id",
+                  show: "/shop/products/show/:id",
                   meta: {
                     parent: "Shop entities",
                     icon: <ProductIcon />,
@@ -189,10 +189,10 @@ function App() {
                 },
                 {
                   name: "colors",
-                  list: "admin/shop/colors",
-                  create: "admin/shop/colors/create",
-                  edit: "admin/shop/colors/edit/:id",
-                  show: "admin/shop/colors/show/:id",
+                  list: "/shop/colors",
+                  create: "/shop/colors/create",
+                  edit: "/shop/colors/edit/:id",
+                  show: "/shop/colors/show/:id",
                   meta: {
                     parent: "Shop entities",
                     icon: <ColorIcon />,
@@ -200,10 +200,10 @@ function App() {
                 },
                 {
                   name: "brands",
-                  list: "admin/shop/brands",
-                  create: "admin/shop/brands/create",
-                  edit: "admin/shop/brands/edit/:id",
-                  show: "admin/shop/brands/show/:id",
+                  list: "/shop/brands",
+                  create: "/shop/brands/create",
+                  edit: "/shop/brands/edit/:id",
+                  show: "/shop/brands/show/:id",
                   meta: {
                     parent: "Shop entities",
                     icon: <TagsOutlined />,
@@ -211,10 +211,10 @@ function App() {
                 },
                 {
                   name: "styles",
-                  list: "admin/shop/styles",
-                  create: "admin/shop/styles/create",
-                  edit: "admin/shop/styles/edit/:id",
-                  show: "admin/shop/styles/show/:id",
+                  list: "/shop/styles",
+                  create: "/shop/styles/create",
+                  edit: "/shop/styles/edit/:id",
+                  show: "/shop/styles/show/:id",
                   meta: {
                     parent: "Shop entities",
                     icon: <StyleIcon />,
@@ -222,10 +222,10 @@ function App() {
                 },
                 {
                   name: "materials",
-                  list: "admin/shop/materials",
-                  create: "admin/shop/materials/create",
-                  edit: "admin/shop/materials/edit/:id",
-                  show: "admin/shop/materials/show/:id",
+                  list: "/shop/materials",
+                  create: "/shop/materials/create",
+                  edit: "/shop/materials/edit/:id",
+                  show: "/shop/materials/show/:id",
                   meta: {
                     parent: "Shop entities",
                     icon: <MaterialIcon />,
@@ -233,10 +233,10 @@ function App() {
                 },
                 {
                   name: "sizes",
-                  list: "admin/shop/sizes",
-                  create: "admin/shop/sizes/create",
-                  edit: "admin/shop/sizes/edit/:id",
-                  show: "admin/shop/sizes/show/:id",
+                  list: "/shop/sizes",
+                  create: "/shop/sizes/create",
+                  edit: "/shop/sizes/edit/:id",
+                  show: "/shop/sizes/show/:id",
                   meta: {
                     parent: "Shop entities",
                     icon: <SizeIcon />,
@@ -244,10 +244,10 @@ function App() {
                 },
                 {
                   name: "trade-marks",
-                  list: "admin/shop/trade-marks",
-                  create: "admin/shop/trade-marks/create",
-                  edit: "admin/shop/trade-marks/edit/:id",
-                  show: "admin/shop/trade-marks/show/:id",
+                  list: "/shop/trade-marks",
+                  create: "/shop/trade-marks/create",
+                  edit: "/shop/trade-marks/edit/:id",
+                  show: "/shop/trade-marks/show/:id",
                   meta: {
                     parent: "Shop entities",
                     icon: <TradeMarkIcon />,
@@ -255,10 +255,10 @@ function App() {
                 },
                 {
                   name: "soles",
-                  list: "admin/shop/soles",
-                  create: "admin/shop/soles/create",
-                  edit: "admin/shop/soles/edit/:id",
-                  show: "admin/shop/soles/show/:id",
+                  list: "/shop/soles",
+                  create: "/shop/soles/create",
+                  edit: "/shop/soles/edit/:id",
+                  show: "/shop/soles/show/:id",
                   meta: {
                     parent: "Shop entities",
                     icon: <SoleIcon />,
@@ -273,10 +273,10 @@ function App() {
                 },
                 {
                   name: "vouchers",
-                  list: "admin/vouchers",
-                  create: "admin/vouchers/create",
-                  edit: "admin/vouchers/edit/:id",
-                  show: "admin/vouchers/show/:id",
+                  list: "/vouchers",
+                  create: "/vouchers/create",
+                  edit: "/vouchers/edit/:id",
+                  show: "/vouchers/show/:id",
                   meta: {
                     parent: "discount",
                     icon: <DiscountOrderIcon />,
@@ -295,30 +295,30 @@ function App() {
                 },
                 {
                   name: "customers",
-                  list: "admin/customers",
-                  create: "admin/customers/create",
-                  edit: "admin/customers/edit/:id",
-                  show: "admin/customers/show/:id",
+                  list: "/customers",
+                  create: "/customers/create",
+                  edit: "/customers/edit/:id",
+                  show: "/customers/show/:id",
                   meta: {
                     icon: <TeamOutlined />,
                   },
                 },
                 {
                   name: "employees",
-                  list: "admin/employees",
-                  create: "admin/employees/create",
-                  edit: "admin/employees/edit/:id",
-                  show: "admin/employees/show/:id",
+                  list: "/employees",
+                  create: "/employees/create",
+                  edit: "/employees/edit/:id",
+                  show: "/employees/show/:id",
                   meta: {
                     icon: <ApartmentOutlined />,
                   },
                 },
                 {
                   name: "roles",
-                  list: "admin/roles",
-                  create: "admin/roles/create",
-                  edit: "admin/roles/edit/:id",
-                  show: "admin/roles/show/:id",
+                  list: "/roles",
+                  create: "/roles/create",
+                  edit: "/roles/edit/:id",
+                  show: "/roles/show/:id",
                   meta: {
                     icon: <SafetyOutlined />,
                   },
@@ -332,10 +332,10 @@ function App() {
                 },
                 {
                   name: "payments",
-                  list: "admin/transaction/payments",
-                  create: "admin/transaction/payments/create",
-                  edit: "admin/transaction/payments/edit/:id",
-                  show: "admin/transaction/payments/show/:id",
+                  list: "/transaction/payments",
+                  create: "/transaction/payments/create",
+                  edit: "/transaction/payments/edit/:id",
+                  show: "/transaction/payments/show/:id",
                   meta: {
                     parent: "Transactions",
                     icon: <ReadOutlined />,
@@ -343,10 +343,10 @@ function App() {
                 },
                 {
                   name: "payment-methods",
-                  list: "admin/transaction/payment-methods",
-                  create: "admin/transaction/payment-methods/create",
-                  edit: "admin/transaction/payment-methods/edit/:id",
-                  show: "admin/transaction/payment-methods/show/:id",
+                  list: "/transaction/payment-methods",
+                  create: "/transaction/payment-methods/create",
+                  edit: "/transaction/payment-methods/edit/:id",
+                  show: "/transaction/payment-methods/show/:id",
                   meta: {
                     parent: "Transactions",
                     icon: <ForkOutlined />,
@@ -361,7 +361,7 @@ function App() {
             >
               <Routes>
                 <Route
-                  path="/admin"
+                  path="/"
                   element={
                     <ThemedLayoutV2
                       Header={() => <AdminHeader sticky />}
@@ -385,12 +385,12 @@ function App() {
                     }
                   />
 
-                  <Route path="/admin/orders">
+                  <Route path="/orders">
                     <Route index element={<OrderList />} />
                     <Route path="show/:id" element={<OrderShow />} />
                   </Route>
 
-                  <Route path="/admin/shop">
+                  <Route path="/shop">
                     <Route path="products">
                       <Route index element={<ProductList />} />
                       <Route path="create" element={<ProductCreate />} />
@@ -418,26 +418,26 @@ function App() {
                       <Route index element={<TradeMarkList />} />
                     </Route>
                   </Route>
-                  <Route path="/admin/customers">
+                  <Route path="/customers">
                     <Route index element={<CustomerList />} />
                     <Route path="create" element={<CustomerCreate />} />
                     <Route path="edit/:id" element={<CustomerEdit />} />
                     <Route path="show/:id" element={<CustomerShow />} />
                   </Route>
-                  <Route path="/admin/vouchers">
+                  <Route path="/vouchers">
                     <Route index element={<VoucherList />} />
                     <Route path="create" element={<VoucherCreate />} />
                     <Route path="edit/:id" element={<VoucherEdit />} />
                   </Route>
-                  <Route path="/admin/employees">
+                  <Route path="/employees">
                     <Route index element={<EmployeeList />} />
                     <Route path="create" element={<EmployeeCreate />} />
                     <Route path="edit/:id" element={<EmployeeEdit />} />
                   </Route>
-                  <Route path="/admin/roles">
+                  <Route path="/roles">
                     <Route index element={<RoleList />} />
                   </Route>
-                  <Route path="/admin/transaction">
+                  <Route path="/transaction">
                     <Route path="payments">
                       <Route index element={<PaymentList />} />
                     </Route>
@@ -446,13 +446,10 @@ function App() {
                     </Route>
                   </Route>
 
-                  <Route path="/admin/point-of-sales">
+                  <Route path="/point-of-sales">
                     <Route index element={<PointOfSales />} />
                   </Route>
 
-                  <Route path="*" element={<ErrorComponent />} />
-                </Route>
-                <Route>
                   <Route path="*" element={<ErrorComponent />} />
                 </Route>
               </Routes>
