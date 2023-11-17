@@ -67,6 +67,21 @@ export const getVouccherStatusOptions = (t: TranslateFunction) => [
   },
 ];
 
+export const getPromotionStatusOptions = (t: TranslateFunction) => [
+  {
+    label: t("enum.promotionsStatuses.ACTIVE"),
+    value: "ACTIVE",
+  },
+  {
+    label: t("enum.promotionsStatuses.IN_ACTIVE"),
+    value: "IN_ACTIVE",
+  },
+  {
+    label: t("enum.promotionsStatuses.EXPIRED"),
+    value: "EXPIRED",
+  },
+];
+
 export const getOrderTypeOptions = (t: TranslateFunction) => [
   {
     label: t("orders.fields.type.OFFLINE"),

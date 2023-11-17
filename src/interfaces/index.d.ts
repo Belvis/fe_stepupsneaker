@@ -185,6 +185,7 @@ export interface IUserSelected {
 export type ProductStatus = "ACTIVE" | "IN_ACTIVE";
 export type UserStatus = "ACTIVE" | "IN_ACTIVE" | "BLOCKED";
 export type VoucherStatus = "ACTIVE" | "IN_ACTIVE" | "EXPIRED";
+export type PromotionStatus = "ACTIVE" | "IN_ACTIVE" | "EXPIRED";
 export type VoucherType = "PERCENTAGE" | "CASH";
 export type OrderType = "ONLINE" | "OFFLINE";
 export type OrderStatus =
@@ -257,6 +258,17 @@ export interface IVoucher {
   value: number;
   constraint: number;
   quantity: number;
+  startDate: number;
+  endDate: number;
+  image: string;
+}
+
+export interface IPromotion {
+  id: string;
+  code: string;
+  name: string;
+  status: PromotionStatus;
+  value: number;
   startDate: number;
   endDate: number;
   image: string;
@@ -402,6 +414,14 @@ export interface IVoucherFilterVariables {
   value: number;
   constraint: number;
   quantity: number;
+  startDate: number;
+  endDate: number;
+}
+
+export interface IPromotionFilterVariables {
+  q?: string;
+  status: PromotionStatus;
+  value: number;
   startDate: number;
   endDate: number;
 }

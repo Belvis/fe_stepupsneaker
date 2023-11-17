@@ -1,18 +1,10 @@
 import { Action, IResourceItem, Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
-import {
-  ErrorComponent,
-  ThemedLayoutV2,
-  ThemedSiderV2,
-  useNotificationProvider,
-} from "@refinedev/antd";
+import { ErrorComponent, ThemedLayoutV2, ThemedSiderV2, useNotificationProvider } from "@refinedev/antd";
 import "@refinedev/antd/dist/reset.css";
 
-import routerBindings, {
-  DocumentTitleHandler,
-  UnsavedChangesNotifier,
-} from "@refinedev/react-router-v6";
+import routerBindings, { DocumentTitleHandler, UnsavedChangesNotifier } from "@refinedev/react-router-v6";
 import { App as AntdApp } from "antd";
 import { ConfirmDialog } from "primereact/confirmdialog";
 import { useTranslation } from "react-i18next";
@@ -82,6 +74,7 @@ import {
   VoucherList,
   DashboardPage,
 } from "./pages/admin";
+import { PromotionCreate, PromotionList } from "./pages/admin/promotions";
 
 // const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
@@ -110,21 +103,13 @@ function App() {
         case "list":
           return `${t(`${resourceName}.${resourceName}`)} | SUNS`;
         case "edit":
-          return `${t(`actions.edit`)} ${t(
-            `${resourceName}.${resourceName}`
-          )} | SUNS`;
+          return `${t(`actions.edit`)} ${t(`${resourceName}.${resourceName}`)} | SUNS`;
         case "show":
-          return `${t(`actions.show`)} ${t(
-            `${resourceName}.${resourceName}`
-          )} | SUNS`;
+          return `${t(`actions.show`)} ${t(`${resourceName}.${resourceName}`)} | SUNS`;
         case "create":
-          return `${t(`actions.create`)} ${t(
-            `${resourceName}.${resourceName}`
-          )} | SUNS`;
+          return `${t(`actions.create`)} ${t(`${resourceName}.${resourceName}`)} | SUNS`;
         case "clone":
-          return `${t(`actions.clone`)} ${t(
-            `${resourceName}.${resourceName}`
-          )} | SUNS`;
+          return `${t(`actions.clone`)} ${t(`${resourceName}.${resourceName}`)} | SUNS`;
         default:
           return "SUNS";
       }
@@ -283,11 +268,11 @@ function App() {
                   },
                 },
                 {
-                  name: "unknown",
-                  list: "/unknown",
-                  create: "/unknown/create",
-                  edit: "/unknown/edit/:id",
-                  show: "/unknown/show/:id",
+                  name: "promotions",
+                  list: "/promotions",
+                  create: "/promotions/create",
+                  edit: "/promotions/edit/:id",
+                  show: "/promotions/show/:id",
                   meta: {
                     parent: "discount",
                     icon: <DiscountProductIcon />,
@@ -368,9 +353,7 @@ function App() {
                       // Warning: [antd: Menu] `children` is deprecated. Please use `items` instead.
                       // To do: customized sider
                       Sider={(props) => <ThemedSiderV2 {...props} fixed />}
-                      Title={({ collapsed }) => (
-                        <ThemedTitleV2 collapsed={collapsed} />
-                      )}
+                      Title={({ collapsed }) => <ThemedTitleV2 collapsed={collapsed} />}
                     >
                       <Outlet />
                     </ThemedLayoutV2>
@@ -427,6 +410,11 @@ function App() {
                   <Route path="/vouchers">
                     <Route index element={<VoucherList />} />
                     <Route path="create" element={<VoucherCreate />} />
+                    <Route path="edit/:id" element={<VoucherEdit />} />
+                  </Route>
+                  <Route path="/promotions">
+                    <Route index element={<PromotionList />} />
+                    <Route path="create" element={<PromotionCreate />} />
                     <Route path="edit/:id" element={<VoucherEdit />} />
                   </Route>
                   <Route path="/employees">

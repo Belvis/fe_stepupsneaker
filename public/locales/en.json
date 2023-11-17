@@ -361,6 +361,52 @@
             "relations": "Relations"
         }
     },
+    "promotionProductDetail": {
+        "table":{
+          "title": {
+            "eligible": "List of products eligible for promotion",
+            "ineligible": "List of products ineligible for promotion"
+          }
+        }
+      },
+    "promotions": {
+        "promotions": "Promotions",
+        "titles": {
+            "create": "Create Promotion",
+            "list": "Promotion",
+            "edit": "Edit Promotion"
+        },
+        "fields": {
+            "id": "ID",
+            "code": "Code",
+            "name": "Name",
+            "status": "Status",
+            "type": "Type",
+            "value": "Value",
+            "startDate": "Start Date",
+            "endDate": "End Date",
+            "images": {
+                "description": "Add Promotion picture",
+                "validation": "must be 1080x1080 px"
+            },
+            "promotionRange": "Date"
+        },
+        "filters": {
+            "title": "Filters",
+            "search": {
+                "label": "Name",
+                "placeholder": "Search by name"
+            },
+            "status": {
+                "label": "Status",
+                "placeholder": "Filter by Status"
+            }
+        },
+        "steps": {
+            "content": "Content",
+            "relations": "Relations"
+        }
+    },
     "employees": {
         "employees": "Employees",
         "titles": {
@@ -591,6 +637,11 @@
             "BLOCKED": "Blocked"
         },
         "vouchersStatuses": {
+            "IN_ACTIVE": "In Active",
+            "ACTIVE": "Active",
+            "EXPIRED": "Expired"
+        },
+        "promotionsStatuses": {
             "IN_ACTIVE": "In Active",
             "ACTIVE": "Active",
             "EXPIRED": "Expired"
