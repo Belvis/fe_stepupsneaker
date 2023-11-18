@@ -288,9 +288,14 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
     filters: {
       initial: [
         {
-          field: "noPromotion",
+          field: "promotion",
           operator: "eq",
           value: id,
+        },
+        {
+          field: "isInPromotion",
+          operator: "eq",
+          value: 0,
         },
       ],
     },
