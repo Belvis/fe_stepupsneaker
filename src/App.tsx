@@ -74,10 +74,10 @@ import {
   VoucherList,
   DashboardPage,
 } from "./pages/admin";
-import { PromotionCreate, PromotionList } from "./pages/admin/promotions";
+import { PromotionCreate, PromotionEdit, PromotionList } from "./pages/admin/promotions";
 
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
-// const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
+// const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
+const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -415,7 +415,7 @@ function App() {
                   <Route path="/promotions">
                     <Route index element={<PromotionList />} />
                     <Route path="create" element={<PromotionCreate />} />
-                    <Route path="edit/:id" element={<VoucherEdit />} />
+                    <Route path="edit/:id" element={<PromotionEdit />} />
                   </Route>
                   <Route path="/employees">
                     <Route index element={<EmployeeList />} />

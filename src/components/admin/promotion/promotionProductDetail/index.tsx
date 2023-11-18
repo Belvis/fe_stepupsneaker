@@ -1,25 +1,25 @@
-import { useTranslate } from "@refinedev/core";
+import { CrudFilters, HttpError, useTranslate } from "@refinedev/core";
 import { Button, Flex, Space, Table, Typography } from "antd";
-import { ColumnsType } from "antd/es/table";
-import { Dispatch, Key, SetStateAction, useState } from "react";
-import { ICustomer, IProductDetail } from "../../../../interfaces";
+import { ColumnsType, TableProps } from "antd/es/table";
+import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
+import { IProductDetail } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
+import { log } from "console";
+import { tablePaginationSettings } from "../../../../constants";
 
 const { Title } = Typography;
 
 type PromotionProductDetailTableProps = {
   columns: ColumnsType<IProductDetail>;
-  isLoading: boolean;
-  productDetails: IProductDetail[];
   title: string;
+  tableProps: TableProps<IProductDetail>;
   handlePromotionProductDetail(selectedKeys: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>): void;
 };
 
 export const PromotionProductDetailTable: React.FC<PromotionProductDetailTableProps> = ({
   columns,
-  isLoading,
-  productDetails,
   title,
+  tableProps,
   handlePromotionProductDetail,
 }) => {
   const t = useTranslate();
@@ -31,28 +31,27 @@ export const PromotionProductDetailTable: React.FC<PromotionProductDetailTablePr
   };
 
   const rowSelection = {
-    setSelectedIds,
+    selectedRowKeys: selectedIds,
     onChange: onSelectChange,
   };
 
-  const hasSelected = selectedIds.length > 0;
-
   return (
     <Table
-      loading={isLoading}
+      {...tableProps}
       rowSelection={rowSelection}
       bordered
       title={() => {
         return (
           <Flex justify={"space-between"} align={"center"}>
-            <Title level={5}>
-              {title} ({productDetails.length})
-            </Title>
-            {hasSelected && (
+            <Title level={5}>{t(`promotionProductDetail.table.title.${title}`)}</Title>
+            {rowSelection.selectedRowKeys.length > 0 && (
               <Space>
+                <span style={{ marginLeft: 8 }}>Selected {rowSelection.selectedRowKeys.length} items</span>
+                <Button type="primary" loading={tableProps.loading} onClick={() => setSelectedIds([])}>
+                  {t(`buttons.clear`)}
+                </Button>
                 <Button
                   type="primary"
-                  loading={isLoading}
                   onClick={() =>
                     showWarningConfirmDialog({
                       options: {
@@ -65,24 +64,17 @@ export const PromotionProductDetailTable: React.FC<PromotionProductDetailTablePr
                 >
                   {t(`actions.${title === "eligible" ? "remove" : "apply"}`)}
                 </Button>
-                <span style={{ marginLeft: 8 }}>Selected {selectedIds.length} items</span>
               </Space>
             )}
           </Flex>
         );
       }}
       pagination={{
-        // ...pagination,
-        showTotal: (total: number, range: [number, number]) => (
-          <div>
-            {range[0]} - {range[1]} of {total} items
-          </div>
-        ),
+        ...tableProps.pagination,
+        ...tablePaginationSettings,
       }}
-      dataSource={productDetails}
       rowKey="id"
       columns={columns}
-      //   onChange={(pagination) => setPagination(pagination)}
     />
   );
 };

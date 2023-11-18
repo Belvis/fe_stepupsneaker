@@ -1,5 +1,7 @@
-import { Edit, getValueFromEvent, useForm } from "@refinedev/antd";
+import { Edit, getValueFromEvent, useForm, useTable } from "@refinedev/antd";
 import {
+  CrudFilters,
+  HttpError,
   IResourceComponentsProps,
   useApiUrl,
   useCreate,
@@ -7,6 +9,7 @@ import {
   useDelete,
   useParsed,
   useTranslate,
+  useUpdate,
 } from "@refinedev/core";
 import {
   Avatar,
@@ -20,60 +23,58 @@ import {
   Row,
   Select,
   Space,
+  Tag,
   Typography,
   Upload,
   message,
 } from "antd";
 
 import { ColumnsType } from "antd/es/table";
-import {
-  RcFile,
-  UploadChangeParam,
-  UploadFile,
-  UploadProps,
-} from "antd/es/upload";
+import { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
 import dayjs from "dayjs";
 import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
-import { CustomerVoucherTable } from "../../../components";
-import { getVouccherStatusOptions } from "../../../constants";
-import { ICustomer, IVoucher } from "../../../interfaces";
+import { ProductStatus } from "../../../components";
+import { getPromotionStatusOptions, tablePaginationSettings } from "../../../constants";
+import { ICustomer, IProductDetail, IProductDetailFilterVariables, IPromotion } from "../../../interfaces";
 import { formatTimestamp, getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import { PromotionProductDetailTable } from "../../../components/admin/promotion/promotionProductDetail";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
 
-export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
+export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
   const API_URL = useApiUrl();
   const { id } = useParsed();
-  const [successFlag, setSuccessFlag] = useState(true);
   const [loadingImage, setLoadingImage] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [eligibleCustomers, setEligibleCustomers] = useState<ICustomer[]>([]);
-  const [inEligibleCustomers, setInEligibleCustomers] = useState<ICustomer[]>(
-    []
-  );
-
-  const { mutate: mutateCreate } = useCreate();
-
   const { mutate: mutateDelete } = useDelete();
+  const { mutate: mutateUpdate } = useUpdate();
 
-  const { formProps, saveButtonProps, queryResult, onFinish } =
-    useForm<IVoucher>({});
+  const [selectedIds, setSelectedIds] = useState<React.Key[]>([]);
+
+  const onSelectChange = (newSelectedRowKeys: React.Key[]) => {
+    setSelectedIds(newSelectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys: selectedIds,
+    onChange: onSelectChange,
+    preserveSelectedRowKeys: true,
+  };
+
+  const { formProps, saveButtonProps, queryResult, onFinish } = useForm<IPromotion>({});
 
   const handleOnFinish = (values: any) => {
     const data = {
       code: `${values.code}`,
       name: `${values.name}`,
       status: `${values.status}`,
-      type: `${values.type}`,
       value: `${values.value}`,
-      constraint: `${values.constraint}`,
-      quantity: `${values.quantity}`,
-      startDate: `${values.voucherRange[0].valueOf()}`,
-      endDate: `${values.voucherRange[1].valueOf()}`,
+      startDate: `${values.promotionRange[0].valueOf()}`,
+      endDate: `${values.promotionRange[1].valueOf()}`,
       image: `${values.image}`,
+      productDetailIds: selectedIds,
     };
     showWarningConfirmDialog({
       options: {
@@ -87,27 +88,20 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   };
 
   const imageUrl = Form.useWatch("image", formProps.form);
+  const [successFlag, setSuccessFlag] = useState(true);
 
   useEffect(() => {
+    console.log("TIME==============");
+    console.log(queryResult);
+
     const startDate = formProps.form?.getFieldValue("startDate");
     const endDate = formProps.form?.getFieldValue("endDate");
 
     if (startDate && endDate) {
-      const voucherRange = [dayjs(startDate), dayjs(endDate)];
-      formProps.form?.setFieldsValue({ voucherRange });
+      const promotionRange = [dayjs(startDate), dayjs(endDate)];
+      formProps.form?.setFieldsValue({ promotionRange });
     }
-  }, [
-    formProps.form?.getFieldValue("startDate"),
-    formProps.form?.getFieldValue("endDate"),
-  ]);
-
-  useEffect(() => {
-    if (successFlag) {
-      refetchEligibleCustomer();
-      refetchInEligibleCustomer();
-      setSuccessFlag(false);
-    }
-  }, [id, successFlag]);
+  }, [queryResult]);
 
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -127,65 +121,58 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  function handleInEligibleCustomerVoucher(
-    selectedIds: Key[],
-    setSelectedIds: Dispatch<SetStateAction<Key[]>>
-  ) {
-    setLoadingInEligible(true);
-    try {
-      mutateCreate(
-        {
-          resource: "customerVoucher",
-          values: {
-            voucher: [id],
-            customer: selectedIds,
-          },
-        },
-        {
-          onSuccess: () => {
-            setSuccessFlag(true);
-            setLoadingInEligible(false);
-            setSelectedIds([]);
-          },
-        }
-      );
-    } catch (error) {
-      console.error("Creation failed", error);
-      setLoadingInEligible(false);
-    }
-  }
-
-  function handleEligibleCustomerVoucher(
-    selectedIds: Key[],
-    setSelectedIds: Dispatch<SetStateAction<Key[]>>
-  ) {
-    setLoadingEligible(true);
+  function handleEligiblePromotionProductDetail(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
     try {
       mutateDelete(
         {
-          resource: "customerVoucher",
+          resource: "promotion-product-details",
           values: {
-            customer: selectedIds,
+            productDetails: selectedIds,
           },
           id: id as any,
         },
         {
           onSuccess: () => {
             setSuccessFlag(true);
-            setLoadingEligible(false);
             setSelectedIds([]);
           },
         }
       );
     } catch (error) {
-      console.error("Creation failed", error);
-      setLoadingEligible(false);
+      console.error("cakruy failed", error);
     }
   }
 
-  const handleChange: UploadProps["onChange"] = (
-    info: UploadChangeParam<UploadFile>
-  ) => {
+  function handleInEligiblePromotionProductDetail(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
+    try {
+      mutateUpdate(
+        {
+          resource: "promotions",
+          values: {
+            code: `${formProps.form?.getFieldValue("code")}`,
+            name: `${formProps.form?.getFieldValue("name")}`,
+            status: `${formProps.form?.getFieldValue("status")}`,
+            value: `${formProps.form?.getFieldValue("value")}`,
+            startDate: `${formProps.form?.getFieldValue("promotionRange")[0].valueOf()}`,
+            endDate: `${formProps.form?.getFieldValue("promotionRange")[1].valueOf()}`,
+            image: `${formProps.form?.getFieldValue("image")}`,
+            productDetailIds: selectedIds,
+          },
+          id: id as any,
+        },
+        {
+          onSuccess: () => {
+            setSuccessFlag(true);
+            setSelectedIds([]);
+          },
+        }
+      );
+    } catch (error) {
+      console.error("cakruy failed", error);
+    }
+  }
+
+  const handleChange: UploadProps["onChange"] = (info: UploadChangeParam<UploadFile>) => {
     if (info.file.status === "uploading") {
       setLoadingImage(true);
       return;
@@ -198,118 +185,245 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     }
   };
 
+  useEffect(() => {
+    if (successFlag) {
+      refetchEligible();
+      refetchInEligible();
+      setSuccessFlag(false);
+    }
+  }, [id, successFlag]);
+
   const {
-    isLoading: isLoadingEligibleCustomer,
-    refetch: refetchEligibleCustomer,
-  } = useCustom<ICustomer[]>({
-    url: `${API_URL}/customers`,
-    method: "get",
-    config: {
-      filters: [
+    tableProps,
+    searchFormProps,
+    filters,
+    current,
+    pageSize,
+    tableQueryResult: { refetch: refetchEligible },
+  } = useTable<IProductDetail, HttpError, IProductDetailFilterVariables>({
+    resource: `product-details`,
+    filters: {
+      initial: [
         {
-          field: "voucher",
+          field: "promotion",
           operator: "eq",
           value: id,
         },
       ],
     },
-    queryOptions: {
-      enabled: false,
-      onSuccess: (data: any) => {
-        setEligibleCustomers(data.response.content.data);
-      },
+    pagination: {
+      pageSize: 5,
+    },
+    onSearch: ({ status, brand, color, material, priceMax, priceMin, quantity, size, sole, style, tradeMark }) => {
+      const productDetailFilters: CrudFilters = [];
+
+      productDetailFilters.push({
+        field: "status",
+        operator: "eq",
+        value: status ? status : undefined,
+      });
+
+      productDetailFilters.push({
+        field: "brand",
+        operator: "eq",
+        value: brand ? brand : undefined,
+      });
+      productDetailFilters.push({
+        field: "color",
+        operator: "eq",
+        value: color ? color : undefined,
+      });
+      productDetailFilters.push({
+        field: "material",
+        operator: "eq",
+        value: material ? material : undefined,
+      });
+      productDetailFilters.push({
+        field: "size",
+        operator: "eq",
+        value: size ? size : undefined,
+      });
+      productDetailFilters.push({
+        field: "sole",
+        operator: "eq",
+        value: sole ? sole : undefined,
+      });
+      productDetailFilters.push({
+        field: "style",
+        operator: "eq",
+        value: style ? style : undefined,
+      });
+      productDetailFilters.push({
+        field: "tradeMark",
+        operator: "eq",
+        value: tradeMark ? tradeMark : undefined,
+      });
+      productDetailFilters.push({
+        field: "priceMin",
+        operator: "eq",
+        value: priceMin ? priceMin : undefined,
+      });
+      productDetailFilters.push({
+        field: "priceMax",
+        operator: "eq",
+        value: priceMax ? priceMax : undefined,
+      });
+      productDetailFilters.push({
+        field: "quantity",
+        operator: "eq",
+        value: quantity ? quantity : undefined,
+      });
+
+      return productDetailFilters;
     },
   });
 
   const {
-    isLoading: isLoadingInEligibleCustomer,
-    refetch: refetchInEligibleCustomer,
-  } = useCustom<ICustomer[]>({
-    url: `${API_URL}/customers`,
-    method: "get",
-    config: {
-      filters: [
+    tableProps: tablePropsNoPromotion,
+    current: currentTableNoPromotion,
+    pageSize: pageSizeTableNoPromotion,
+    tableQueryResult: { refetch: refetchInEligible },
+  } = useTable<IProductDetail, HttpError, IProductDetailFilterVariables>({
+    resource: `product-details`,
+    filters: {
+      initial: [
         {
-          field: "noVoucher",
+          field: "noPromotion",
           operator: "eq",
           value: id,
         },
       ],
     },
-    queryOptions: {
-      enabled: false,
-      onSuccess: (data: any) => {
-        setInEligibleCustomers(data.response.content.data);
-      },
+    pagination: {
+      pageSize: 5,
+    },
+    onSearch: ({ status, brand, color, material, priceMax, priceMin, quantity, size, sole, style, tradeMark }) => {
+      const productDetailFilters: CrudFilters = [];
+
+      productDetailFilters.push({
+        field: "status",
+        operator: "eq",
+        value: status ? status : undefined,
+      });
+
+      productDetailFilters.push({
+        field: "brand",
+        operator: "eq",
+        value: brand ? brand : undefined,
+      });
+      productDetailFilters.push({
+        field: "color",
+        operator: "eq",
+        value: color ? color : undefined,
+      });
+      productDetailFilters.push({
+        field: "material",
+        operator: "eq",
+        value: material ? material : undefined,
+      });
+      productDetailFilters.push({
+        field: "size",
+        operator: "eq",
+        value: size ? size : undefined,
+      });
+      productDetailFilters.push({
+        field: "sole",
+        operator: "eq",
+        value: sole ? sole : undefined,
+      });
+      productDetailFilters.push({
+        field: "style",
+        operator: "eq",
+        value: style ? style : undefined,
+      });
+      productDetailFilters.push({
+        field: "tradeMark",
+        operator: "eq",
+        value: tradeMark ? tradeMark : undefined,
+      });
+      productDetailFilters.push({
+        field: "priceMin",
+        operator: "eq",
+        value: priceMin ? priceMin : undefined,
+      });
+      productDetailFilters.push({
+        field: "priceMax",
+        operator: "eq",
+        value: priceMax ? priceMax : undefined,
+      });
+      productDetailFilters.push({
+        field: "quantity",
+        operator: "eq",
+        value: quantity ? quantity : undefined,
+      });
+
+      return productDetailFilters;
     },
   });
 
-  const columns: ColumnsType<ICustomer> = [
-    {
-      title: "#",
-      key: "index",
-      width: "1px",
-      render: (text, record, index) => index + 1,
-    },
-    {
-      title: t("customers.fields.fullName"),
-      dataIndex: "fullName",
-      key: "fullName",
-      render: (_, { image, fullName }) => (
-        <Space>
-          <Avatar size={48} src={image} />
-          <Text style={{ wordBreak: "inherit" }}>{fullName}</Text>
-        </Space>
-      ),
-    },
-    {
-      title: t("customers.fields.phone"),
-      dataIndex: "phoneNumber",
-      key: "phoneNumber",
-      render: (_, record) => {
-        const defaultAddress = record.addressList.find(
-          (address) => address.isDefault
-        );
-        const phoneNumber = defaultAddress ? defaultAddress.phoneNumber : "N/A";
-        return <>{phoneNumber}</>;
+  type ColumnPagination = { current: number; pageSize: number };
+  const generateColumns = (props: ColumnPagination): ColumnsType<IProductDetail> => {
+    const columns: ColumnsType<IProductDetail> = [
+      {
+        title: "#",
+        key: "index",
+        width: "1px",
+        render: (text, record, index) => (props.current - 1) * props.pageSize + index + 1,
       },
-    },
-    {
-      title: t("customers.fields.email"),
-      dataIndex: "email",
-      key: "email",
-    },
-    {
-      title: t("customers.fields.dateOfBirth"),
-      dataIndex: "dateOfBirth",
-      key: "dateOfBirth",
-      render: (_, record) => {
-        return <>{formatTimestamp(record.dateOfBirth).dateFormat}</>;
+      {
+        title: t("productDetails.fields.image"),
+        dataIndex: "image",
+        key: "image",
+        render: (_, { image }) => <Avatar shape="square" size={74} src={image} />,
       },
-    },
-  ];
-
-  const [loadingEligible, setLoadingEligible] = useState(false);
-  const [loadingInEligible, setLoadingInEligible] = useState(false);
+      {
+        title: t("productDetails.fields.name"),
+        dataIndex: "name",
+        key: "name",
+        render: (_, { product, size, color }) => (
+          <Text style={{ wordBreak: "inherit" }}>
+            {product.name} [{size.name} - {color.name}]
+          </Text>
+        ),
+      },
+      {
+        title: t("productDetails.fields.size"),
+        key: "size",
+        dataIndex: "size",
+        align: "center",
+        render: (_, record) => <Text style={{ width: "100%" }}>{record.size.name}</Text>,
+      },
+      {
+        title: t("productDetails.fields.color"),
+        key: "color",
+        dataIndex: "color",
+        align: "center",
+        render: (_, record) => (
+          <Tag style={{ width: "100%" }} color={`#${record.color.code}`}>{`#${record.color.code}`}</Tag>
+        ),
+      },
+      {
+        title: t("products.fields.status"),
+        key: "status",
+        dataIndex: "status",
+        width: "10%",
+        align: "center",
+        render: (_, { status }) => <ProductStatus status={status} />,
+      },
+    ];
+    return columns;
+  };
 
   return (
     <>
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={8}>
-          <Edit
-            isLoading={queryResult?.isFetching}
-            saveButtonProps={saveButtonProps}
-          >
+          <Edit isLoading={queryResult?.isFetching} saveButtonProps={saveButtonProps}>
             <Form {...formProps} layout="vertical" onFinish={handleOnFinish}>
               <Row gutter={20}>
                 <Col span={24}>
-                  <Form.Item
-                    name="image"
-                    valuePropName="file"
-                    getValueFromEvent={getValueFromEvent}
-                    noStyle
-                  >
+                  <Form.Item name="image" valuePropName="file" getValueFromEvent={getValueFromEvent} noStyle>
                     <Upload.Dragger
                       name="file"
                       beforeUpload={beforeUpload}
@@ -361,18 +475,16 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                             marginTop: "8px",
                           }}
                         >
-                          {t("vouchers.fields.images.description")}
+                          {t("promotions.fields.images.description")}
                         </Text>
-                        <Text style={{ fontSize: "12px" }}>
-                          {t("vouchers.fields.images.validation")}
-                        </Text>
+                        <Text style={{ fontSize: "12px" }}>{t("promotions.fields.images.validation")}</Text>
                       </Space>
                     </Upload.Dragger>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={t("vouchers.fields.name")}
+                    label={t("promotions.fields.name")}
                     name="name"
                     rules={[
                       {
@@ -383,7 +495,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    label={t("vouchers.fields.code")}
+                    label={t("promotions.fields.code")}
                     name="code"
                     rules={[
                       {
@@ -394,7 +506,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     <Input />
                   </Form.Item>
                   <Form.Item
-                    label={t("vouchers.fields.value")}
+                    label={t("promotions.fields.value")}
                     name="value"
                     rules={[
                       {
@@ -405,30 +517,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     <InputNumber width={100} style={{ width: "100%" }} />
                   </Form.Item>
                   <Form.Item
-                    label={t("vouchers.fields.constraint")}
-                    name="constraint"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                  >
-                    <InputNumber width={100} style={{ width: "100%" }} />
-                  </Form.Item>
-                  <Form.Item
-                    label={t("vouchers.fields.quantity")}
-                    name="quantity"
-                    rules={[
-                      {
-                        required: true,
-                      },
-                    ]}
-                  >
-                    <InputNumber width={100} style={{ width: "100%" }} />
-                  </Form.Item>
-                  <Form.Item
-                    label={t("vouchers.fields.voucherRange")}
-                    name="voucherRange"
+                    label={t("promotions.fields.promotionRange")}
+                    name="promotionRange"
                     rules={[
                       {
                         required: true,
@@ -441,16 +531,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       style={{ width: "100%" }}
                     />
                   </Form.Item>
-                  <Form.Item label={t("vouchers.fields.type")} name="type">
-                    <Radio.Group>
-                      <Radio value={"PERCENTAGE"}>
-                        {t("vouchers.type.PERCENTAGE")}
-                      </Radio>
-                      <Radio value={"CASH"}>{t("vouchers.type.CASH")}</Radio>
-                    </Radio.Group>
-                  </Form.Item>
                   <Form.Item
-                    label={t("vouchers.fields.status")}
+                    label={t("promotions.fields.status")}
                     name="status"
                     rules={[
                       {
@@ -458,7 +540,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Select options={getVouccherStatusOptions(t)} />
+                    <Select options={getPromotionStatusOptions(t)} />
                   </Form.Item>
                 </Col>
               </Row>
@@ -467,26 +549,20 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
         </Col>
         <Col span={16}>
           <Card style={{ height: "100%" }}>
-            <Space
-              direction="vertical"
-              size="middle"
-              style={{ display: "flex" }}
-            >
-              <CustomerVoucherTable
-                columns={columns}
-                customers={eligibleCustomers}
-                isLoading={isLoadingEligibleCustomer || loadingEligible}
-                handleCustomerVoucher={handleEligibleCustomerVoucher}
-                title="eligible"
-              />
-              <CustomerVoucherTable
-                columns={columns}
-                customers={inEligibleCustomers}
-                isLoading={isLoadingInEligibleCustomer || loadingInEligible}
-                handleCustomerVoucher={handleInEligibleCustomerVoucher}
-                title="ineligible"
+            <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+              <PromotionProductDetailTable
+                columns={generateColumns({ current, pageSize })}
+                handlePromotionProductDetail={handleEligiblePromotionProductDetail}
+                title={"eligible"}
+                tableProps={tableProps}
               />
             </Space>
+            <PromotionProductDetailTable
+              columns={generateColumns({ current: currentTableNoPromotion, pageSize: pageSizeTableNoPromotion })}
+              handlePromotionProductDetail={handleInEligiblePromotionProductDetail}
+              title={"ineligible"}
+              tableProps={tablePropsNoPromotion}
+            />
           </Card>
         </Col>
       </Row>

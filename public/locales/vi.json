@@ -370,8 +370,8 @@
     "promotionProductDetail": {
       "table":{
         "title": {
-          "eligible": "Danh sách sản phẩm được áp dụng khuyến mại",
-          "ineligible": "Danh sách sản phẩm không được áp dụng khuyến mại"
+          "eligible": "Danh sách sản phẩm đã được áp dụng khuyến mại",
+          "ineligible": "Danh sách sản phẩm chưa được áp dụng khuyến mại"
         }
       }
     },
