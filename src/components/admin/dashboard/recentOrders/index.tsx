@@ -92,7 +92,7 @@ export const RecentOrders: React.FC = () => {
           {record.employee ? (
             <>
               <Title strong>{`${record.employee.fullName}`}</Title>
-              <Text>{record.address.provinceName}</Text>
+              <Text>{record.employee.address}</Text>
             </>
           ) : (
             "N/A"
