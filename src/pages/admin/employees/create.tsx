@@ -22,7 +22,7 @@ import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useState } from "react";
 import { QRScannerModal } from "../../../components";
-import { getUserStatusOptions } from "../../../constants";
+import { getUserGenderOptions } from "../../../constants";
 import { IEmployee, IRole } from "../../../interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { parseQRCodeResult } from "../../../utils/common/qrCodeParser";
@@ -301,7 +301,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     >
                       <Select
                         placeholder={t("employees.fields.gender.placeholder")}
-                        options={getUserStatusOptions(t)}
+                        options={getUserGenderOptions(t)}
                       />
                     </Form.Item>
                   </Flex>
