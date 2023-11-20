@@ -338,6 +338,20 @@ export interface IProduct {
   productDetails: IProductDetail[];
 }
 
+export interface IPromotionProductDetailResponse {
+  id: string;
+  promotion: IPromotionResponse;
+}
+export interface IPromotionResponse {
+  id: string;
+  code: string;
+  name: string;
+  status: VoucherStatus;
+  value: number;
+  startDate: number;
+  endDate: number;
+}
+
 export interface IProductDetail {
   id: string;
   tradeMark: ITradeMark;
@@ -352,6 +366,7 @@ export interface IProductDetail {
   price: number;
   quantity: number;
   status: ProductStatus;
+  promotionProductDetails: IPromotionProductDetailResponse[];
 }
 
 export interface IPayment {
