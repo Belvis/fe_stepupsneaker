@@ -121,6 +121,7 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
       title: t("products.fields.color"),
       dataIndex: "color",
       key: "color",
+      width: "10%",
       align: "center",
       render: (_, { productDetails }) => {
         const colors: IColor[] = Object.values(
@@ -133,7 +134,7 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
           }, {})
         );
         return (
-          <Space>
+          <Space wrap>
             {colors.length > 0 ? (
               <>
                 {colors.map((color, index) => (
@@ -158,6 +159,7 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
       title: t("products.fields.size"),
       dataIndex: "size",
       key: "size",
+      width: "10%",
       align: "center",
       render: (_, { productDetails }) => {
         const sizes: ISize[] = Object.values(
@@ -170,7 +172,7 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
           }, {})
         );
         return (
-          <Space>
+          <Space wrap>
             {sizes.length > 0 && (
               <>
                 {sizes.map((size, index) => (
@@ -194,15 +196,13 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
         return (
           <Text>
             {prices.length > 0 ? (
-              (
-                <NumberField
-                  options={{
-                    currency: "VND",
-                    style: "currency",
-                  }}
-                  value={lowestPrice}
-                />
-              )
+              <NumberField
+                options={{
+                  currency: "VND",
+                  style: "currency",
+                }}
+                value={lowestPrice}
+              />
             ) : (
               "N/A"
             )}

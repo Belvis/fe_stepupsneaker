@@ -14,7 +14,6 @@ import {
   Form,
   Input,
   InputProps,
-  Modal,
   Row,
   Select,
   Space,
@@ -26,13 +25,16 @@ import InputMask from "react-input-mask";
 
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
+import dayjs from "dayjs";
 import { useEffect, useState } from "react";
 import { QRScannerModal } from "../../../components";
+import { getUserGenderOptions } from "../../../constants";
 import { ICustomer, IDistrict, IProvince, IWard } from "../../../interfaces";
-import { getUserStatusOptions } from "../../../constants";
-import { parseQRCodeResult } from "../../../utils";
-import dayjs from "dayjs";
-import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import {
+  getBase64Image,
+  parseQRCodeResult,
+  showWarningConfirmDialog,
+} from "../../../utils";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -409,7 +411,7 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                   >
                     <Select
                       placeholder={t("customers.fields.gender.placeholder")}
-                      options={getUserStatusOptions(t)}
+                      options={getUserGenderOptions(t)}
                     />
                   </Form.Item>
                 </Col>

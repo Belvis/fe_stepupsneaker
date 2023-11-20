@@ -12,10 +12,7 @@ type CustomerVoucherTableProps = {
   isLoading: boolean;
   customers: ICustomer[];
   title: string;
-  handleCustomerVoucher(
-    selectedKeys: Key[],
-    setSelectedIds: Dispatch<SetStateAction<Key[]>>
-  ): void;
+  handleCustomerVoucher(selectedKeys: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>): void;
 };
 
 export const CustomerVoucherTable: React.FC<CustomerVoucherTableProps> = ({
@@ -34,7 +31,7 @@ export const CustomerVoucherTable: React.FC<CustomerVoucherTableProps> = ({
   };
 
   const rowSelection = {
-    setSelectedIds,
+    selectedRowKeys: selectedIds,
     onChange: onSelectChange,
   };
 
@@ -59,8 +56,7 @@ export const CustomerVoucherTable: React.FC<CustomerVoucherTableProps> = ({
                   onClick={() =>
                     showWarningConfirmDialog({
                       options: {
-                        accept: () =>
-                          handleCustomerVoucher(selectedIds, setSelectedIds),
+                        accept: () => handleCustomerVoucher(selectedIds, setSelectedIds),
                         reject: () => {},
                       },
                       t: t,
@@ -69,9 +65,7 @@ export const CustomerVoucherTable: React.FC<CustomerVoucherTableProps> = ({
                 >
                   {t(`actions.${title === "eligible" ? "remove" : "apply"}`)}
                 </Button>
-                <span style={{ marginLeft: 8 }}>
-                  Selected {selectedIds.length} items
-                </span>
+                <span style={{ marginLeft: 8 }}>Selected {selectedIds.length} items</span>
               </Space>
             )}
           </Flex>

@@ -1,16 +1,5 @@
-import {
-  IResourceComponentsProps,
-  useTranslate,
-  useList,
-  useCreateMany,
-  useNavigation,
-} from "@refinedev/core";
-import {
-  CreateButton,
-  useModalForm,
-  useSelect,
-  useSimpleList,
-} from "@refinedev/antd";
+import { IResourceComponentsProps, useTranslate, useList, useCreateMany, useNavigation } from "@refinedev/core";
+import { CreateButton, useModalForm, useSelect, useSimpleList } from "@refinedev/antd";
 import {
   Select,
   Upload,
@@ -142,8 +131,7 @@ const { Text, Title } = Typography;
 
 function makeid(length: number) {
   let result = "";
-  const characters =
-    "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  const characters = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
   const charactersLength = characters.length;
   let counter = 0;
   while (counter < length) {
@@ -157,21 +145,14 @@ const renderItem = (title: string, imageUrl: string, product: IProduct) => ({
   value: title,
   label: (
     <Row style={{ display: "flex", alignItems: "center" }}>
-      <Avatar
-        shape="square"
-        size={64}
-        src={imageUrl}
-        style={{ minWidth: "64px" }}
-      />
+      <Avatar shape="square" size={64} src={imageUrl} style={{ minWidth: "64px" }} />
       <Text style={{ marginLeft: "16px" }}>{title}</Text>
     </Row>
   ),
   product: product,
 });
 
-function convertToPayload(
-  productDetails: IProductDetail[]
-): IProductDetailConvertedPayload[] {
+function convertToPayload(productDetails: IProductDetail[]): IProductDetailConvertedPayload[] {
   return productDetails.map((detail) => ({
     product: detail.product.id,
     tradeMark: detail.tradeMark.id,
@@ -195,8 +176,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
   const { mutate } = useCreateMany();
   const { list } = useNavigation();
 
-  const [userSelected, setUserSelected] =
-    useState<IUserSelected>(initialValues);
+  const [userSelected, setUserSelected] = useState<IUserSelected>(initialValues);
   const [productDetails, setProductDetails] = useState<IProductDetail[]>([]);
 
   const [isColorModalOpen, setIsColorModalOpen] = useState(false);
@@ -258,9 +238,31 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  const handleChange: UploadProps["onChange"] = async (
-    info: UploadChangeParam<UploadFile>
-  ) => {
+  useEffect(() => {
+    const keys = Object.keys(fileLists);
+    const productDetailsCopy = productDetails;
+    for (const key of keys) {
+      const productDetailFilterColors = productDetails.filter((productDetail) => productDetail.color.code === key);
+      for (let index = 0; index < productDetailFilterColors.length; index++) {
+        const productDetail = productDetailFilterColors[index];
+
+        const productDetailFind = productDetailsCopy.find((pd) => pd.id === productDetail.id);
+        if (productDetailFind) {
+          try {
+            getBase64(fileLists[key][index].originFileObj as RcFile).then((base64String) => {
+              productDetailFind.image = base64String;
+            });
+          } catch (error) {
+            productDetailFind.image = "";
+          }
+        }
+      }
+    }
+
+    setProductDetails(productDetailsCopy);
+  }, [fileLists]);
+
+  const handleChange: UploadProps["onChange"] = async (info: UploadChangeParam<UploadFile>) => {
     if (info.file.status === "uploading") {
       setLoadingImage(true);
       return;
@@ -291,9 +293,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
 
     setPreviewImage(file.url || (file.preview as string));
     setPreviewOpen(true);
-    setPreviewTitle(
-      file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1)
-    );
+    setPreviewTitle(file.name || file.url!.substring(file.url!.lastIndexOf("/") + 1));
   };
 
   const handleCancel = () => setPreviewOpen(false);
@@ -321,6 +321,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
   } = useModalForm<IBrand>({
     resource: "brands",
     onMutationSuccess: () => {
+      refetchBrands();
       brandCreateFormProps.form?.resetFields();
     },
     redirect: false,
@@ -336,6 +337,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
   } = useModalForm<IStyle>({
     resource: "styles",
     onMutationSuccess: () => {
+      refetchStyles();
       styleCreateFormProps.form?.resetFields();
     },
     redirect: false,
@@ -351,6 +353,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
   } = useModalForm<IMaterial>({
     resource: "materials",
     onMutationSuccess: () => {
+      refetchMaterials();
       materialCreateFormProps.form?.resetFields();
     },
     redirect: false,
@@ -366,6 +369,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
   } = useModalForm<ITradeMark>({
     resource: "trade-marks",
     onMutationSuccess: () => {
+      refetchTradeMarks();
       tradeMarkCreateFormProps.form?.resetFields();
     },
     redirect: false,
@@ -431,9 +435,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     queryOptions: {
       enabled: false,
       onSuccess: (data) => {
-        const productOptions = data.data.map((item) =>
-          renderItem(`${item.name} / #${item.code}`, item.image, item)
-        );
+        const productOptions = data.data.map((item) => renderItem(`${item.name} / #${item.code}`, item.image, item));
         if (productOptions.length > 0) {
           setProductOptions(productOptions);
         }
@@ -446,11 +448,20 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     refetchProducts();
   }, [value]);
 
-  const { selectProps: brandSelectProps } = useSelect<IBrand>({
+  const {
+    selectProps: brandSelectProps,
+    queryResult: { refetch: refetchBrands },
+  } = useSelect<IBrand>({
     resource: "brands?pageSize=1000&",
     optionLabel: "name",
     optionValue: "id",
     debounce: 500,
+    sorters: [
+      {
+        field: "updatedAt",
+        order: "desc",
+      },
+    ],
     onSearch: (value) => [
       {
         field: "q",
@@ -460,11 +471,20 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     ],
   });
 
-  const { selectProps: styleSelectProps } = useSelect<IStyle>({
+  const {
+    selectProps: styleSelectProps,
+    queryResult: { refetch: refetchStyles },
+  } = useSelect<IStyle>({
     resource: "styles?pageSize=1000&",
     optionLabel: "name",
     optionValue: "id",
     debounce: 500,
+    sorters: [
+      {
+        field: "updatedAt",
+        order: "desc",
+      },
+    ],
     onSearch: (value) => [
       {
         field: "q",
@@ -474,11 +494,20 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     ],
   });
 
-  const { selectProps: materialSelectProps } = useSelect<IMaterial>({
+  const {
+    selectProps: materialSelectProps,
+    queryResult: { refetch: refetchMaterials },
+  } = useSelect<IMaterial>({
     resource: "materials?pageSize=1000&",
     optionLabel: "name",
     optionValue: "id",
     debounce: 500,
+    sorters: [
+      {
+        field: "updatedAt",
+        order: "desc",
+      },
+    ],
     onSearch: (value) => [
       {
         field: "q",
@@ -488,11 +517,20 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     ],
   });
 
-  const { selectProps: tradeMarkSelectProps } = useSelect<ITradeMark>({
+  const {
+    selectProps: tradeMarkSelectProps,
+    queryResult: { refetch: refetchTradeMarks },
+  } = useSelect<ITradeMark>({
     resource: "trade-marks?pageSize=1000&",
     optionLabel: "name",
     optionValue: "id",
     debounce: 500,
+    sorters: [
+      {
+        field: "updatedAt",
+        order: "desc",
+      },
+    ],
     onSearch: (value) => [
       {
         field: "q",
@@ -502,11 +540,20 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     ],
   });
 
-  const { selectProps: soleSelectProps } = useSelect<ISole>({
+  const {
+    selectProps: soleSelectProps,
+    queryResult: { refetch: refetchSoles },
+  } = useSelect<ISole>({
     resource: "soles?pageSize=1000&",
     optionLabel: "name",
     optionValue: "id",
     debounce: 500,
+    sorters: [
+      {
+        field: "updatedAt",
+        order: "desc",
+      },
+    ],
     onSearch: (value) => [
       {
         field: "q",
@@ -542,9 +589,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
 
   const handleSizeChange = (size: ISize, checked: boolean) => {
     setUserSelected((prevUserSelected) => {
-      const nextSize = checked
-        ? [...prevUserSelected.size, size]
-        : prevUserSelected.size.filter((c) => c !== size);
+      const nextSize = checked ? [...prevUserSelected.size, size] : prevUserSelected.size.filter((c) => c !== size);
 
       return { ...prevUserSelected, size: nextSize };
     });
@@ -564,25 +609,18 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
     });
   };
 
-  const handlePriceChange = debounce(
-    (value: number, record: IProductDetail) => {
-      const index = productDetails.findIndex(
-        (productDetail) => productDetail.id === record.id
-      );
-      const updatedProductDetails = [...productDetails];
-      updatedProductDetails[index] = {
-        ...updatedProductDetails[index],
-        price: value,
-      };
-      setProductDetails(updatedProductDetails);
-    },
-    500
-  );
+  const handlePriceChange = debounce((value: number, record: IProductDetail) => {
+    const index = productDetails.findIndex((productDetail) => productDetail.id === record.id);
+    const updatedProductDetails = [...productDetails];
+    updatedProductDetails[index] = {
+      ...updatedProductDetails[index],
+      price: value,
+    };
+    setProductDetails(updatedProductDetails);
+  }, 500);
 
   const handleQuantityChange = (value: number, record: IProductDetail) => {
-    const index = productDetails.findIndex(
-      (productDetail) => productDetail.id === record.id
-    );
+    const index = productDetails.findIndex((productDetail) => productDetail.id === record.id);
     const updatedProductDetails = [...productDetails];
     updatedProductDetails[index] = {
       ...updatedProductDetails[index],
@@ -637,9 +675,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
       align: "center",
       render: (_, record) => (
         <InputNumber
-          formatter={(value) =>
-            `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
-          }
+          formatter={(value) => `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
           parser={(value) => {
             const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
             return isNaN(parsedValue) ? 0 : parsedValue;
@@ -664,9 +700,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
               size="small"
               icon={<DeleteOutlined />}
               onClick={() => {
-                const updatedProductDetails = productDetails.filter(
-                  (productDetail) => productDetail.id !== record.id
-                );
+                const updatedProductDetails = productDetails.filter((productDetail) => productDetail.id !== record.id);
                 setProductDetails(updatedProductDetails);
               }}
             />
@@ -684,14 +718,10 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
         const { current = 1, pageSize = 10 } = pagination;
         const color = record.color;
         const fileList = fileLists[color.code] || [];
-        const colorOccurCount = productDetails.filter(
-          (data) => data.color === color
-        ).length;
+        const colorOccurCount = productDetails.filter((data) => data.color === color).length;
 
         const currentRowIndex = (current - 1) * pageSize + index;
-        const groupIndex = productDetails.findIndex(
-          (data) => data.color === color
-        );
+        const groupIndex = productDetails.findIndex((data) => data.color === color);
 
         const obj = {
           children: (
@@ -710,24 +740,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
               customRequest={({ onSuccess, onError, file }) => {
                 if (onSuccess) {
                   try {
-                    const updatedProductDetails = [...productDetails];
-
-                    getBase64(file as RcFile).then((base64String) => {
-                      for (
-                        let i = currentRowIndex;
-                        i < currentRowIndex + colorOccurCount;
-                        i++
-                      ) {
-                        if (!updatedProductDetails[i].image) {
-                          updatedProductDetails[i] = {
-                            ...updatedProductDetails[i],
-                            image: base64String,
-                          };
-                        }
-                      }
-                      setProductDetails(updatedProductDetails);
-                      onSuccess("ok");
-                    });
+                    onSuccess("ok");
                   } catch (error) {
                     console.error(error);
                   }
@@ -770,19 +783,8 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
             const size = userSelected.size[j];
             const index = i * userSelected.size.length + j;
             if (updatedProductDetails[index]) {
-              const {
-                id,
-                product,
-                tradeMark,
-                style,
-                material,
-                brand,
-                sole,
-                image,
-                price,
-                quantity,
-                status,
-              } = updatedProductDetails[index];
+              const { id, product, tradeMark, style, material, brand, sole, image, price, quantity, status } =
+                updatedProductDetails[index];
               updatedProductDetails[index] = {
                 id,
                 product,
@@ -823,9 +825,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
   }, [userSelected.color, userSelected.size]);
 
   const handleSubmit = async () => {
-    const convertedPayload: IProductDetailConvertedPayload[] =
-      convertToPayload(productDetails);
-
+    const convertedPayload: IProductDetailConvertedPayload[] = convertToPayload(productDetails);
     try {
       mutate(
         {
@@ -931,9 +931,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
                 >
                   {t("products.fields.images.description")}
                 </Text>
-                <Text style={{ fontSize: "12px" }}>
-                  {t("products.fields.images.validation")}
-                </Text>
+                <Text style={{ fontSize: "12px" }}>{t("products.fields.images.validation")}</Text>
               </Space>
             </Upload.Dragger>
           </Col>
@@ -941,9 +939,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
             <Row gutter={[16, 24]}>
               <Col xs={0} sm={24}>
                 <Flex gap="middle" justify="flex-start" align="center">
-                  <Text style={{ fontSize: "24px", flexShrink: 0 }}>
-                    {t("products.products")}
-                  </Text>
+                  <Text style={{ fontSize: "24px", flexShrink: 0 }}>{t("products.products")}</Text>
                   <AutoComplete
                     options={productOptions}
                     filterOption={false}
@@ -959,11 +955,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
                     }}
                     onSearch={debounce((value: string) => setValue(value), 300)}
                   >
-                    <Input
-                      size="large"
-                      placeholder={t("search.placeholder.product")}
-                      suffix={<SearchOutlined />}
-                    />
+                    <Input size="large" placeholder={t("search.placeholder.product")} suffix={<SearchOutlined />} />
                   </AutoComplete>
                   <CreateButton
                     hideText
@@ -982,11 +974,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
                 >
                   {t("products.fields.description")}
                 </Title>
-                <TextArea
-                  value={userSelected.product.description}
-                  rows={5}
-                  placeholder="..."
-                />
+                <TextArea value={userSelected.product.description} rows={5} placeholder="..." />
               </Col>
             </Row>
           </Col>
@@ -1200,12 +1188,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
                   </>
                 )}
               </Col>
-              <Modal
-                title="Choose colors"
-                open={isColorModalOpen}
-                onOk={handleColorOk}
-                onCancel={handleColorCancel}
-              >
+              <Modal title="Choose colors" open={isColorModalOpen} onOk={handleColorOk} onCancel={handleColorCancel}>
                 <Row gutter={[16, 24]}>
                   <Col span={24}>
                     <CreateButton
@@ -1226,9 +1209,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
                             colorcode={item.code}
                             key={item.code}
                             checked={userSelected.color.includes(item)}
-                            onChange={(checked) =>
-                              handleColorChange(item, checked)
-                            }
+                            onChange={(checked) => handleColorChange(item, checked)}
                           >
                             {item.name}
                           </StyledCheckableTag>
@@ -1273,12 +1254,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
                   </>
                 )}
               </Col>
-              <Modal
-                title="Choose sizes"
-                open={isSizeModalOpen}
-                onOk={handleSizeOk}
-                onCancel={handleSizeCancel}
-              >
+              <Modal title="Choose sizes" open={isSizeModalOpen} onOk={handleSizeOk} onCancel={handleSizeCancel}>
                 <Row gutter={[16, 24]}>
                   <Col span={24}>
                     <CreateButton
@@ -1299,9 +1275,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
                             colorcode="c1c1c1"
                             key={item.id}
                             checked={userSelected.size.includes(item)}
-                            onChange={(checked) =>
-                              handleSizeChange(item, checked)
-                            }
+                            onChange={(checked) => handleSizeChange(item, checked)}
                           >
                             {item.name}
                           </StyledCheckableTag>
@@ -1357,16 +1331,8 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
         modalProps={productCreateModalProps}
         formProps={productCreateFormProps}
       />
-      <CreateBrand
-        onFinish={brandCreateOnFinish}
-        modalProps={brandCreateModalProps}
-        formProps={brandCreateFormProps}
-      />
-      <CreateStyle
-        onFinish={styleCreateOnFinish}
-        modalProps={styleCreateModalProps}
-        formProps={styleCreateFormProps}
-      />
+      <CreateBrand onFinish={brandCreateOnFinish} modalProps={brandCreateModalProps} formProps={brandCreateFormProps} />
+      <CreateStyle onFinish={styleCreateOnFinish} modalProps={styleCreateModalProps} formProps={styleCreateFormProps} />
       <CreateMaterial
         onFinish={materialCreateOnFinish}
         modalProps={materialCreateModalProps}
@@ -1377,27 +1343,10 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
         modalProps={tradeMarkCreateModalProps}
         formProps={tradeMarkCreateFormProps}
       />
-      <CreateSole
-        onFinish={soleCreateOnFinish}
-        modalProps={soleCreateModalProps}
-        formProps={soleCreateFormProps}
-      />
-      <CreateColor
-        onFinish={colorCreateOnFinish}
-        modalProps={colorCreateModalProps}
-        formProps={colorCreateFormProps}
-      />
-      <CreateSize
-        onFinish={sizeCreateOnFinish}
-        modalProps={sizeCreateModalProps}
-        formProps={sizeCreateFormProps}
-      />
-      <Modal
-        open={previewOpen}
-        title={previewTitle}
-        footer={null}
-        onCancel={handleCancel}
-      >
+      <CreateSole onFinish={soleCreateOnFinish} modalProps={soleCreateModalProps} formProps={soleCreateFormProps} />
+      <CreateColor onFinish={colorCreateOnFinish} modalProps={colorCreateModalProps} formProps={colorCreateFormProps} />
+      <CreateSize onFinish={sizeCreateOnFinish} modalProps={sizeCreateModalProps} formProps={sizeCreateFormProps} />
+      <Modal open={previewOpen} title={previewTitle} footer={null} onCancel={handleCancel}>
         <img alt="example" style={{ width: "100%" }} src={previewImage} />
       </Modal>
     </>
