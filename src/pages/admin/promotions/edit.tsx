@@ -3,6 +3,7 @@ import {
   CrudFilters,
   HttpError,
   IResourceComponentsProps,
+  getDefaultFilter,
   useApiUrl,
   useCreate,
   useCustom,
@@ -13,6 +14,7 @@ import {
 } from "@refinedev/core";
 import {
   Avatar,
+  Button,
   Card,
   Col,
   DatePicker,
@@ -34,10 +36,12 @@ import { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/uplo
 import dayjs from "dayjs";
 import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
 import { ProductStatus } from "../../../components";
-import { getPromotionStatusOptions, tablePaginationSettings } from "../../../constants";
+import { getProductStatusOptions, getPromotionStatusOptions, tablePaginationSettings } from "../../../constants";
 import { ICustomer, IProductDetail, IProductDetailFilterVariables, IPromotion } from "../../../interfaces";
 import { formatTimestamp, getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { PromotionProductDetailTable } from "../../../components/admin/promotion/promotionProductDetail";
+import { debounce } from "lodash";
+import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -195,8 +199,8 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
 
   const {
     tableProps,
-    searchFormProps,
-    filters,
+    searchFormProps: searchFormPropsPromotion,
+    filters: filtersPromotion,
     current,
     pageSize,
     tableQueryResult: { refetch: refetchEligible },
@@ -214,67 +218,21 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
     pagination: {
       pageSize: 5,
     },
-    onSearch: ({ status, brand, color, material, priceMax, priceMin, quantity, size, sole, style, tradeMark }) => {
-      const productDetailFilters: CrudFilters = [];
-
-      productDetailFilters.push({
+    onSearch: ({ q, status }) => {
+      const customerFilters: CrudFilters = [];
+      customerFilters.push({
         field: "status",
         operator: "eq",
         value: status ? status : undefined,
       });
 
-      productDetailFilters.push({
-        field: "brand",
+      customerFilters.push({
+        field: "q",
         operator: "eq",
-        value: brand ? brand : undefined,
-      });
-      productDetailFilters.push({
-        field: "color",
-        operator: "eq",
-        value: color ? color : undefined,
-      });
-      productDetailFilters.push({
-        field: "material",
-        operator: "eq",
-        value: material ? material : undefined,
-      });
-      productDetailFilters.push({
-        field: "size",
-        operator: "eq",
-        value: size ? size : undefined,
-      });
-      productDetailFilters.push({
-        field: "sole",
-        operator: "eq",
-        value: sole ? sole : undefined,
-      });
-      productDetailFilters.push({
-        field: "style",
-        operator: "eq",
-        value: style ? style : undefined,
-      });
-      productDetailFilters.push({
-        field: "tradeMark",
-        operator: "eq",
-        value: tradeMark ? tradeMark : undefined,
-      });
-      productDetailFilters.push({
-        field: "priceMin",
-        operator: "eq",
-        value: priceMin ? priceMin : undefined,
-      });
-      productDetailFilters.push({
-        field: "priceMax",
-        operator: "eq",
-        value: priceMax ? priceMax : undefined,
-      });
-      productDetailFilters.push({
-        field: "quantity",
-        operator: "eq",
-        value: quantity ? quantity : undefined,
+        value: q ? q : undefined,
       });
 
-      return productDetailFilters;
+      return customerFilters;
     },
   });
 
@@ -282,6 +240,8 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
     tableProps: tablePropsNoPromotion,
     current: currentTableNoPromotion,
     pageSize: pageSizeTableNoPromotion,
+    searchFormProps: searchFormPropsNoPromotion,
+    filters: filtersNoPromotion,
     tableQueryResult: { refetch: refetchInEligible },
   } = useTable<IProductDetail, HttpError, IProductDetailFilterVariables>({
     resource: `product-details`,
@@ -302,69 +262,35 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
     pagination: {
       pageSize: 5,
     },
-    onSearch: ({ status, brand, color, material, priceMax, priceMin, quantity, size, sole, style, tradeMark }) => {
-      const productDetailFilters: CrudFilters = [];
-
-      productDetailFilters.push({
+    onSearch: ({ q, status }) => {
+      const customerFilters: CrudFilters = [];
+      customerFilters.push({
         field: "status",
         operator: "eq",
         value: status ? status : undefined,
       });
 
-      productDetailFilters.push({
-        field: "brand",
+      customerFilters.push({
+        field: "q",
         operator: "eq",
-        value: brand ? brand : undefined,
-      });
-      productDetailFilters.push({
-        field: "color",
-        operator: "eq",
-        value: color ? color : undefined,
-      });
-      productDetailFilters.push({
-        field: "material",
-        operator: "eq",
-        value: material ? material : undefined,
-      });
-      productDetailFilters.push({
-        field: "size",
-        operator: "eq",
-        value: size ? size : undefined,
-      });
-      productDetailFilters.push({
-        field: "sole",
-        operator: "eq",
-        value: sole ? sole : undefined,
-      });
-      productDetailFilters.push({
-        field: "style",
-        operator: "eq",
-        value: style ? style : undefined,
-      });
-      productDetailFilters.push({
-        field: "tradeMark",
-        operator: "eq",
-        value: tradeMark ? tradeMark : undefined,
-      });
-      productDetailFilters.push({
-        field: "priceMin",
-        operator: "eq",
-        value: priceMin ? priceMin : undefined,
-      });
-      productDetailFilters.push({
-        field: "priceMax",
-        operator: "eq",
-        value: priceMax ? priceMax : undefined,
-      });
-      productDetailFilters.push({
-        field: "quantity",
-        operator: "eq",
-        value: quantity ? quantity : undefined,
+        value: q ? q : undefined,
       });
 
-      return productDetailFilters;
+      return customerFilters;
     },
   });
+
+  const handleClearFiltersPromotion = () => {
+    searchFormPropsPromotion.form?.setFieldValue("q", null);
+    searchFormPropsPromotion.form?.setFieldValue("status", null);
+    searchFormPropsPromotion.form?.submit();
+  };
+
+  const handleClearFiltersNoPromotion = () => {
+    searchFormPropsNoPromotion.form?.setFieldValue("q", null);
+    searchFormPropsNoPromotion.form?.setFieldValue("status", null);
+    searchFormPropsNoPromotion.form?.submit();
+  };
 
   type ColumnPagination = { current: number; pageSize: number };
   const generateColumns = (props: ColumnPagination): ColumnsType<IProductDetail> => {
@@ -555,19 +481,93 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
         <Col span={16}>
           <Card style={{ height: "100%" }}>
             <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+              <Form
+                {...searchFormPropsPromotion}
+                onValuesChange={debounce(() => {
+                  searchFormPropsPromotion.form?.submit();
+                }, 500)}
+                initialValues={{
+                  name: getDefaultFilter("q", filtersPromotion, "eq"),
+                  status: getDefaultFilter("status", filtersPromotion, "eq"),
+                }}
+              >
+                <Space wrap>
+                  <Text style={{ fontSize: "18px" }} strong>
+                    {t("products.filters.title")}
+                  </Text>
+                  <Form.Item name="q" noStyle>
+                    <Input
+                      style={{
+                        width: "360px",
+                      }}
+                      placeholder={t("products.filters.search.placeholder")}
+                      suffix={<SearchOutlined />}
+                    />
+                  </Form.Item>
+                  <Form.Item noStyle label={t("products.fields.status")} name="status">
+                    <Select
+                      placeholder={t("products.filters.status.placeholder")}
+                      style={{
+                        width: "160px",
+                      }}
+                      options={getProductStatusOptions(t)}
+                    />
+                  </Form.Item>
+                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersPromotion}>
+                    {t("actions.clear")}
+                  </Button>
+                </Space>
+              </Form>
               <PromotionProductDetailTable
                 columns={generateColumns({ current, pageSize })}
                 handlePromotionProductDetail={handleEligiblePromotionProductDetail}
                 title={"eligible"}
                 tableProps={tableProps}
               />
+              <Form
+                {...searchFormPropsNoPromotion}
+                onValuesChange={debounce(() => {
+                  searchFormPropsNoPromotion.form?.submit();
+                }, 500)}
+                initialValues={{
+                  name: getDefaultFilter("q", filtersNoPromotion, "eq"),
+                  status: getDefaultFilter("status", filtersNoPromotion, "eq"),
+                }}
+              >
+                <Space wrap>
+                  <Text style={{ fontSize: "18px" }} strong>
+                    {t("products.filters.title")}
+                  </Text>
+                  <Form.Item name="q" noStyle>
+                    <Input
+                      style={{
+                        width: "360px",
+                      }}
+                      placeholder={t("products.filters.search.placeholder")}
+                      suffix={<SearchOutlined />}
+                    />
+                  </Form.Item>
+                  <Form.Item noStyle label={t("products.fields.status")} name="status">
+                    <Select
+                      placeholder={t("products.filters.status.placeholder")}
+                      style={{
+                        width: "160px",
+                      }}
+                      options={getProductStatusOptions(t)}
+                    />
+                  </Form.Item>
+                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersNoPromotion}>
+                    {t("actions.clear")}
+                  </Button>
+                </Space>
+              </Form>
+              <PromotionProductDetailTable
+                columns={generateColumns({ current: currentTableNoPromotion, pageSize: pageSizeTableNoPromotion })}
+                handlePromotionProductDetail={handleInEligiblePromotionProductDetail}
+                title={"ineligible"}
+                tableProps={tablePropsNoPromotion}
+              />
             </Space>
-            <PromotionProductDetailTable
-              columns={generateColumns({ current: currentTableNoPromotion, pageSize: pageSizeTableNoPromotion })}
-              handlePromotionProductDetail={handleInEligiblePromotionProductDetail}
-              title={"ineligible"}
-              tableProps={tablePropsNoPromotion}
-            />
           </Card>
         </Col>
       </Row>

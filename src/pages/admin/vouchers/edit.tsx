@@ -1,6 +1,9 @@
-import { Edit, getValueFromEvent, useForm } from "@refinedev/antd";
+import { Edit, getValueFromEvent, useForm, useTable } from "@refinedev/antd";
 import {
+  CrudFilters,
+  HttpError,
   IResourceComponentsProps,
+  getDefaultFilter,
   useApiUrl,
   useCreate,
   useCustom,
@@ -10,6 +13,7 @@ import {
 } from "@refinedev/core";
 import {
   Avatar,
+  Button,
   Card,
   Col,
   DatePicker,
@@ -26,18 +30,15 @@ import {
 } from "antd";
 
 import { ColumnsType } from "antd/es/table";
-import {
-  RcFile,
-  UploadChangeParam,
-  UploadFile,
-  UploadProps,
-} from "antd/es/upload";
+import { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
 import dayjs from "dayjs";
 import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
 import { CustomerVoucherTable } from "../../../components";
-import { getVouccherStatusOptions } from "../../../constants";
-import { ICustomer, IVoucher } from "../../../interfaces";
+import { getUserStatusOptions, getVouccherStatusOptions } from "../../../constants";
+import { ICustomer, ICustomerFilterVariables, IVoucher } from "../../../interfaces";
 import { formatTimestamp, getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { debounce } from "lodash";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -51,16 +52,13 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [eligibleCustomers, setEligibleCustomers] = useState<ICustomer[]>([]);
-  const [inEligibleCustomers, setInEligibleCustomers] = useState<ICustomer[]>(
-    []
-  );
+  const [inEligibleCustomers, setInEligibleCustomers] = useState<ICustomer[]>([]);
 
   const { mutate: mutateCreate } = useCreate();
 
   const { mutate: mutateDelete } = useDelete();
 
-  const { formProps, saveButtonProps, queryResult, onFinish } =
-    useForm<IVoucher>({});
+  const { formProps, saveButtonProps, queryResult, onFinish } = useForm<IVoucher>({});
 
   const handleOnFinish = (values: any) => {
     const data = {
@@ -96,18 +94,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       const voucherRange = [dayjs(startDate), dayjs(endDate)];
       formProps.form?.setFieldsValue({ voucherRange });
     }
-  }, [
-    formProps.form?.getFieldValue("startDate"),
-    formProps.form?.getFieldValue("endDate"),
-  ]);
-
-  useEffect(() => {
-    if (successFlag) {
-      refetchEligibleCustomer();
-      refetchInEligibleCustomer();
-      setSuccessFlag(false);
-    }
-  }, [id, successFlag]);
+  }, [formProps.form?.getFieldValue("startDate"), formProps.form?.getFieldValue("endDate")]);
 
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -127,11 +114,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  function handleInEligibleCustomerVoucher(
-    selectedIds: Key[],
-    setSelectedIds: Dispatch<SetStateAction<Key[]>>
-  ) {
-    setLoadingInEligible(true);
+  function handleInEligibleCustomerVoucher(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
     try {
       mutateCreate(
         {
@@ -143,23 +126,18 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
         },
         {
           onSuccess: () => {
-            setSuccessFlag(true);
-            setLoadingInEligible(false);
+            refetchInEligibleCustomer();
+            refetchEligibleCustomer();
             setSelectedIds([]);
           },
         }
       );
     } catch (error) {
       console.error("Creation failed", error);
-      setLoadingInEligible(false);
     }
   }
 
-  function handleEligibleCustomerVoucher(
-    selectedIds: Key[],
-    setSelectedIds: Dispatch<SetStateAction<Key[]>>
-  ) {
-    setLoadingEligible(true);
+  function handleEligibleCustomerVoucher(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
     try {
       mutateDelete(
         {
@@ -171,21 +149,18 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
         },
         {
           onSuccess: () => {
-            setSuccessFlag(true);
-            setLoadingEligible(false);
+            refetchEligibleCustomer();
+            refetchInEligibleCustomer();
             setSelectedIds([]);
           },
         }
       );
     } catch (error) {
       console.error("Creation failed", error);
-      setLoadingEligible(false);
     }
   }
 
-  const handleChange: UploadProps["onChange"] = (
-    info: UploadChangeParam<UploadFile>
-  ) => {
+  const handleChange: UploadProps["onChange"] = (info: UploadChangeParam<UploadFile>) => {
     if (info.file.status === "uploading") {
       setLoadingImage(true);
       return;
@@ -199,13 +174,19 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   };
 
   const {
-    isLoading: isLoadingEligibleCustomer,
-    refetch: refetchEligibleCustomer,
-  } = useCustom<ICustomer[]>({
-    url: `${API_URL}/customers`,
-    method: "get",
-    config: {
-      filters: [
+    tableProps: tablePropsEligibleCustomer,
+    searchFormProps: searchFormPropsEligibleCustomer,
+    filters: filtersEligibleCustomer,
+    current: currentEligibleCustomer,
+    pageSize: pageSizeEligibleCustomer,
+    tableQueryResult: { refetch: refetchEligibleCustomer },
+  } = useTable<ICustomer, HttpError, ICustomerFilterVariables>({
+    resource: "customers",
+    pagination: {
+      pageSize: 5,
+    },
+    filters: {
+      initial: [
         {
           field: "voucher",
           operator: "eq",
@@ -213,22 +194,38 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
         },
       ],
     },
-    queryOptions: {
-      enabled: false,
-      onSuccess: (data: any) => {
-        setEligibleCustomers(data.response.content.data);
-      },
+    onSearch: ({ q, status }) => {
+      const customerFilters: CrudFilters = [];
+      customerFilters.push({
+        field: "status",
+        operator: "eq",
+        value: status ? status : undefined,
+      });
+
+      customerFilters.push({
+        field: "q",
+        operator: "eq",
+        value: q ? q : undefined,
+      });
+
+      return customerFilters;
     },
   });
 
   const {
-    isLoading: isLoadingInEligibleCustomer,
-    refetch: refetchInEligibleCustomer,
-  } = useCustom<ICustomer[]>({
-    url: `${API_URL}/customers`,
-    method: "get",
-    config: {
-      filters: [
+    tableProps: tablePropsInEligibleCustomer,
+    searchFormProps: searchFormPropsInEligibleCustomer,
+    filters: filtersInEligibleCustomer,
+    current: currentInEligibleCustomer,
+    pageSize: pageSizeInEligibleCustomer,
+    tableQueryResult: { refetch: refetchInEligibleCustomer },
+  } = useTable<ICustomer, HttpError, ICustomerFilterVariables>({
+    resource: "customers",
+    pagination: {
+      pageSize: 5,
+    },
+    filters: {
+      initial: [
         {
           field: "noVoucher",
           operator: "eq",
@@ -236,11 +233,21 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
         },
       ],
     },
-    queryOptions: {
-      enabled: false,
-      onSuccess: (data: any) => {
-        setInEligibleCustomers(data.response.content.data);
-      },
+    onSearch: ({ q, status }) => {
+      const customerFilters: CrudFilters = [];
+      customerFilters.push({
+        field: "status",
+        operator: "eq",
+        value: status ? status : undefined,
+      });
+
+      customerFilters.push({
+        field: "q",
+        operator: "eq",
+        value: q ? q : undefined,
+      });
+
+      return customerFilters;
     },
   });
 
@@ -267,9 +274,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "phoneNumber",
       key: "phoneNumber",
       render: (_, record) => {
-        const defaultAddress = record.addressList.find(
-          (address) => address.isDefault
-        );
+        const defaultAddress = record.addressList.find((address) => address.isDefault);
         const phoneNumber = defaultAddress ? defaultAddress.phoneNumber : "N/A";
         return <>{phoneNumber}</>;
       },
@@ -291,25 +296,27 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
 
   const [loadingEligible, setLoadingEligible] = useState(false);
   const [loadingInEligible, setLoadingInEligible] = useState(false);
+  const handleClearFiltersEligibleCustomer = () => {
+    searchFormPropsEligibleCustomer.form?.setFieldValue("q", null);
+    searchFormPropsEligibleCustomer.form?.setFieldValue("status", null);
+    searchFormPropsEligibleCustomer.form?.submit();
+  };
+  const handleClearFiltersInEligibleCustomer = () => {
+    searchFormPropsInEligibleCustomer.form?.setFieldValue("q", null);
+    searchFormPropsInEligibleCustomer.form?.setFieldValue("status", null);
+    searchFormPropsInEligibleCustomer.form?.submit();
+  };
 
   return (
     <>
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={8}>
-          <Edit
-            isLoading={queryResult?.isFetching}
-            saveButtonProps={saveButtonProps}
-          >
+          <Edit isLoading={queryResult?.isFetching} saveButtonProps={saveButtonProps}>
             <Form {...formProps} layout="vertical" onFinish={handleOnFinish}>
               <Row gutter={20}>
                 <Col span={24}>
-                  <Form.Item
-                    name="image"
-                    valuePropName="file"
-                    getValueFromEvent={getValueFromEvent}
-                    noStyle
-                  >
+                  <Form.Item name="image" valuePropName="file" getValueFromEvent={getValueFromEvent} noStyle>
                     <Upload.Dragger
                       name="file"
                       beforeUpload={beforeUpload}
@@ -363,9 +370,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                         >
                           {t("vouchers.fields.images.description")}
                         </Text>
-                        <Text style={{ fontSize: "12px" }}>
-                          {t("vouchers.fields.images.validation")}
-                        </Text>
+                        <Text style={{ fontSize: "12px" }}>{t("vouchers.fields.images.validation")}</Text>
                       </Space>
                     </Upload.Dragger>
                   </Form.Item>
@@ -443,9 +448,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                   </Form.Item>
                   <Form.Item label={t("vouchers.fields.type")} name="type">
                     <Radio.Group>
-                      <Radio value={"PERCENTAGE"}>
-                        {t("vouchers.type.PERCENTAGE")}
-                      </Radio>
+                      <Radio value={"PERCENTAGE"}>{t("vouchers.type.PERCENTAGE")}</Radio>
                       <Radio value={"CASH"}>{t("vouchers.type.CASH")}</Radio>
                     </Radio.Group>
                   </Form.Item>
@@ -467,22 +470,91 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
         </Col>
         <Col span={16}>
           <Card style={{ height: "100%" }}>
-            <Space
-              direction="vertical"
-              size="middle"
-              style={{ display: "flex" }}
-            >
+            <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+              <Form
+                {...searchFormPropsEligibleCustomer}
+                onValuesChange={debounce(() => {
+                  searchFormPropsEligibleCustomer.form?.submit();
+                }, 500)}
+                initialValues={{
+                  name: getDefaultFilter("q", filtersEligibleCustomer, "eq"),
+                  status: getDefaultFilter("status", filtersEligibleCustomer, "eq"),
+                }}
+              >
+                <Space wrap>
+                  <Text style={{ fontSize: "18px" }} strong>
+                    {t("customers.filters.title")}
+                  </Text>
+                  <Form.Item name="q" noStyle>
+                    <Input
+                      style={{
+                        width: "360px",
+                      }}
+                      placeholder={t("customers.filters.search.placeholder")}
+                      suffix={<SearchOutlined />}
+                    />
+                  </Form.Item>
+                  <Form.Item noStyle label={t("customers.fields.status")} name="status">
+                    <Select
+                      placeholder={t("customers.filters.status.placeholder")}
+                      style={{
+                        width: "160px",
+                      }}
+                      options={getUserStatusOptions(t)}
+                    />
+                  </Form.Item>
+                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersEligibleCustomer}>
+                    {t("actions.clear")}
+                  </Button>
+                </Space>
+              </Form>
               <CustomerVoucherTable
                 columns={columns}
-                customers={eligibleCustomers}
-                isLoading={isLoadingEligibleCustomer || loadingEligible}
                 handleCustomerVoucher={handleEligibleCustomerVoucher}
+                tableProps={tablePropsEligibleCustomer}
                 title="eligible"
               />
+
+              <Form
+                {...searchFormPropsInEligibleCustomer}
+                onValuesChange={debounce(() => {
+                  searchFormPropsInEligibleCustomer.form?.submit();
+                }, 500)}
+                initialValues={{
+                  name: getDefaultFilter("q", filtersInEligibleCustomer, "eq"),
+                  status: getDefaultFilter("status", filtersInEligibleCustomer, "eq"),
+                }}
+              >
+                <Space wrap>
+                  <Text style={{ fontSize: "18px" }} strong>
+                    {t("customers.filters.title")}
+                  </Text>
+                  <Form.Item name="q" noStyle>
+                    <Input
+                      style={{
+                        width: "360px",
+                      }}
+                      placeholder={t("customers.filters.search.placeholder")}
+                      suffix={<SearchOutlined />}
+                    />
+                  </Form.Item>
+                  <Form.Item noStyle label={t("customers.fields.status")} name="status">
+                    <Select
+                      placeholder={t("customers.filters.status.placeholder")}
+                      style={{
+                        width: "160px",
+                      }}
+                      options={getUserStatusOptions(t)}
+                    />
+                  </Form.Item>
+                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersInEligibleCustomer}>
+                    {t("actions.clear")}
+                  </Button>
+                </Space>
+              </Form>
               <CustomerVoucherTable
+                tableProps={tablePropsInEligibleCustomer}
                 columns={columns}
-                customers={inEligibleCustomers}
-                isLoading={isLoadingInEligibleCustomer || loadingInEligible}
                 handleCustomerVoucher={handleInEligibleCustomerVoucher}
                 title="ineligible"
               />

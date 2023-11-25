@@ -639,12 +639,16 @@
         "vouchersStatuses": {
             "IN_ACTIVE": "In Active",
             "ACTIVE": "Active",
-            "EXPIRED": "Expired"
+            "EXPIRED": "Expired",
+            "CANCELLED": "Cancelled",
+            "UP_COMING": "Up coming"
         },
         "promotionsStatuses": {
             "IN_ACTIVE": "In Active",
             "ACTIVE": "Active",
-            "EXPIRED": "Expired"
+            "EXPIRED": "Expired",
+            "CANCELLED": "Cancelled",
+            "UP_COMING": "Up coming"
         }
     },
     "orders": {
