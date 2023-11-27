@@ -32,8 +32,6 @@ const OverviewGrowth = () => {
 
   const growth = data?.data ?? ([] as any);
 
-  console.log(growth);
-
   const config: LineConfig = {
     data: growth.map((item: { name: string }) => ({
       ...item,
@@ -72,12 +70,12 @@ const OverviewGrowth = () => {
   };
 
   return (
-    <div>
+    <>
       <div style={{ textAlign: "center", padding: "5px" }}>
         <Text strong>Biểu đồ biểu thị tốc độ tăng trưởng</Text>
       </div>
-      <Line style={{ padding: "20px", height: "100%" }} {...config} />;
-    </div>
+      <Line {...config} style={{ padding: "20px", height: "100%" }} />
+    </>
   );
 };
 
