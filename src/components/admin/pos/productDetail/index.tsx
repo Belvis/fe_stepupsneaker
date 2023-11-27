@@ -210,14 +210,14 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             </Col>
             <Col span={24}>
               <Space direction="vertical">
-                <Text strong>Description</Text>
+                <Text strong>Mô tả</Text>
                 <Paragraph>{product.description}</Paragraph>
               </Space>
             </Col>
             <Col span={24}>
               <Space direction="vertical">
                 <Space>
-                  <Text strong>Color</Text>
+                  <Text strong>Màu sắc</Text>
                   <Text>{selectedColor?.name}</Text>
                 </Space>
                 <Space>
@@ -250,7 +250,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             <Col span={24}>
               <Space direction="vertical">
                 <Space>
-                  <Text strong>Size</Text>
+                  <Text strong>Kích cỡ</Text>
                   <Text>{selectedSize?.name}</Text>
                 </Space>
                 <Space>
@@ -283,7 +283,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             <Row align="middle">
               <Col span={12}>
                 <Quantity>
-                  <span>Quantity</span>
+                  <span>Số lượng</span>
                   <button onClick={decreaseQty}>
                     <AiFillMinusCircle />
                   </button>
@@ -301,7 +301,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                   style={{ width: "100%" }}
                   disabled={productDetails.length <= 0}
                 >
-                  Add To Cart
+                  Thêm vào giỏ
                 </Button>
               </Col>
             </Row>

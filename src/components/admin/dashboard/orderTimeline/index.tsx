@@ -1,38 +1,51 @@
-import { useTranslate, useNavigation } from "@refinedev/core";
 import { useSimpleList } from "@refinedev/antd";
+import { useNavigation, useTranslate } from "@refinedev/core";
 import {
-  Typography,
   List as AntdList,
-  Tooltip,
   ConfigProvider,
+  Tooltip,
+  Typography,
   theme,
 } from "antd";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
-import { IOrder, OrderStatus } from "../../../../interfaces";
+import { IOrderHistory, OrderStatus } from "../../../../interfaces";
 import {
-  TimelineContent,
   CreatedAt,
   Number,
   Timeline,
+  TimelineContent,
   TimelineItem,
 } from "./styled";
 
 dayjs.extend(relativeTime);
 
-export const OrderTimeline: React.FC = () => {
+type OrderTimelineProps = {
+  id?: string;
+};
+
+export const OrderTimeline: React.FC<OrderTimelineProps> = ({ id }) => {
   const t = useTranslate();
   const { show } = useNavigation();
 
-  const { listProps } = useSimpleList<IOrder>({
-    resource: "orders",
+  const { listProps } = useSimpleList<IOrderHistory>({
+    resource: "order-histories",
     initialSorter: [
       {
         field: "createdAt",
         order: "desc",
       },
     ],
+    filters: {
+      initial: [
+        {
+          field: "order",
+          operator: "eq",
+          value: id,
+        },
+      ],
+    },
     pagination: {
       pageSize: 6,
     },
@@ -65,6 +78,12 @@ export const OrderTimeline: React.FC = () => {
         return {
           indicatorColor: "green",
           backgroundColor: "#e6f7ff",
+          text: "wait for delivery",
+        };
+      case "DELIVERING":
+        return {
+          indicatorColor: "green",
+          backgroundColor: "#e6f7ff",
           text: "on the way",
         };
       case "COMPLETED":
@@ -93,41 +112,45 @@ export const OrderTimeline: React.FC = () => {
       pagination={{
         ...listProps.pagination,
         simple: true,
+        hideOnSinglePage: true,
       }}
     >
       <ConfigProvider theme={{ algorithm: theme.defaultAlgorithm }}>
         <Timeline>
-          {dataSource?.map(({ createdAt, code, status, id }) => (
-            <TimelineItem
-              key={code.toUpperCase()}
-              color={orderStatusColor(status)?.indicatorColor}
-            >
-              <TimelineContent
-                backgroundColor={
-                  orderStatusColor(status)?.backgroundColor || "transparent"
-                }
+          {dataSource?.map(({ createdAt, order, actionStatus }) => {
+            return (
+              <TimelineItem
+                key={order.code.toUpperCase()}
+                color={orderStatusColor(actionStatus)?.indicatorColor}
               >
-                <Tooltip
-                  overlayInnerStyle={{ color: "#626262" }}
-                  color="rgba(255, 255, 255, 0.3)"
-                  placement="topLeft"
-                  title={dayjs(createdAt).format("lll")}
+                <TimelineContent
+                  backgroundColor={
+                    orderStatusColor(actionStatus)?.backgroundColor ||
+                    "transparent"
+                  }
                 >
-                  <CreatedAt italic>{dayjs(createdAt).fromNow()}</CreatedAt>
-                </Tooltip>
-                <Text>
-                  {t(
-                    `dashboard.timeline.orderStatuses.${
-                      orderStatusColor(status)?.text
-                    }`
-                  )}
-                </Text>
-                <Number onClick={() => show("orders", id)} strong>
-                  #{code.toUpperCase()}
-                </Number>
-              </TimelineContent>
-            </TimelineItem>
-          ))}
+                  <Tooltip
+                    overlayInnerStyle={{ color: "#626262" }}
+                    color="rgba(255, 255, 255, 0.3)"
+                    placement="topLeft"
+                    title={dayjs(createdAt).format("lll")}
+                  >
+                    <CreatedAt italic>{dayjs(createdAt).fromNow()}</CreatedAt>
+                  </Tooltip>
+                  <Text>
+                    {t(
+                      `dashboard.timeline.orderStatuses.${
+                        orderStatusColor(actionStatus)?.text
+                      }`
+                    )}
+                  </Text>
+                  <Number onClick={() => show("orders", order.id)} strong>
+                    #{order.code.toUpperCase()}
+                  </Number>
+                </TimelineContent>
+              </TimelineItem>
+            );
+          })}
         </Timeline>
       </ConfigProvider>
     </AntdList>

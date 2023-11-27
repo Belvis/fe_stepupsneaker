@@ -18,6 +18,7 @@ import {
   Avatar,
   Button,
   Card,
+  Col,
   Flex,
   Input,
   Row,
@@ -378,14 +379,18 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
 const renderItem = (title: string, imageUrl: string, product: IProduct) => ({
   value: title,
   label: (
-    <Row style={{ display: "flex", alignItems: "center" }}>
-      <Avatar
-        shape="square"
-        size={64}
-        src={imageUrl}
-        style={{ minWidth: "64px" }}
-      />
-      <Text style={{ marginLeft: "16px" }}>{title}</Text>
+    <Row style={{ display: "flex", alignItems: "center", flexWrap: "wrap" }}>
+      <Col span={6}>
+        <Avatar
+          shape="square"
+          size={64}
+          src={imageUrl}
+          style={{ minWidth: "64px" }}
+        />
+      </Col>
+      <Col span={18}>
+        <Text style={{ whiteSpace: "normal" }}>{title}</Text>
+      </Col>
     </Row>
   ),
   product: product,

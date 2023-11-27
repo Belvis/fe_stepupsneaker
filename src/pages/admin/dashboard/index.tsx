@@ -1,17 +1,15 @@
-import { Row, Col, Card, Typography } from "antd";
+import { Card, Col, Flex, Row, Segmented, Select, Typography } from "antd";
 import { useTranslation } from "react-i18next";
 
 import {
-  DailyRevenue,
   DailyOrders,
+  DailyRevenue,
   NewCustomers,
   OrderTimeline,
   RecentOrders,
   TrendingMenu,
-  GenderCustomersPie,
-  AddressCustomersPie,
-  GroupAge,
 } from "../../../components";
+import OverviewTab from "../../../components/admin/dashboard/overviewTab";
 
 const { Text } = Typography;
 
@@ -29,7 +27,7 @@ export const DashboardPage: React.FC = () => {
                 paddingBottom: 0,
               }}
               style={{
-                background: "url(images/daily-revenue.png)",
+                background: "#081523",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "right",
                 backgroundSize: "cover",
@@ -45,7 +43,7 @@ export const DashboardPage: React.FC = () => {
                 paddingBottom: 0,
               }}
               style={{
-                background: "url(images/daily-order.png)",
+                background: "#081523",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "right",
                 backgroundSize: "cover",
@@ -61,7 +59,7 @@ export const DashboardPage: React.FC = () => {
                 paddingBottom: 0,
               }}
               style={{
-                background: "url(images/new-orders.png)",
+                background: "#081523",
                 backgroundRepeat: "no-repeat",
                 backgroundPosition: "right",
                 backgroundSize: "cover",
@@ -76,24 +74,13 @@ export const DashboardPage: React.FC = () => {
         <Card
           bodyStyle={{
             height: 550,
-            padding: 0,
+            paddingLeft: 0,
+            paddingRight: 0,
           }}
-          title={<Text strong>{t("dashboard.deliveryMap.title")}</Text>}
+          // title={<Text strong>{t("dashboard.deliveryMap.title")}</Text>}
+          title={<Text strong>Biểu đồ phân tích</Text>}
         >
-          <Row>
-            <Col xl={12} lg={24} md={24} sm={24} xs={24}>
-              <GenderCustomersPie />
-            </Col>
-            <Col xl={12} lg={12} md={24} sm={24} xs={24}>
-              <AddressCustomersPie />
-            </Col>
-            <Col
-              span={24}
-              style={{ paddingLeft: "20px", paddingRight: "20px" }}
-            >
-              <GroupAge />
-            </Col>
-          </Row>
+          <OverviewTab />
         </Card>
       </Col>
       <Col xl={7} lg={8} md={24} sm={24} xs={24}>
@@ -117,7 +104,14 @@ export const DashboardPage: React.FC = () => {
         </Card>
       </Col>
       <Col xl={7} lg={8} md={24} sm={24} xs={24}>
-        <Card title={<Text strong>{t("dashboard.trendingMenus.title")}</Text>}>
+        <Card
+          title={
+            <Flex align="center" justify="space-between">
+              <Text strong>{t("dashboard.trendingMenus.title")}</Text>
+              <Segmented options={["Ngày", "Tuần", "Tháng", "Năm"]} />
+            </Flex>
+          }
+        >
           <TrendingMenu />
         </Card>
       </Col>

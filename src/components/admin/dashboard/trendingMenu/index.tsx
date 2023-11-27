@@ -1,14 +1,22 @@
 import { NumberField, useSimpleList } from "@refinedev/antd";
 import { Typography, Avatar, Space, List as AntdList } from "antd";
 import { Container, AvatarWrapper, AvatarCircle, TextWrapper } from "./styled";
-import { IOrder } from "../../../../interfaces";
+import { IProduct, IProductDetail } from "../../../../interfaces";
 
 const { Text } = Typography;
 
 export const TrendingMenu: React.FC = () => {
-  const { listProps } = useSimpleList<IOrder>({
-    resource: "orders",
+  const { listProps } = useSimpleList<IProduct>({
+    resource: "products",
     pagination: { pageSize: 5 },
+    sorters: {
+      initial: [
+        {
+          field: "saleCount",
+          order: "desc",
+        },
+      ],
+    },
     syncWithLocation: false,
   });
 
@@ -21,7 +29,18 @@ export const TrendingMenu: React.FC = () => {
   );
 };
 
-const MenuItem: React.FC<{ item: IOrder; index: number }> = ({
+const calculateLowestPrice = (productDetails: IProductDetail[]): number => {
+  if (productDetails.length === 0) {
+    return 0;
+  }
+
+  return productDetails.reduce((minPrice, productDetail) => {
+    const currentPrice = productDetail.price;
+    return currentPrice < minPrice ? currentPrice : minPrice;
+  }, productDetails[0].price);
+};
+
+const MenuItem: React.FC<{ item: IProduct; index: number }> = ({
   item,
   index,
 }) => (
@@ -37,22 +56,22 @@ const MenuItem: React.FC<{ item: IOrder; index: number }> = ({
             xl: 132,
             xxl: 108,
           }}
-          src={item.orderDetails[0]?.productDetail.product.image}
+          src={item.image}
         />
         <AvatarCircle>
           <span>#{index + 1}</span>
         </AvatarCircle>
       </AvatarWrapper>
       <TextWrapper>
-        <Text strong>{item.orderDetails[0]?.productDetail.product.name}</Text>
+        <Text strong>{item.name}</Text>
         <NumberField
           strong
           options={{
-            currency: "USD",
+            currency: "VND",
             style: "currency",
             notation: "standard",
           }}
-          value={item.totalMoney}
+          value={calculateLowestPrice(item.productDetails)}
         />
       </TextWrapper>
     </Space>

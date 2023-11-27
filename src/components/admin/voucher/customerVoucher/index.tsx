@@ -11,7 +11,10 @@ const { Title } = Typography;
 type CustomerVoucherTableProps = {
   columns: ColumnsType<ICustomer>;
   title: string;
-  handleCustomerVoucher(selectedKeys: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>): void;
+  handleCustomerVoucher(
+    selectedKeys: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ): void;
   tableProps: TableProps<ICustomer>;
 };
 
@@ -46,7 +49,8 @@ export const CustomerVoucherTable: React.FC<CustomerVoucherTableProps> = ({
         return (
           <Flex justify={"space-between"} align={"center"}>
             <Title level={5}>
-              List of customers {title} for voucher ({tableProps.dataSource?.length})
+              {t(`vouchers.table.title.${title}`)} (
+              {tableProps.dataSource?.length})
             </Title>
             {hasSelected && (
               <Space>
@@ -56,7 +60,8 @@ export const CustomerVoucherTable: React.FC<CustomerVoucherTableProps> = ({
                   onClick={() =>
                     showWarningConfirmDialog({
                       options: {
-                        accept: () => handleCustomerVoucher(selectedIds, setSelectedIds),
+                        accept: () =>
+                          handleCustomerVoucher(selectedIds, setSelectedIds),
                         reject: () => {},
                       },
                       t: t,
@@ -65,7 +70,9 @@ export const CustomerVoucherTable: React.FC<CustomerVoucherTableProps> = ({
                 >
                   {t(`actions.${title === "eligible" ? "remove" : "apply"}`)}
                 </Button>
-                <span style={{ marginLeft: 8 }}>Selected {selectedIds.length} items</span>
+                <span style={{ marginLeft: 8 }}>
+                  Selected {selectedIds.length} items
+                </span>
               </Space>
             )}
           </Flex>

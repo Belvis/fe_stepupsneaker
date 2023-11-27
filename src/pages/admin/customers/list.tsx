@@ -155,7 +155,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
       title: t("customers.fields.address"),
       dataIndex: "address",
       key: "address",
-      width: "20%",
+      width: "15%",
       render: (_, record) => {
         const defaultAddress = record.addressList.find(
           (address) => address.isDefault
@@ -183,12 +183,7 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title="Show">
-            <ShowButton 
-            
-            size="small"
-             hideText  
-             recordItemId={record.id}
-              />
+            <ShowButton size="small" hideText recordItemId={record.id} />
           </Tooltip>
 
           <Tooltip title={t("actions.showAddress")}>
@@ -217,7 +212,6 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
               onClick={() => handleDelete(record.id)}
             />
           </Tooltip>
-
         </Space>
       ),
     },
@@ -286,7 +280,6 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
             }}
             rowKey="id"
             columns={columns}
-            
           />
         </Col>
       </Row>

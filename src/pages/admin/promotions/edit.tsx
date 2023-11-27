@@ -5,8 +5,6 @@ import {
   IResourceComponentsProps,
   getDefaultFilter,
   useApiUrl,
-  useCreate,
-  useCustom,
   useDelete,
   useParsed,
   useTranslate,
@@ -21,7 +19,6 @@ import {
   Form,
   Input,
   InputNumber,
-  Radio,
   Row,
   Select,
   Space,
@@ -31,17 +28,29 @@ import {
   message,
 } from "antd";
 
+import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import { ColumnsType } from "antd/es/table";
-import { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
+import {
+  RcFile,
+  UploadChangeParam,
+  UploadFile,
+  UploadProps,
+} from "antd/es/upload";
 import dayjs from "dayjs";
+import { debounce } from "lodash";
 import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
 import { ProductStatus } from "../../../components";
-import { getProductStatusOptions, getPromotionStatusOptions, tablePaginationSettings } from "../../../constants";
-import { ICustomer, IProductDetail, IProductDetailFilterVariables, IPromotion } from "../../../interfaces";
-import { formatTimestamp, getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { PromotionProductDetailTable } from "../../../components/admin/promotion/promotionProductDetail";
-import { debounce } from "lodash";
-import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import {
+  getProductStatusOptions,
+  getPromotionStatusOptions,
+} from "../../../constants";
+import {
+  IProductDetail,
+  IProductDetailFilterVariables,
+  IPromotion,
+} from "../../../interfaces";
+import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -67,7 +76,8 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
     preserveSelectedRowKeys: true,
   };
 
-  const { formProps, saveButtonProps, queryResult, onFinish } = useForm<IPromotion>({});
+  const { formProps, saveButtonProps, queryResult, onFinish } =
+    useForm<IPromotion>({});
 
   const handleOnFinish = (values: any) => {
     const data = {
@@ -95,9 +105,6 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
   const [successFlag, setSuccessFlag] = useState(true);
 
   useEffect(() => {
-    console.log("TIME==============");
-    console.log(queryResult);
-
     const startDate = formProps.form?.getFieldValue("startDate");
     const endDate = formProps.form?.getFieldValue("endDate");
 
@@ -125,7 +132,10 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  function handleEligiblePromotionProductDetail(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
+  function handleEligiblePromotionProductDetail(
+    selectedIds: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ) {
     try {
       mutateDelete(
         {
@@ -147,7 +157,10 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
     }
   }
 
-  function handleInEligiblePromotionProductDetail(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
+  function handleInEligiblePromotionProductDetail(
+    selectedIds: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ) {
     try {
       mutateUpdate(
         {
@@ -157,8 +170,12 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
             name: `${formProps.form?.getFieldValue("name")}`,
             status: `${formProps.form?.getFieldValue("status")}`,
             value: `${formProps.form?.getFieldValue("value")}`,
-            startDate: `${formProps.form?.getFieldValue("promotionRange")[0].valueOf()}`,
-            endDate: `${formProps.form?.getFieldValue("promotionRange")[1].valueOf()}`,
+            startDate: `${formProps.form
+              ?.getFieldValue("promotionRange")[0]
+              .valueOf()}`,
+            endDate: `${formProps.form
+              ?.getFieldValue("promotionRange")[1]
+              .valueOf()}`,
             image: `${formProps.form?.getFieldValue("image")}`,
             productDetailIds: selectedIds,
           },
@@ -176,7 +193,9 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
     }
   }
 
-  const handleChange: UploadProps["onChange"] = (info: UploadChangeParam<UploadFile>) => {
+  const handleChange: UploadProps["onChange"] = (
+    info: UploadChangeParam<UploadFile>
+  ) => {
     if (info.file.status === "uploading") {
       setLoadingImage(true);
       return;
@@ -293,19 +312,24 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
   };
 
   type ColumnPagination = { current: number; pageSize: number };
-  const generateColumns = (props: ColumnPagination): ColumnsType<IProductDetail> => {
+  const generateColumns = (
+    props: ColumnPagination
+  ): ColumnsType<IProductDetail> => {
     const columns: ColumnsType<IProductDetail> = [
       {
         title: "#",
         key: "index",
         width: "1px",
-        render: (text, record, index) => (props.current - 1) * props.pageSize + index + 1,
+        render: (text, record, index) =>
+          (props.current - 1) * props.pageSize + index + 1,
       },
       {
         title: t("productDetails.fields.image"),
         dataIndex: "image",
         key: "image",
-        render: (_, { image }) => <Avatar shape="square" size={74} src={image} />,
+        render: (_, { image }) => (
+          <Avatar shape="square" size={74} src={image} />
+        ),
       },
       {
         title: t("productDetails.fields.name"),
@@ -322,7 +346,9 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
         key: "size",
         dataIndex: "size",
         align: "center",
-        render: (_, record) => <Text style={{ width: "100%" }}>{record.size.name}</Text>,
+        render: (_, record) => (
+          <Text style={{ width: "100%" }}>{record.size.name}</Text>
+        ),
       },
       {
         title: t("productDetails.fields.color"),
@@ -330,7 +356,10 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
         dataIndex: "color",
         align: "center",
         render: (_, record) => (
-          <Tag style={{ width: "100%" }} color={`#${record.color.code}`}>{`#${record.color.code}`}</Tag>
+          <Tag
+            style={{ width: "100%" }}
+            color={`#${record.color.code}`}
+          >{`#${record.color.code}`}</Tag>
         ),
       },
       {
@@ -350,11 +379,19 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={8}>
-          <Edit isLoading={queryResult?.isFetching} saveButtonProps={saveButtonProps}>
+          <Edit
+            isLoading={queryResult?.isFetching}
+            saveButtonProps={saveButtonProps}
+          >
             <Form {...formProps} layout="vertical" onFinish={handleOnFinish}>
               <Row gutter={20}>
                 <Col span={24}>
-                  <Form.Item name="image" valuePropName="file" getValueFromEvent={getValueFromEvent} noStyle>
+                  <Form.Item
+                    name="image"
+                    valuePropName="file"
+                    getValueFromEvent={getValueFromEvent}
+                    noStyle
+                  >
                     <Upload.Dragger
                       name="file"
                       beforeUpload={beforeUpload}
@@ -408,7 +445,9 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                         >
                           {t("promotions.fields.images.description")}
                         </Text>
-                        <Text style={{ fontSize: "12px" }}>{t("promotions.fields.images.validation")}</Text>
+                        <Text style={{ fontSize: "12px" }}>
+                          {t("promotions.fields.images.validation")}
+                        </Text>
                       </Space>
                     </Upload.Dragger>
                   </Form.Item>
@@ -480,7 +519,11 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
         </Col>
         <Col span={16}>
           <Card style={{ height: "100%" }}>
-            <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+            <Space
+              direction="vertical"
+              size="middle"
+              style={{ display: "flex" }}
+            >
               <Form
                 {...searchFormPropsPromotion}
                 onValuesChange={debounce(() => {
@@ -504,7 +547,11 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                       suffix={<SearchOutlined />}
                     />
                   </Form.Item>
-                  <Form.Item noStyle label={t("products.fields.status")} name="status">
+                  <Form.Item
+                    noStyle
+                    label={t("products.fields.status")}
+                    name="status"
+                  >
                     <Select
                       placeholder={t("products.filters.status.placeholder")}
                       style={{
@@ -513,14 +560,19 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                       options={getProductStatusOptions(t)}
                     />
                   </Form.Item>
-                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersPromotion}>
+                  <Button
+                    icon={<UndoOutlined />}
+                    onClick={handleClearFiltersPromotion}
+                  >
                     {t("actions.clear")}
                   </Button>
                 </Space>
               </Form>
               <PromotionProductDetailTable
                 columns={generateColumns({ current, pageSize })}
-                handlePromotionProductDetail={handleEligiblePromotionProductDetail}
+                handlePromotionProductDetail={
+                  handleEligiblePromotionProductDetail
+                }
                 title={"eligible"}
                 tableProps={tableProps}
               />
@@ -547,7 +599,11 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                       suffix={<SearchOutlined />}
                     />
                   </Form.Item>
-                  <Form.Item noStyle label={t("products.fields.status")} name="status">
+                  <Form.Item
+                    noStyle
+                    label={t("products.fields.status")}
+                    name="status"
+                  >
                     <Select
                       placeholder={t("products.filters.status.placeholder")}
                       style={{
@@ -556,14 +612,22 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                       options={getProductStatusOptions(t)}
                     />
                   </Form.Item>
-                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersNoPromotion}>
+                  <Button
+                    icon={<UndoOutlined />}
+                    onClick={handleClearFiltersNoPromotion}
+                  >
                     {t("actions.clear")}
                   </Button>
                 </Space>
               </Form>
               <PromotionProductDetailTable
-                columns={generateColumns({ current: currentTableNoPromotion, pageSize: pageSizeTableNoPromotion })}
-                handlePromotionProductDetail={handleInEligiblePromotionProductDetail}
+                columns={generateColumns({
+                  current: currentTableNoPromotion,
+                  pageSize: pageSizeTableNoPromotion,
+                })}
+                handlePromotionProductDetail={
+                  handleInEligiblePromotionProductDetail
+                }
                 title={"ineligible"}
                 tableProps={tablePropsNoPromotion}
               />

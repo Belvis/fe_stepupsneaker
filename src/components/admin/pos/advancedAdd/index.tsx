@@ -42,7 +42,6 @@ import {
   IBrand,
   IColor,
   IMaterial,
-  IOrder,
   IOrderDetailConvertedPayload,
   IProductDetail,
   IProductDetailFilterVariables,
@@ -80,6 +79,7 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({
     IProductDetailFilterVariables
   >({
     resource: `product-details`,
+    syncWithLocation: false,
     pagination: {
       pageSize: 5,
     },

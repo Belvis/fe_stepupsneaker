@@ -314,13 +314,15 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
     <Row key="relations" gutter={[16, 24]}>
       <Col span={24}>
         <Title level={5}>
-          Select specific customers to apply the voucher (leave unchecked to
-          apply to all)
+          Chỉ định khách hàng được áp dụng cho phiếu giảm giá (Bỏ qua để áp dụng
+          cho tất cả)
+          {/* Select specific customers to apply the voucher (leave unchecked to
+          apply to all) */}
         </Title>
       </Col>
       <Col span={24}>
         <Input.Search
-          placeholder="Search by keyword"
+          placeholder="Tìm kiếm bằng từ khoá"
           onChange={(e) => handleSearch(e.target.value)}
         />
       </Col>
@@ -413,7 +415,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
           </>
         }
       >
-        <Steps {...stepsProps} responsive>
+        <Steps {...stepsProps} responsive style={{}} size="small">
           <Steps.Step title={t("vouchers.steps.content")} />
           <Steps.Step title={t("vouchers.steps.relations")} />
         </Steps>

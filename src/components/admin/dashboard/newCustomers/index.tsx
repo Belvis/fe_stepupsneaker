@@ -9,6 +9,7 @@ import { IncreaseIcon, DecreaseIcon } from "../../../icons";
 import { ISalesChart } from "../../../../interfaces";
 import { Header, HeaderNumbers, NewCustomersWrapper } from "./styled";
 import { DashboardContext } from "../../../../contexts/admin/dashboard";
+import dayjs from "dayjs";
 
 export const NewCustomers: React.FC = () => {
   const t = useTranslate();
@@ -52,7 +53,9 @@ export const NewCustomers: React.FC = () => {
       color: "rgba(255, 255, 255, 0.5)",
       tooltip: {
         customContent: (title, data) => {
-          return `<div style="padding: 8px 4px; font-size:16px; font-weight:600">${data[0]?.value}</div>`;
+          return `<div style="padding: 8px 4px; font-size:16px; font-weight:600">${dayjs(
+            new Date(Number(title) * 1000)
+          ).format("LL")}: ${data[0]?.value} khách hàng mới</div>`;
         },
       },
 

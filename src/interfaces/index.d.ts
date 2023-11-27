@@ -189,6 +189,7 @@ export type PromotionStatus = "ACTIVE" | "IN_ACTIVE" | "EXPIRED";
 export type VoucherType = "PERCENTAGE" | "CASH";
 export type OrderType = "ONLINE" | "OFFLINE";
 export type OrderStatus =
+  | "PLACE_ORDER"
   | "PENDING"
   | "WAIT_FOR_CONFIRMATION"
   | "WAIT_FOR_DELIVERY"

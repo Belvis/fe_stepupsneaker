@@ -113,7 +113,8 @@
       "checkSelected": "Xem lựa chọn của bạn",
       "addAndGo": "Thêm và hoàn tất",
       "go": "Hoàn tất",
-      "addAndContinue": "Xác nhận và tiếp tục"
+      "addAndContinue": "Xác nhận và tiếp tục",
+      "forceConfirm": "Chủ động xác nhận"
     },
     "loading": "Đang tải",
     "tags": {
@@ -365,7 +366,14 @@
       "steps": {
         "content": "Nội dung",
         "relations": "quan hệ"
+      },
+      "table":{
+        "title": {
+          "eligible": "Danh sách khách hàng đã được áp dụng cho Phiếu giảm giá",
+          "ineligible": "Danh sách khách hàng chưa được áp dụng cho Phiếu giảm giá"
+        }
       }
+
     },
     "promotionProductDetail": {
       "table":{
@@ -576,10 +584,10 @@
         "title": "Tổng doanh thu"
       },
       "dailyRevenue": {
-        "title": "Doanh số hàng ngày"
+        "title": "Doanh số"
       },
       "dailyOrders": {
-        "title": "Đơn hàng hàng ngày"
+        "title": "Đơn hàng"
       },
       "newCustomers": {
         "title": "Những khách hàng mới"
@@ -599,7 +607,8 @@
           "pending": "Đang chuẩn bị đơn hàng",
           "ready": "Đơn hàng đã sẵn sàng",
           "on the way": "Đơn hàng đang trên đường tới",
-          "delivered": "Đơn hàng được giao",
+          "wait for delivery": "Đơn hàng đang đợi để được giao",
+          "delivered": "Đơn hàng đã được giao thành công",
           "cancelled": "Đơn hàng bị hủy"
         }
       },
@@ -607,11 +616,19 @@
         "title": "Đơn đơn hàng gần đây"
       },
       "trendingMenus": {
-        "title": "Xu hướng hàng ngày"
+        "title": "Xu hướng"
+      },
+      "overviewTab": {
+        "overview": {
+          "Revenue": "Doanh thu",
+          "Order": "Đơn hàng",
+          "Customer": "Khách hàng"
+        }
       }
     },
     "enum": {
       "orderStatuses": {
+        "PLACE_ORDER": "Đặt hàng",
         "PENDING": "Chưa giải quyết",
         "WAIT_FOR_CONFIRMATION": "Đang chờ xác nhận",
         "WAIT_FOR_DELIVERY": "Sẵn sàng",
