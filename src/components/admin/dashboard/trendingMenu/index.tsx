@@ -2,11 +2,18 @@ import { NumberField, useSimpleList } from "@refinedev/antd";
 import { Typography, Avatar, Space, List as AntdList } from "antd";
 import { Container, AvatarWrapper, AvatarCircle, TextWrapper } from "./styled";
 import { IProduct, IProductDetail } from "../../../../interfaces";
+import { useEffect } from "react";
 
 const { Text } = Typography;
 
-export const TrendingMenu: React.FC = () => {
-  const { listProps } = useSimpleList<IProduct>({
+type TrendingMenuProps = {
+  range: { start: number; end: number };
+};
+export const TrendingMenu: React.FC<TrendingMenuProps> = ({ range }) => {
+  const {
+    listProps,
+    queryResult: { refetch },
+  } = useSimpleList<IProduct>({
     resource: "products",
     pagination: { pageSize: 5 },
     sorters: {
@@ -17,8 +24,26 @@ export const TrendingMenu: React.FC = () => {
         },
       ],
     },
+    filters: {
+      initial: [
+        {
+          field: "start",
+          operator: "eq",
+          value: range.start,
+        },
+        {
+          field: "end",
+          operator: "eq",
+          value: range.end,
+        },
+      ],
+    },
     syncWithLocation: false,
   });
+
+  useEffect(() => {
+    if (range) refetch();
+  }, [range]);
 
   return (
     <AntdList

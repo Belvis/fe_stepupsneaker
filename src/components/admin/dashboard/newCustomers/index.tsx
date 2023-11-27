@@ -69,6 +69,15 @@ export const NewCustomers: React.FC = () => {
         grid: null,
         tickLine: null,
       },
+      label: {
+        // type: "outer",
+        position: "middle",
+        style: {
+          fill: "#FFFFFF",
+          fontWeight: 700,
+          opacity: 0.6,
+        },
+      },
     };
 
     return config;

@@ -10,11 +10,58 @@ import {
   TrendingMenu,
 } from "../../../components";
 import OverviewTab from "../../../components/admin/dashboard/overviewTab";
+import { useState } from "react";
+import dayjs from "dayjs";
+import { SegmentedValue } from "antd/es/segmented";
 
 const { Text } = Typography;
 
+type TrendingOption = "Ngày" | "Tuần" | "Tháng" | "Năm";
+
 export const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
+  const [selectedTrendingOption, setSelectedTrendingOption] =
+    useState<TrendingOption>("Ngày");
+
+  const calculateTimeRange = (option: TrendingOption) => {
+    const currentDate = dayjs();
+
+    switch (option) {
+      case "Ngày":
+        return {
+          start: currentDate.valueOf(),
+          end: currentDate.valueOf(),
+        };
+      case "Tuần":
+        const startDateWeek = currentDate.subtract(1, "week");
+        return {
+          start: startDateWeek.valueOf(),
+          end: currentDate.valueOf(),
+        };
+      case "Tháng":
+        const startDateMonth = currentDate.subtract(1, "month");
+        return {
+          start: startDateMonth.valueOf(),
+          end: currentDate.valueOf(),
+        };
+      case "Năm":
+        const startDateYear = currentDate.subtract(1, "year");
+        return {
+          start: startDateYear.valueOf(),
+          end: currentDate.valueOf(),
+        };
+      default:
+        return {
+          start: currentDate.valueOf(),
+          end: currentDate.valueOf(),
+        };
+    }
+  };
+
+  const handleOptionChange = (value: SegmentedValue) => {
+    const option: TrendingOption = value as TrendingOption;
+    setSelectedTrendingOption(option);
+  };
 
   return (
     <Row gutter={[16, 16]}>
@@ -77,7 +124,6 @@ export const DashboardPage: React.FC = () => {
             paddingLeft: 0,
             paddingRight: 0,
           }}
-          // title={<Text strong>{t("dashboard.deliveryMap.title")}</Text>}
           title={<Text strong>Biểu đồ phân tích</Text>}
         >
           <OverviewTab />
@@ -108,11 +154,14 @@ export const DashboardPage: React.FC = () => {
           title={
             <Flex align="center" justify="space-between">
               <Text strong>{t("dashboard.trendingMenus.title")}</Text>
-              <Segmented options={["Ngày", "Tuần", "Tháng", "Năm"]} />
+              <Segmented
+                options={["Ngày", "Tuần", "Tháng", "Năm"]}
+                onChange={handleOptionChange}
+              />
             </Flex>
           }
         >
-          <TrendingMenu />
+          <TrendingMenu range={calculateTimeRange(selectedTrendingOption)} />
         </Card>
       </Col>
     </Row>
