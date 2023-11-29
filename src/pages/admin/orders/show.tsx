@@ -10,11 +10,16 @@ import {
 } from "@refinedev/core";
 import { DateField, List, NumberField } from "@refinedev/antd";
 import {
+  CarOutlined,
   CheckCircleOutlined,
+  CheckOutlined,
   CloseCircleOutlined,
+  DropboxOutlined,
+  FileProtectOutlined,
   LoadingOutlined,
   MailOutlined,
   MobileOutlined,
+  QuestionOutlined,
 } from "@ant-design/icons";
 import {
   Row,
@@ -36,7 +41,7 @@ import {
 import dayjs from "dayjs";
 
 // import { Map, MapMarker } from "../../components";
-import { BikeWhiteIcon, OrderHistoryTimeLine } from "../../../components";
+import { OrderHistoryTimeLine } from "../../../components";
 // import { useOrderCustomKbarActions } from "../../hooks";
 import {
   IEvent,
@@ -44,6 +49,7 @@ import {
   IOrderDetail,
   IOrderHistory,
   IProduct,
+  OrderStatus,
 } from "../../../interfaces";
 
 import {
@@ -63,6 +69,10 @@ const { useBreakpoint } = Grid;
 const { Text } = Typography;
 
 const InitialEventData: IEvent[] = [
+  {
+    date: undefined,
+    status: "PLACE_ORDER",
+  },
   {
     date: undefined,
     status: "WAIT_FOR_CONFIRMATION",
@@ -141,6 +151,11 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       onSuccess: (data) => {
         const updatedEvents = InitialEventData.map((event) => {
           switch (event.status) {
+            case "PLACE_ORDER":
+              return {
+                ...event,
+                date: data.data[0].createdAt,
+              };
             case "COMPLETED":
               const canceledReturnedOrExchangedOrder = data.data.find(
                 (orderHistory) =>
@@ -211,15 +226,23 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       return "finish";
     };
 
-    const handleMutate = (status: string) => {
-      if (record) {
-        mutate({
-          resource: "orders",
-          id: record.id,
-          values: {
-            status: status,
+    const handleMutate = (status: OrderStatus | null) => {
+      if (record && status) {
+        mutate(
+          {
+            resource: "orders",
+            id: record.id,
+            values: {
+              status: status,
+            },
           },
-        });
+          {
+            onError: (error, variables, context) => {},
+            onSuccess: (data, variables, context) => {
+              refetchOrderHistory();
+            },
+          }
+        );
       }
     };
 
@@ -232,6 +255,17 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         title={t("orders.fields.code")}
         subTitle={`#${record?.code.toUpperCase() ?? ""}`}
         extra={[
+          <Button
+            disabled={!canRejectOrder}
+            key="accept"
+            icon={<CheckCircleOutlined />}
+            type="primary"
+            onClick={() =>
+              handleMutate(getNextStatus(record?.status ?? "PENDING"))
+            }
+          >
+            {t("buttons.forceConfirm")}
+          </Button>,
           <Button
             disabled={!canAcceptOrder}
             key="accept"
@@ -266,7 +300,11 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                   key={index}
                   title={t(`enum.orderStatuses.${event.status}`)}
                   icon={
-                    notFinishedCurrentStep(event, index) && <LoadingOutlined />
+                    notFinishedCurrentStep(event, index) ? (
+                      <LoadingOutlined />
+                    ) : (
+                      getIconByStatus(event.status)
+                    )
                   }
                   description={
                     event.date && dayjs(new Date(event.date)).format("L LT")
@@ -734,46 +772,58 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     <>
       <Space size={20} direction="vertical" style={{ width: "100%" }}>
         {renderOrderSteps()}
-        {/* <div style={{ height: "500px", width: "100%" }}>
-          <Map
-            center={{
-              lat: 40.73061,
-              lng: -73.935242,
-            }}
-            zoom={9}
-          >
-            <MapMarker
-              key={`user-marker-${record?.user.id}`}
-              icon={{
-                url: "/images/marker-location.svg",
-              }}
-              position={{
-                lat: Number(record?.adress.coordinate[0]),
-                lng: Number(record?.adress.coordinate[1]),
-              }}
-            />
-            <MapMarker
-              key={`user-marker-${record?.user.id}`}
-              icon={{
-                url: "/images/marker-employee.svg",
-              }}
-              position={{
-                lat: Number(record?.store.address.coordinate[0]),
-                lng: Number(record?.store.address.coordinate[1]),
-              }}
-            />
-          </Map>
-        </div> */}
         {renderEmployeeInfo()}
         {renderDeliverables()}
         {renderOrderInfor()}
       </Space>
       <OrderHistoryTimeLine
-        orderHistories={record?.orderHistories || []}
+        id={id as string}
         open={isModalVisible}
         handleOk={handleModalOk}
         handleCancel={handleModalCancel}
       />
     </>
   );
+};
+
+const getIconByStatus = (status: OrderStatus) => {
+  switch (status) {
+    case "PLACE_ORDER":
+      return <DropboxOutlined />;
+    case "WAIT_FOR_CONFIRMATION":
+      return <QuestionOutlined />;
+    case "WAIT_FOR_DELIVERY":
+      return <CheckOutlined />;
+    case "DELIVERING":
+      return <CarOutlined />;
+    case "COMPLETED":
+      return <FileProtectOutlined />;
+    default:
+      return null;
+  }
+};
+
+export const getNextStatus = (
+  currentStatus: OrderStatus
+): OrderStatus | null => {
+  switch (currentStatus) {
+    case "WAIT_FOR_CONFIRMATION":
+      return "WAIT_FOR_DELIVERY";
+    case "WAIT_FOR_DELIVERY":
+      return "DELIVERING";
+    case "DELIVERING":
+      return "COMPLETED";
+    case "COMPLETED":
+      return null;
+    case "CANCELED":
+      return null;
+    case "EXPIRED":
+      return null;
+    case "RETURNED":
+      return null;
+    case "EXCHANGED":
+      return null;
+    default:
+      return null;
+  }
 };

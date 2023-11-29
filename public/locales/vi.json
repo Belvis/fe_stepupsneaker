@@ -113,7 +113,8 @@
       "checkSelected": "Xem lựa chọn của bạn",
       "addAndGo": "Thêm và hoàn tất",
       "go": "Hoàn tất",
-      "addAndContinue": "Xác nhận và tiếp tục"
+      "addAndContinue": "Xác nhận và tiếp tục",
+      "forceConfirm": "Chủ động xác nhận"
     },
     "loading": "Đang tải",
     "tags": {
@@ -324,11 +325,11 @@
       }
     },
     "vouchers": {
-      "vouchers": "Khuyến Mãi",
+      "vouchers": "Phiếu giảm giá",
       "titles": {
-        "create": "Tạo Khuyến Mãi",
-        "list": "Khuyến Mãi",
-        "edit": "Chỉnh sửa Khuyến Mãi"
+        "create": "Tạo Phiếu giảm giá",
+        "list": "Phiếu giảm giá",
+        "edit": "Chỉnh sửa Phiếu giảm giá"
       },
       "fields": {
         "id": "ID",
@@ -342,7 +343,7 @@
         "startDate": "Ngày bắt đầu",
         "endDate": "Ngày kết thúc",
         "images": {
-          "description": "Thêm hình ảnh Khuyến Mãi",
+          "description": "Thêm hình ảnh Phiếu giảm giá",
           "validation": "phải là 1080x1080 px"
         },
         "voucherRange": "Ngày"
@@ -365,22 +366,29 @@
       "steps": {
         "content": "Nội dung",
         "relations": "quan hệ"
+      },
+      "table":{
+        "title": {
+          "eligible": "Danh sách khách hàng đã được áp dụng cho Phiếu giảm giá",
+          "ineligible": "Danh sách khách hàng chưa được áp dụng cho Phiếu giảm giá"
+        }
       }
+
     },
     "promotionProductDetail": {
       "table":{
         "title": {
-          "eligible": "Danh sách sản phẩm đã được áp dụng khuyến mại",
-          "ineligible": "Danh sách sản phẩm chưa được áp dụng khuyến mại"
+          "eligible": "Danh sách sản phẩm đã được áp dụng Đợt giảm giá",
+          "ineligible": "Danh sách sản phẩm chưa được áp dụng Đợt giảm giá"
         }
       }
     },
     "promotions": {
-      "promotions": "Khuyến Mại",
+      "promotions": "Đợt giảm giá",
       "titles": {
-        "create": "Tạo Khuyến Mại",
-        "list": "Khuyến Mại",
-        "edit": "Chỉnh sửa Khuyến Mại"
+        "create": "Tạo Đợt giảm giá",
+        "list": "Đợt giảm giá",
+        "edit": "Chỉnh sửa Đợt giảm giá"
       },
       "fields": {
         "id": "ID",
@@ -391,7 +399,7 @@
         "startDate": "Ngày bắt đầu",
         "endDate": "Ngày kết thúc",
         "images": {
-          "description": "Thêm hình ảnh Khuyến Mại",
+          "description": "Thêm hình ảnh Đợt giảm giá",
           "validation": "phải là 1080x1080 px"
         },
         "promotionRange": "Ngày"
@@ -576,10 +584,10 @@
         "title": "Tổng doanh thu"
       },
       "dailyRevenue": {
-        "title": "Doanh số hàng ngày"
+        "title": "Doanh số"
       },
       "dailyOrders": {
-        "title": "Đơn hàng hàng ngày"
+        "title": "Đơn hàng"
       },
       "newCustomers": {
         "title": "Những khách hàng mới"
@@ -599,7 +607,8 @@
           "pending": "Đang chuẩn bị đơn hàng",
           "ready": "Đơn hàng đã sẵn sàng",
           "on the way": "Đơn hàng đang trên đường tới",
-          "delivered": "Đơn hàng được giao",
+          "wait for delivery": "Đơn hàng đang đợi để được giao",
+          "delivered": "Đơn hàng đã được giao thành công",
           "cancelled": "Đơn hàng bị hủy"
         }
       },
@@ -607,11 +616,19 @@
         "title": "Đơn đơn hàng gần đây"
       },
       "trendingMenus": {
-        "title": "Xu hướng hàng ngày"
+        "title": "Xu hướng"
+      },
+      "overviewTab": {
+        "overview": {
+          "Revenue": "Doanh thu",
+          "Order": "Đơn hàng",
+          "Customer": "Khách hàng"
+        }
       }
     },
     "enum": {
       "orderStatuses": {
+        "PLACE_ORDER": "Đặt hàng",
         "PENDING": "Chưa giải quyết",
         "WAIT_FOR_CONFIRMATION": "Đang chờ xác nhận",
         "WAIT_FOR_DELIVERY": "Sẵn sàng",
@@ -634,12 +651,16 @@
       "promotionsStatuses": {
         "IN_ACTIVE": "Ngừng hoạt động",
         "ACTIVE": "Đang hoạt động",
-        "EXPIRED": "Hết hạn"
+        "EXPIRED": "Hết hạn",
+        "CANCELLED": "Đã hủy",
+        "UP_COMING": "Sắp diễn ra"
       },
       "vouchersStatuses": {
         "IN_ACTIVE": "Ngừng hoạt động",
         "ACTIVE": "Đang hoạt động",
-        "EXPIRED": "Hết hạn"
+        "EXPIRED": "Hết hạn",
+        "CANCELLED": "Đã hủy",
+        "UP_COMING": "Sắp diễn ra"
       }
     },
     "orders": {
@@ -654,7 +675,7 @@
         "status": "Trạng thái",
         "customer": "Khách hàng",
         "employee": "Nhân viên",
-        "voucher": "Khuyến mãi",
+        "voucher": "Phiếu giảm giá",
         "orderDetails": "Chi tiết đơn hàng",
         "createdAt": "Tạo lúc",
         "totalPrice": "Tổng cộng",
@@ -998,7 +1019,7 @@
         "title": "Bán hàng tại quầy"
     },
     "shop": {
-        "title": "Cửa hàng"
+        "title": "Sản phẩm"
     },
     "discount": {
         "title": "Giảm giá"

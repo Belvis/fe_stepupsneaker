@@ -112,7 +112,7 @@ export const GroupAge: React.FC = () => {
       <div style={{ textAlign: "center" }}>
         <Text strong>{t(`dashboard.groupAge.title`)}</Text>
       </div>
-      <Line height={190} style={{ maxHeight: "190px" }} {...config} />
+      <Line style={{ padding: "20px" }} {...config} />
     </div>
   );
 };

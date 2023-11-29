@@ -54,16 +54,24 @@ export const getUserStatusOptions = (t: TranslateFunction) => [
 
 export const getVouccherStatusOptions = (t: TranslateFunction) => [
   {
-    label: t("enum.userStatuses.ACTIVE"),
+    label: t("enum.vouchersStatuses.ACTIVE"),
     value: "ACTIVE",
   },
   {
-    label: t("enum.userStatuses.IN_ACTIVE"),
+    label: t("enum.vouchersStatuses.IN_ACTIVE"),
     value: "IN_ACTIVE",
   },
   {
-    label: t("enum.userStatuses.BLOCKED"),
-    value: "BLOCKED",
+    label: t("enum.vouchersStatuses.EXPIRED"),
+    value: "EXPIRED",
+  },
+  {
+    label: t("enum.vouchersStatuses.UP_COMING"),
+    value: "UP_COMING",
+  },
+  {
+    label: t("enum.vouchersStatuses.CANCELLED"),
+    value: "CANCELLED",
   },
 ];
 
@@ -79,6 +87,14 @@ export const getPromotionStatusOptions = (t: TranslateFunction) => [
   {
     label: t("enum.promotionsStatuses.EXPIRED"),
     value: "EXPIRED",
+  },
+  {
+    label: t("enum.promotionsStatuses.CANCELLED"),
+    value: "CANCELLED",
+  },
+  {
+    label: t("enum.promotionsStatuses.UP_COMING"),
+    value: "UP_COMING",
   },
 ];
 

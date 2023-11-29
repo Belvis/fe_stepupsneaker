@@ -3,6 +3,7 @@ import {
   CrudFilters,
   HttpError,
   IResourceComponentsProps,
+  getDefaultFilter,
   useApiUrl,
   useCreate,
   useCustom,
@@ -35,9 +36,11 @@ import Table, { ColumnsType } from "antd/es/table";
 import { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
 import { useState } from "react";
 import { ProductStatus } from "../../../components";
-import { getPromotionStatusOptions, tablePaginationSettings } from "../../../constants";
+import { getProductStatusOptions, getPromotionStatusOptions, tablePaginationSettings } from "../../../constants";
 import { IProductDetail, IProductDetailFilterVariables, IPromotion } from "../../../interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import { debounce } from "lodash";
+import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -138,67 +141,21 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
     pagination: {
       pageSize: 5,
     },
-    onSearch: ({ status, brand, color, material, priceMax, priceMin, quantity, size, sole, style, tradeMark }) => {
-      const productDetailFilters: CrudFilters = [];
-
-      productDetailFilters.push({
+    onSearch: ({ q, status }) => {
+      const customerFilters: CrudFilters = [];
+      customerFilters.push({
         field: "status",
         operator: "eq",
         value: status ? status : undefined,
       });
 
-      productDetailFilters.push({
-        field: "brand",
+      customerFilters.push({
+        field: "q",
         operator: "eq",
-        value: brand ? brand : undefined,
-      });
-      productDetailFilters.push({
-        field: "color",
-        operator: "eq",
-        value: color ? color : undefined,
-      });
-      productDetailFilters.push({
-        field: "material",
-        operator: "eq",
-        value: material ? material : undefined,
-      });
-      productDetailFilters.push({
-        field: "size",
-        operator: "eq",
-        value: size ? size : undefined,
-      });
-      productDetailFilters.push({
-        field: "sole",
-        operator: "eq",
-        value: sole ? sole : undefined,
-      });
-      productDetailFilters.push({
-        field: "style",
-        operator: "eq",
-        value: style ? style : undefined,
-      });
-      productDetailFilters.push({
-        field: "tradeMark",
-        operator: "eq",
-        value: tradeMark ? tradeMark : undefined,
-      });
-      productDetailFilters.push({
-        field: "priceMin",
-        operator: "eq",
-        value: priceMin ? priceMin : undefined,
-      });
-      productDetailFilters.push({
-        field: "priceMax",
-        operator: "eq",
-        value: priceMax ? priceMax : undefined,
-      });
-      productDetailFilters.push({
-        field: "quantity",
-        operator: "eq",
-        value: quantity ? quantity : undefined,
+        value: q ? q : undefined,
       });
 
-      return productDetailFilters;
+      return customerFilters;
     },
   });
 
@@ -253,6 +210,12 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
       },
     ];
     return columns;
+  };
+
+  const handleClearFilters = () => {
+    searchFormProps.form?.setFieldValue("q", null);
+    searchFormProps.form?.setFieldValue("status", null);
+    searchFormProps.form?.submit();
   };
 
   return (
@@ -380,6 +343,43 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
         <Col span={16}>
           <Card style={{ height: "100%" }}>
             <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+              <Form
+                {...searchFormProps}
+                onValuesChange={debounce(() => {
+                  searchFormProps.form?.submit();
+                }, 500)}
+                initialValues={{
+                  name: getDefaultFilter("q", filters, "eq"),
+                  status: getDefaultFilter("status", filters, "eq"),
+                }}
+              >
+                <Space wrap>
+                  <Text style={{ fontSize: "18px" }} strong>
+                    {t("products.filters.title")}
+                  </Text>
+                  <Form.Item name="q" noStyle>
+                    <Input
+                      style={{
+                        width: "360px",
+                      }}
+                      placeholder={t("products.filters.search.placeholder")}
+                      suffix={<SearchOutlined />}
+                    />
+                  </Form.Item>
+                  <Form.Item noStyle label={t("products.fields.status")} name="status">
+                    <Select
+                      placeholder={t("products.filters.status.placeholder")}
+                      style={{
+                        width: "160px",
+                      }}
+                      options={getProductStatusOptions(t)}
+                    />
+                  </Form.Item>
+                  <Button icon={<UndoOutlined />} onClick={handleClearFilters}>
+                    {t("actions.clear")}
+                  </Button>
+                </Space>
+              </Form>
               <Table
                 {...tableProps}
                 rowSelection={rowSelection}

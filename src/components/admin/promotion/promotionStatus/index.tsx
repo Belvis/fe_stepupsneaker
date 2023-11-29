@@ -3,7 +3,7 @@ import { Tag } from "antd";
 import { TagProps } from "antd/lib";
 
 type PromotionStatusProps = {
-  status?: "IN_ACTIVE" | "ACTIVE" | "EXPIRED";
+  status?: "IN_ACTIVE" | "ACTIVE" | "EXPIRED" | "CANCELLED" | "UP_COMING";
 };
 
 export const PromotionStatus: React.FC<PromotionStatusProps> = ({ status }) => {
@@ -20,6 +20,12 @@ export const PromotionStatus: React.FC<PromotionStatusProps> = ({ status }) => {
       break;
     case "EXPIRED":
       color = "error";
+      break;
+    case "CANCELLED":
+      color = "magenta";
+      break;
+    case "UP_COMING":
+      color = "processing";
       break;
   }
 

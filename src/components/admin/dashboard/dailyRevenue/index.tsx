@@ -17,6 +17,9 @@ import {
   RangePicker,
 } from "./styled";
 import { DashboardContext } from "../../../../contexts/admin/dashboard";
+import { formatCurrency } from "../../../../utils";
+
+const { Text, Title } = Typography;
 
 export const DailyRevenue: React.FC = () => {
   const t = useTranslate();
@@ -54,7 +57,9 @@ export const DailyRevenue: React.FC = () => {
       color: "rgba(255, 255, 255, 0.5)",
       tooltip: {
         customContent: (title, data) => {
-          return `<div style="padding: 8px 4px; font-size:16px; font-weight:600">${data[0]?.value} $</div>`;
+          return `<div style="padding: 8px 4px; font-size:16px; font-weight:600">${dayjs(
+            new Date(Number(title) * 1000)
+          ).format("LL")}: ${formatCurrency(data[0]?.value)} </div>`;
         },
       },
 
@@ -96,7 +101,14 @@ export const DailyRevenue: React.FC = () => {
               locale="vi"
               value={data?.data.total ?? 0}
             />
-            {(data?.data?.trend ?? 0) > 0 ? <IncreaseIcon /> : <DecreaseIcon />}
+            <div style={{ marginLeft: "1rem" }}>
+              <Text strong>{data?.data.trend ?? 0}%</Text>
+              {(data?.data?.trend ?? 0) > 0 ? (
+                <IncreaseIcon />
+              ) : (
+                <DecreaseIcon />
+              )}
+            </div>
           </TitleAreNumber>
         </TitleAreaAmount>
 
@@ -129,8 +141,8 @@ export const DailyRevenue: React.FC = () => {
       <Line
         padding={0}
         appendPadding={10}
-        height={135}
-        style={{ maxHeight: "135px" }}
+        height={115}
+        style={{ maxHeight: "115px" }}
         {...config}
       />
     </DailyRevenueWrapper>

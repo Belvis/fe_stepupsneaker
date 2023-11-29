@@ -3,18 +3,28 @@ import { useTranslate, useUpdate } from "@refinedev/core";
 import { Button, Space, Tooltip } from "antd";
 import { IOrder } from "../../../../interfaces";
 import { orderToPayload } from "../../../../utils/common/payloadConverter";
+import { CSSProperties } from "react";
 
 type OrderActionProps = {
   record: IOrder;
   callBack: any;
+  hideText?: boolean;
 };
 
 export const OrderActions: React.FC<OrderActionProps> = ({
   record,
   callBack,
+  hideText = false,
 }) => {
   const t = useTranslate();
   const { mutate, isLoading } = useUpdate();
+
+  const buttonStyle: CSSProperties = {
+    fontSize: 15,
+    display: "flex",
+    alignItems: "center",
+    fontWeight: 500,
+  };
 
   return (
     <Space size="middle">
@@ -22,12 +32,7 @@ export const OrderActions: React.FC<OrderActionProps> = ({
         <Button
           loading={isLoading}
           key="accept"
-          style={{
-            fontSize: 15,
-            display: "flex",
-            alignItems: "center",
-            fontWeight: 500,
-          }}
+          style={hideText ? undefined : buttonStyle}
           disabled={record.status !== "WAIT_FOR_CONFIRMATION"}
           icon={
             <CheckCircleOutlined
@@ -60,7 +65,7 @@ export const OrderActions: React.FC<OrderActionProps> = ({
             );
           }}
         >
-          {t("buttons.accept")}
+          {hideText ? null : t("buttons.accept")}
         </Button>
       </Tooltip>
 
@@ -68,12 +73,7 @@ export const OrderActions: React.FC<OrderActionProps> = ({
         <Button
           loading={isLoading}
           key="reject"
-          style={{
-            fontSize: 15,
-            display: "flex",
-            alignItems: "center",
-            fontWeight: 500,
-          }}
+          style={hideText ? undefined : buttonStyle}
           icon={
             <CloseCircleOutlined
               style={{
@@ -107,7 +107,7 @@ export const OrderActions: React.FC<OrderActionProps> = ({
             );
           }}
         >
-          {t("buttons.reject")}
+          {hideText ? null : t("buttons.reject")}
         </Button>
       </Tooltip>
     </Space>

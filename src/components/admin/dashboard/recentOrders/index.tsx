@@ -1,17 +1,11 @@
-import { useNavigation, useTranslate } from "@refinedev/core";
 import { useTable } from "@refinedev/antd";
-import { Typography, Table, Avatar, Space, Tag } from "antd";
-import {
-  RecentOrdersColumn,
-  Price,
-  OrderId,
-  Title,
-  TitleWrapper,
-} from "./styled";
+import { useNavigation, useTranslate } from "@refinedev/core";
+import { Avatar, Space, Table, Tag, Typography } from "antd";
+import { OrderId, Price, Title, TitleWrapper } from "./styled";
 
+import { ColumnsType } from "antd/es/table";
 import { IOrder } from "../../../../interfaces";
 import { OrderActions } from "../../order";
-import { ColumnsType } from "antd/es/table";
 
 const { Text, Paragraph } = Typography;
 
@@ -51,7 +45,10 @@ export const RecentOrders: React.FC = () => {
             xl: 132,
             xxl: 144,
           }}
-          src={record.orderDetails[0].productDetail.product.image}
+          src={
+            record.orderDetails[0]?.productDetail?.product?.image ??
+            "default_image_url"
+          }
         />
       ),
     },
@@ -61,17 +58,17 @@ export const RecentOrders: React.FC = () => {
       render: (_, record) => (
         <TitleWrapper>
           <Title strong>
-            {record.orderDetails[0].productDetail.product?.name}
+            {record.orderDetails[0]?.productDetail?.product?.name}
           </Title>
           <Paragraph
             ellipsis={{
               rows: 2,
               tooltip:
-                record.orderDetails[0].productDetail.product?.description,
+                record.orderDetails[0]?.productDetail?.product?.description,
               symbol: <span>...</span>,
             }}
           >
-            {record.orderDetails[0].productDetail.product?.description}
+            {record.orderDetails[0]?.productDetail?.product?.description}
           </Paragraph>
 
           <OrderId
@@ -92,7 +89,7 @@ export const RecentOrders: React.FC = () => {
           {record.employee ? (
             <>
               <Title strong>{`${record.employee.fullName}`}</Title>
-              <Text>{record.address.provinceName}</Text>
+              <Text>{record.employee.address}</Text>
             </>
           ) : (
             "N/A"
@@ -128,7 +125,7 @@ export const RecentOrders: React.FC = () => {
       key: "actions",
       align: "center",
       render: (_, record) => (
-        <OrderActions record={record} callBack={undefined} />
+        <OrderActions hideText={true} record={record} callBack={undefined} />
       ),
     },
   ];
