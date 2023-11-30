@@ -95,6 +95,9 @@ import { authProvider } from "./api/authProvider";
 // const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
 
+// const AUTH_API_URL = import.meta.env.VITE_BACKEND_API_AUTH_URL;
+const AUTH_API_URL = import.meta.env.VITE_BACKEND_API_LOCAL_AUTH_URL;
+
 function App() {
   const { t, i18n } = useTranslation();
 
@@ -150,7 +153,7 @@ function App() {
             <ConfirmDialog />
             <Refine
               dataProvider={dataProvider(API_BASE_URL)}
-              authProvider={authProvider}
+              authProvider={authProvider(AUTH_API_URL)}
               notificationProvider={useNotificationProvider}
               i18nProvider={i18nProvider}
               routerProvider={routerBindings}
@@ -484,8 +487,8 @@ function App() {
                         type="login"
                         formProps={{
                           initialValues: {
-                            email: "demo@refine.dev",
-                            password: "demodemo",
+                            email: "tuannaph29788@fpt.edu.vn",
+                            password: "123",
                           },
                         }}
                       />
@@ -498,8 +501,8 @@ function App() {
                         type="register"
                         formProps={{
                           initialValues: {
-                            email: "demo@refine.dev",
-                            password: "demodemo",
+                            email: "tuannaph29788@fpt.edu.vn",
+                            password: "123",
                           },
                         }}
                       />

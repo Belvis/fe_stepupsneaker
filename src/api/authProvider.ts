@@ -6,28 +6,36 @@ import { axiosInstance } from "../utils";
 export const TOKEN_KEY = "suns-auth-token";
 
 const httpClient: AxiosInstance = axiosInstance;
-// const API_BASE_URL = import.meta.env.VITE_BACKEND_API_AUTH_URL;
-const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_AUTH_URL;
 
-export const authProvider: AuthBindings = {
+export const authProvider = (url: string): AuthBindings => ({
   login: async ({ email, password }) => {
-    const response = await httpClient.post(`${API_BASE_URL}/login`, {
+    const response = await httpClient.post(`${url}/login`, {
       email,
       password,
     });
-    console.log(response);
+    const token = response.data.token ?? null;
 
-    localStorage.setItem(TOKEN_KEY, `${email}-${password}`);
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+
     return {
-      success: false,
+      success: true,
       redirectTo: "/",
     };
   },
   register: async ({ email, password }) => {
     try {
-      await authProvider.login({ email, password });
+      const response = await httpClient.post(`${url}/login`, {
+        email,
+        password,
+      });
+
+      const token = response.data.token ?? null;
+
+      if (token) localStorage.setItem(TOKEN_KEY, token);
+
       return {
         success: true,
+        redirectTo: "/",
       };
     } catch (error) {
       return {
@@ -66,10 +74,12 @@ export const authProvider: AuthBindings = {
   },
   onError: async (error) => {
     console.error(error);
+
     return { error };
   },
   check: async () => {
     const token = localStorage.getItem(TOKEN_KEY);
+
     if (token) {
       return {
         authenticated: true,
@@ -99,4 +109,4 @@ export const authProvider: AuthBindings = {
       avatar: "https://i.pravatar.cc/150",
     };
   },
-};
+});
