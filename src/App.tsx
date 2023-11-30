@@ -1,4 +1,4 @@
-import { Action, IResourceItem, Refine } from "@refinedev/core";
+import { Action, Authenticated, IResourceItem, Refine } from "@refinedev/core";
 import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 
 import {
@@ -10,7 +10,9 @@ import {
 import "@refinedev/antd/dist/reset.css";
 
 import routerBindings, {
+  CatchAllNavigate,
   DocumentTitleHandler,
+  NavigateToResource,
   UnsavedChangesNotifier,
 } from "@refinedev/react-router-v6";
 import { App as AntdApp } from "antd";
@@ -87,9 +89,14 @@ import {
   PromotionEdit,
   PromotionList,
 } from "./pages/admin/promotions";
+import { AuthPage } from "./pages/auth";
+import { authProvider } from "./api/authProvider";
 
 // const API_BASE_URL = import.meta.env.VITE_BACKEND_API_BASE_URL;
 const API_BASE_URL = import.meta.env.VITE_BACKEND_API_LOCAL_BASE_URL;
+
+// const AUTH_API_URL = import.meta.env.VITE_BACKEND_API_AUTH_URL;
+const AUTH_API_URL = import.meta.env.VITE_BACKEND_API_LOCAL_AUTH_URL;
 
 function App() {
   const { t, i18n } = useTranslation();
@@ -146,6 +153,7 @@ function App() {
             <ConfirmDialog />
             <Refine
               dataProvider={dataProvider(API_BASE_URL)}
+              authProvider={authProvider(AUTH_API_URL)}
               notificationProvider={useNotificationProvider}
               i18nProvider={i18nProvider}
               routerProvider={routerBindings}
@@ -368,17 +376,19 @@ function App() {
                 <Route
                   path="/"
                   element={
-                    <ThemedLayoutV2
-                      Header={() => <AdminHeader sticky />}
-                      // Warning: [antd: Menu] `children` is deprecated. Please use `items` instead.
-                      // To do: customized sider
-                      Sider={(props) => <ThemedSiderV2 {...props} fixed />}
-                      Title={({ collapsed }) => (
-                        <ThemedTitleV2 collapsed={collapsed} />
-                      )}
-                    >
-                      <Outlet />
-                    </ThemedLayoutV2>
+                    <Authenticated fallback={<CatchAllNavigate to="/login" />}>
+                      <ThemedLayoutV2
+                        Header={() => <AdminHeader sticky />}
+                        // Warning: [antd: Menu] `children` is deprecated. Please use `items` instead.
+                        // To do: customized sider
+                        Sider={(props) => <ThemedSiderV2 {...props} fixed />}
+                        Title={({ collapsed }) => (
+                          <ThemedTitleV2 collapsed={collapsed} />
+                        )}
+                      >
+                        <Outlet />
+                      </ThemedLayoutV2>
+                    </Authenticated>
                   }
                 >
                   <Route
@@ -461,6 +471,51 @@ function App() {
                   </Route>
 
                   <Route path="*" element={<ErrorComponent />} />
+                </Route>
+
+                <Route
+                  element={
+                    <Authenticated fallback={<Outlet />}>
+                      <NavigateToResource resource="dashboard" />
+                    </Authenticated>
+                  }
+                >
+                  <Route
+                    path="/login"
+                    element={
+                      <AuthPage
+                        type="login"
+                        formProps={{
+                          initialValues: {
+                            email: "tuannaph29788@fpt.edu.vn",
+                            password: "123",
+                          },
+                        }}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/register"
+                    element={
+                      <AuthPage
+                        type="register"
+                        formProps={{
+                          initialValues: {
+                            email: "tuannaph29788@fpt.edu.vn",
+                            password: "123",
+                          },
+                        }}
+                      />
+                    }
+                  />
+                  <Route
+                    path="/forgot-password"
+                    element={<AuthPage type="forgotPassword" />}
+                  />
+                  <Route
+                    path="/update-password"
+                    element={<AuthPage type="updatePassword" />}
+                  />
                 </Route>
               </Routes>
               <RefineKbar />

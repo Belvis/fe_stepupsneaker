@@ -1,7 +1,7 @@
 {
     "pages": {
       "login": {
-        "title": "Đăng nhập vào tài khoản của bạn",
+        "title": "Đăng nhập",
         "signin": "Đăng nhập",
         "signup": "Đăng ký",
         "divider": "hoặc",
@@ -16,7 +16,7 @@
           "submit": "Đăng nhập",
           "forgotPassword": "Quên mật khẩu?",
           "noAccount": "Bạn chưa có tài khoản?",
-          "rememberMe": "Tìm lại mật khẩu cũ"
+          "rememberMe": "Lưu thông tin đăng nhập"
         }
       },
       "forgotPassword": {
