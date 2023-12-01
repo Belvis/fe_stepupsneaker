@@ -137,17 +137,24 @@ export const Notifications: React.FC = () => {
     >
       {notifications &&
         notifications.length > 0 &&
-        notifications.map((noti) => (
+        notifications.map((noti, index) => (
           <Link
             to={noti.href}
             onClick={() => {
               readNotif(noti.id);
               setOpen(false);
             }}
+            key={index}
           >
-            <Skeleton avatar title={false} loading={!noti.id} active>
-              <Flex justify="space-between" align="center">
-                <Space key={noti.id}>
+            <Skeleton
+              avatar
+              title={false}
+              loading={!noti.id}
+              active
+              key={index}
+            >
+              <Flex justify="space-between" align="center" key={index}>
+                <Space key={index}>
                   <CustomAvatar
                     size={48}
                     shape="square"

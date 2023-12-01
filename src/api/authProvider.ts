@@ -99,9 +99,18 @@ export const authProvider = (url: string): AuthBindings => ({
   getPermissions: async () => null,
   getIdentity: async () => {
     const token = localStorage.getItem(TOKEN_KEY);
+
     if (!token) {
       return null;
     }
+
+    const response = await httpClient.post(
+      `http://localhost:8080/admin/employee/me`
+    );
+
+    const user = response.data ?? null;
+
+    console.log(user);
 
     return {
       id: 1,
