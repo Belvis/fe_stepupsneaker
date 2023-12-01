@@ -1,4 +1,5 @@
-import { AuthPage as AntdAuthPage, AuthProps } from "@refinedev/antd";
+import { AuthProps } from "@refinedev/antd";
+import { AuthPage as AntdAuthPage } from "../../components";
 import { Link } from "react-router-dom";
 import { AppIcon } from "../../components";
 
@@ -20,7 +21,7 @@ const renderAuthContent = (content: React.ReactNode) => {
       }}
     >
       <Link to="/">
-        <div style={{ marginBottom: 26 }}>
+        <div style={{ marginBottom: 10 }}>
           <AppIcon height={100} width={408} />
         </div>
       </Link>
