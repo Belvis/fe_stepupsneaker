@@ -104,8 +104,8 @@ export const authProvider = (url: string): AuthBindings => ({
       return null;
     }
 
-    const response = await httpClient.post(
-      `http://localhost:8080/admin/employee/me`
+    const response = await httpClient.get(
+      `http://localhost:8080/admin/employees/me`
     );
 
     const user = response.data ?? null;
