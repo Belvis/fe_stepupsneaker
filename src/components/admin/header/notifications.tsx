@@ -172,9 +172,7 @@ export const Notifications: React.FC = () => {
                     </Text>
                   </Space>
                 </Space>
-                <div>
-                  {!noti.read && !noti.id && <Badge status="processing" />}
-                </div>
+                <div>{!noti.read && <Badge status="processing" />}</div>
               </Flex>
             </Skeleton>
           </Link>

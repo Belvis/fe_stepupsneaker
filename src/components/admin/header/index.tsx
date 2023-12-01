@@ -40,7 +40,8 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   const { i18n } = useTranslation();
   const locale = useGetLocale();
   const changeLanguage = useSetLocale();
-  const { data: user } = useGetIdentity<IUser>();
+  const { data } = useGetIdentity<any>();
+
   const { mode, setMode } = useContext(ColorModeContext);
 
   const currentLocale = locale();
@@ -102,8 +103,8 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
         </Dropdown>
         <Notifications />
         <Space style={{ marginLeft: "8px" }} size="middle">
-          {user?.name && <Text strong>{user.name}</Text>}
-          {user?.avatar && <Avatar src={user?.avatar} alt={user?.name} />}
+          {data?.fullName && <Text strong>{data.fullName}</Text>}
+          {data?.image && <Avatar src={data.image} alt={data.fullName} />}
         </Space>
       </Space>
     </AntdLayout.Header>
