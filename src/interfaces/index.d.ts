@@ -17,6 +17,22 @@ export interface IOption {
   value: string;
   label: string | React.ReactNode;
 }
+export interface INotification {
+  id: string;
+  content: string;
+  employee: IEmployee;
+  customer: ICustomer;
+  href: string;
+  notificationType:
+    | "ORDER_PLACED"
+    | "ORDER_PENDING"
+    | "ORDER_CHANGED"
+    | "PRODUCT_LOW_STOCK";
+  read: boolean;
+  delivered: boolean;
+  createdAt: number;
+  loading: boolean;
+}
 
 export interface ConfirmDialogOptions {
   message?: string;

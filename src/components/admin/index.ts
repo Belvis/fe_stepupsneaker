@@ -1,6 +1,7 @@
 export * from "./header";
 export * from "./title";
 export * from "./dashboard";
+export * from "./auth";
 export * from "./product/productStatus";
 export * from "./product/modal/create";
 export * from "./product/modal/edit";

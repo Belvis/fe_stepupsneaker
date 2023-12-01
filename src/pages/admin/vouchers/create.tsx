@@ -89,9 +89,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
       });
     },
     onMutationSuccess: (data) => {
-      if (selectedCustomerIds.length > 0) {
-        handleCustomerVoucher(data.data.id);
-      }
+      handleCustomerVoucher(data.data.id);
     },
   });
   const { mutate } = useCreate();
