@@ -103,10 +103,17 @@ export const authProvider = (url: string): AuthBindings => ({
       return null;
     }
 
-    return {
-      id: 1,
-      name: "James Sullivan",
-      avatar: "https://i.pravatar.cc/150",
-    };
+    try {
+      const response = await httpClient
+        .get("http://localhost:8080/admin/employees/me")
+        .then((res) => {
+          return res.data.content;
+        });
+
+      return response;
+    } catch (error) {
+      console.error("Error fetching identity:", error);
+      return null;
+    }
   },
 });
