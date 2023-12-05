@@ -1,5 +1,5 @@
 import { CheckSquareOutlined, UndoOutlined } from "@ant-design/icons";
-import { EditButton, Show, useSelect, useTable } from "@refinedev/antd";
+import { EditButton, Show, useModalForm, useSelect, useTable } from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -30,7 +30,7 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { ProductStatus } from "../../../../components";
+import { EditProductDetail, ProductStatus } from "../../../../components";
 import { getProductStatusOptions, tablePaginationSettings } from "../../../../constants";
 import {
   IBrand,
@@ -60,6 +60,18 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
 
   const [productDetails, setProductDetails] = useState<IProductDetail[]>([]);
   const [productDetailsSave, setProductDetailsSave] = useState<IProductDetail[]>([]);
+
+  const {
+    modalProps: editModalProps,
+    formProps: editFormProps,
+    show: editModalShow,
+    id: editId,
+    onFinish: editOnFinish,
+  } = useModalForm<IProductDetail>({
+    action: "edit",
+    warnWhenUnsavedChanges: true,
+    resource: "product-details",
+  });
 
   const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
     IProductDetail,
@@ -313,8 +325,11 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "image",
       key: "image",
       render: (_, { image, promotionProductDetails }) => {
-        if (promotionProductDetails.length > 0) {
-          const value = promotionProductDetails[0].promotion.value;
+        const promotionProductDetailsActive = promotionProductDetails.filter(
+          (productDetail) => productDetail.promotion.status == "ACTIVE"
+        );
+        if (promotionProductDetailsActive.length > 0) {
+          const value = promotionProductDetailsActive[0].promotion.value;
           return (
             <Badge.Ribbon text={`${value} %`} color="red">
               <Avatar shape="square" size={74} src={image} />
@@ -400,7 +415,12 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title={t("actions.edit")}>
-            <EditButton style={{ color: "#52c41a", borderColor: "#52c41a" }} hideText size="small" onClick={() => {}} />
+            <EditButton
+              style={{ color: "#52c41a", borderColor: "#52c41a" }}
+              hideText
+              size="small"
+              onClick={() => editModalShow(record.id)}
+            />
           </Tooltip>
         </Space>
       ),
@@ -615,6 +635,7 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
           columns={columns}
         />
       </Card>
+      <EditProductDetail onFinish={editOnFinish} id={editId} modalProps={editModalProps} formProps={editFormProps} />
     </Show>
   );
 };

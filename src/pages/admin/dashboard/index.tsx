@@ -20,8 +20,7 @@ type TrendingOption = "Ngày" | "Tuần" | "Tháng" | "Năm";
 
 export const DashboardPage: React.FC = () => {
   const { t } = useTranslation();
-  const [selectedTrendingOption, setSelectedTrendingOption] =
-    useState<TrendingOption>("Ngày");
+  const [selectedTrendingOption, setSelectedTrendingOption] = useState<TrendingOption>("Ngày");
 
   const calculateTimeRange = (option: TrendingOption) => {
     const currentDate = dayjs();
@@ -29,26 +28,30 @@ export const DashboardPage: React.FC = () => {
     switch (option) {
       case "Ngày":
         return {
-          start: currentDate.valueOf(),
-          end: currentDate.valueOf(),
+          start: currentDate.startOf("day").valueOf(),
+          end: currentDate.endOf("day").valueOf(),
         };
       case "Tuần":
-        const startDateWeek = currentDate.subtract(1, "week");
+        const startDateWeek = currentDate.startOf("week");
+        const endDateWeek = currentDate.endOf("week");
+
         return {
           start: startDateWeek.valueOf(),
-          end: currentDate.valueOf(),
+          end: endDateWeek.valueOf(),
         };
       case "Tháng":
-        const startDateMonth = currentDate.subtract(1, "month");
+        const startDateMonth = currentDate.startOf("month");
+        const endDateMonth = currentDate.endOf("month");
         return {
           start: startDateMonth.valueOf(),
-          end: currentDate.valueOf(),
+          end: endDateMonth.valueOf(),
         };
       case "Năm":
-        const startDateYear = currentDate.subtract(1, "year");
+        const startDateYear = currentDate.startOf("year");
+        const endDateYear = currentDate.endOf("year");
         return {
           start: startDateYear.valueOf(),
-          end: currentDate.valueOf(),
+          end: endDateYear.valueOf(),
         };
       default:
         return {
@@ -154,10 +157,7 @@ export const DashboardPage: React.FC = () => {
           title={
             <Flex align="center" justify="space-between">
               <Text strong>{t("dashboard.trendingMenus.title")}</Text>
-              <Segmented
-                options={["Ngày", "Tuần", "Tháng", "Năm"]}
-                onChange={handleOptionChange}
-              />
+              <Segmented options={["Ngày", "Tuần", "Tháng", "Năm"]} onChange={handleOptionChange} />
             </Flex>
           }
         >
