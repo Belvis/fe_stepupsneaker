@@ -1,5 +1,10 @@
 import { DeleteOutlined, SearchOutlined } from "@ant-design/icons";
-import { EditButton, List, useTable } from "@refinedev/antd";
+import {
+  EditButton,
+  List,
+  getDefaultSortOrder,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -38,32 +43,29 @@ const { Text } = Typography;
 export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
 
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IEmployee,
-    HttpError,
-    IEmployeeFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q, status }) => {
-      const employeeFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<IEmployee, HttpError, IEmployeeFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q, status }) => {
+        const employeeFilters: CrudFilters = [];
 
-      employeeFilters.push({
-        field: "status",
-        operator: "eq",
-        value: status ? status : undefined,
-      });
+        employeeFilters.push({
+          field: "status",
+          operator: "eq",
+          value: status ? status : undefined,
+        });
 
-      employeeFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        employeeFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return employeeFilters;
-    },
-  });
+        return employeeFilters;
+      },
+    });
 
   const { mutate: mutateDelete } = useDelete();
 
@@ -85,12 +87,28 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
   const columns: ColumnsType<IEmployee> = [
     {
       title: "#",
-      key: "index",
-      width: "1rem",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      key: "createdAt",
+      dataIndex: "createdAt",
+      align: "center",
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("employees.fields.fullName"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("fullName", sorters),
       dataIndex: "fullName",
       key: "fullName",
       width: 300,
@@ -103,31 +121,43 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("employees.fields.gender.label"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("gender", sorters),
       dataIndex: "gender",
       key: "gender",
     },
     {
       title: t("employees.fields.role"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("role", sorters),
       dataIndex: ["role", "name"],
       key: "role",
     },
     {
       title: t("employees.fields.phone"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("phoneNumber", sorters),
       dataIndex: "phoneNumber",
       key: "phoneNumber",
     },
     {
       title: t("employees.fields.email"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("email", sorters),
       dataIndex: "email",
       key: "email",
     },
     {
       title: t("employees.fields.address"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("address", sorters),
       dataIndex: "address",
       key: "address",
     },
     {
       title: t("employees.fields.status"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("status", sorters),
       key: "status",
       dataIndex: "status",
       width: "0.5rem",

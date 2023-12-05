@@ -228,6 +228,7 @@ export interface IColor {
   code: string;
   name: string;
   status: ProductStatus;
+  createdAt: number;
 }
 
 export interface IBrand {

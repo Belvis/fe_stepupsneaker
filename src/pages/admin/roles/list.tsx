@@ -4,7 +4,12 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { List, useModalForm, useTable } from "@refinedev/antd";
+import {
+  List,
+  getDefaultSortOrder,
+  useModalForm,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -41,26 +46,23 @@ export const RoleList: React.FC<IResourceComponentsProps> = () => {
 
   const { mutate: mutateDelete } = useDelete();
 
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IRole,
-    HttpError,
-    IRoleFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q }) => {
-      const roleFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<IRole, HttpError, IRoleFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q }) => {
+        const roleFilters: CrudFilters = [];
 
-      roleFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        roleFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return roleFilters;
-    },
-  });
+        return roleFilters;
+      },
+    });
 
   const {
     modalProps: createModalProps,
@@ -89,12 +91,28 @@ export const RoleList: React.FC<IResourceComponentsProps> = () => {
   const columns: ColumnsType<IRole> = [
     {
       title: "#",
-      key: "index",
+      key: "createdAt",
+      dataIndex: "createdAt",
       align: "center",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("roles.fields.name"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("name", sorters),
       dataIndex: "name",
       key: "name",
     },

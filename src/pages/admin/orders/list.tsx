@@ -8,7 +8,13 @@ import {
 } from "@refinedev/core";
 
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
-import { DateField, List, NumberField, useTable } from "@refinedev/antd";
+import {
+  DateField,
+  List,
+  NumberField,
+  getDefaultSortOrder,
+  useTable,
+} from "@refinedev/antd";
 import {
   Button,
   Card,
@@ -45,6 +51,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
     pageSize,
     tableQueryResult: { refetch },
     overtime,
+    sorters,
   } = useTable<IOrder, HttpError, IOrderFilterVariables>({
     onSearch: (params) => {
       const filters: CrudFilters = [];
@@ -90,13 +97,28 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
   const columns: ColumnsType<IOrder> = [
     {
       title: "#",
-      key: "index",
-      width: "1rem",
+      key: "createdAt",
+      dataIndex: "createdAt",
       align: "center",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("orders.fields.code"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("code", sorters),
       key: "code",
       dataIndex: "code",
       width: "10%",
@@ -111,6 +133,8 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("orders.fields.type.title"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("type", sorters),
       key: "type",
       dataIndex: "type",
       align: "center",
@@ -120,6 +144,8 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("orders.fields.status"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("status", sorters),
       key: "status",
       dataIndex: "status",
       align: "center",
@@ -127,8 +153,10 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("orders.fields.totalPrice"),
-      key: "amount",
-      dataIndex: "amount",
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("totalMoney", sorters),
+      key: "totalMoney",
+      dataIndex: "totalMoney",
       width: "10%",
       align: "end",
       render: (_, { totalMoney }) => (
@@ -143,7 +171,9 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("orders.fields.customer"),
-      key: "customer.id",
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("customer", sorters),
+      key: "customer",
       dataIndex: ["customer"],
       render: (_, { customer }) => {
         return (
@@ -190,6 +220,8 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("orders.fields.createdAt"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
       key: "createdAt",
       dataIndex: "createdAt",
       align: "right",
