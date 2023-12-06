@@ -4,7 +4,12 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { List, useModalForm, useTable } from "@refinedev/antd";
+import {
+  List,
+  getDefaultSortOrder,
+  useModalForm,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -46,32 +51,29 @@ export const MaterialList: React.FC<IResourceComponentsProps> = () => {
 
   const { mutate: mutateDelete } = useDelete();
 
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IMaterial,
-    HttpError,
-    IMaterialFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q, status }) => {
-      const materialFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<IMaterial, HttpError, IMaterialFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q, status }) => {
+        const materialFilters: CrudFilters = [];
 
-      materialFilters.push({
-        field: "status",
-        operator: "eq",
-        value: status ? status : undefined,
-      });
+        materialFilters.push({
+          field: "status",
+          operator: "eq",
+          value: status ? status : undefined,
+        });
 
-      materialFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        materialFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return materialFilters;
-    },
-  });
+        return materialFilters;
+      },
+    });
 
   const {
     modalProps: createModalProps,
@@ -100,17 +102,35 @@ export const MaterialList: React.FC<IResourceComponentsProps> = () => {
   const columns: ColumnsType<IMaterial> = [
     {
       title: "#",
-      key: "index",
+      key: "createdAt",
+      dataIndex: "createdAt",
       align: "center",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("materials.fields.name"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("name", sorters),
       dataIndex: "name",
       key: "name",
     },
     {
       title: t("materials.fields.status"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("status", sorters),
       key: "status",
       dataIndex: "status",
       align: "center",

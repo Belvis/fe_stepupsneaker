@@ -4,7 +4,12 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { List, useModalForm, useTable } from "@refinedev/antd";
+import {
+  List,
+  getDefaultSortOrder,
+  useModalForm,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -44,32 +49,29 @@ export const ColorList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
 
   const { mutate: mutateDelete } = useDelete();
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IColor,
-    HttpError,
-    IColorFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q, status }) => {
-      const colorFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<IColor, HttpError, IColorFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q, status }) => {
+        const colorFilters: CrudFilters = [];
 
-      colorFilters.push({
-        field: "status",
-        operator: "eq",
-        value: status ? status : undefined,
-      });
+        colorFilters.push({
+          field: "status",
+          operator: "eq",
+          value: status ? status : undefined,
+        });
 
-      colorFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        colorFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return colorFilters;
-    },
-  });
+        return colorFilters;
+      },
+    });
 
   const {
     modalProps: createModalProps,
@@ -99,26 +101,45 @@ export const ColorList: React.FC<IResourceComponentsProps> = () => {
   const columns: ColumnsType<IColor> = [
     {
       title: "#",
-      key: "index",
+      key: "createdAt",
       align: "center",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("colors.fields.code"),
       dataIndex: "code",
       key: "code",
       align: "center",
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("code", sorters),
       render: (_, { code }) => (
         <ColorPicker style={colorPickerStyles} value={code} showText disabled />
       ),
     },
     {
       title: t("colors.fields.name"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("name", sorters),
       dataIndex: "name",
       key: "name",
     },
     {
       title: t("colors.fields.status"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("status", sorters),
       key: "status",
       dataIndex: "status",
       align: "center",
