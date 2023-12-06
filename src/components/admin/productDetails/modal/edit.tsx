@@ -1,5 +1,5 @@
 import { getValueFromEvent, useSelect } from "@refinedev/antd";
-import { HttpError, useOne, useTranslate } from "@refinedev/core";
+import { HttpError, useOne, useParsed, useTranslate } from "@refinedev/core";
 import {
   Avatar,
   Col,
@@ -47,9 +47,27 @@ type EditProductProps = {
   onFinish: (values: any) => void;
 };
 
+function convertToPayload(productDetails: IProductDetail[], productId: string): IProductDetailConvertedPayload[] {
+  return productDetails.map((detail) => ({
+    product: productId,
+    tradeMark: detail.tradeMark.id,
+    style: detail.style.id,
+    size: detail.size.id,
+    material: detail.material.id,
+    color: detail.color.id,
+    brand: detail.brand.id,
+    sole: detail.sole.id,
+    image: detail.image,
+    price: detail.price,
+    quantity: detail.quantity,
+    status: detail.status,
+  }));
+}
+
 export const EditProductDetail: React.FC<EditProductProps> = ({ modalProps, formProps, id, onFinish }) => {
   const t = useTranslate();
   const breakpoint = Grid.useBreakpoint();
+  const { id: productId } = useParsed();
 
   const renderColor = (value: string, label: string) => ({
     value: value,
@@ -169,11 +187,12 @@ export const EditProductDetail: React.FC<EditProductProps> = ({ modalProps, form
   const imageUrl = Form.useWatch("image", formProps.form);
   const [messageApi, contextHolder] = message.useMessage();
 
-  const onFinishHandler = (values: any) => {
+  const onFinishHandler = (values: IProductDetail) => {
     showWarningConfirmDialog({
       options: {
         accept: () => {
-          onFinish(values);
+          const convertedPayload: IProductDetailConvertedPayload[] = convertToPayload([values], productId as string);
+          onFinish(convertedPayload[0]);
         },
         reject: () => {},
       },
