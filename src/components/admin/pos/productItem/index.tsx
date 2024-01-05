@@ -42,7 +42,7 @@ export const ProductItem: React.FC<ProductItemProps> = ({
                 </Title>
               </Row>
               <Row>
-                <Text>Stock qty: x{totalQuantity}</Text>
+                <Text>Số lượng tồn: x{totalQuantity}</Text>
               </Row>
             </Col>
           </Row>
@@ -63,7 +63,7 @@ export const ProductItem: React.FC<ProductItemProps> = ({
               <Title level={5}>
                 {name} #{code}
               </Title>
-              <Text>Stock qty: x{totalQuantity}</Text>
+              <Text>Số lượng tồn: x{totalQuantity}</Text>
             </Col>
           </Row>
         </Card>

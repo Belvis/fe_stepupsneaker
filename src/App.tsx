@@ -487,8 +487,9 @@ function App() {
                         type="login"
                         formProps={{
                           initialValues: {
-                            email: "tuannaph29788@fpt.edu.vn",
-                            password: "123",
+                            email: localStorage.getItem("suns-email") || "",
+                            password:
+                              localStorage.getItem("suns-password") || "",
                           },
                         }}
                       />

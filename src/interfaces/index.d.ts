@@ -216,6 +216,10 @@ export type OrderStatus =
   | "RETURNED"
   | "EXCHANGED";
 
+type IDiscountInfo = {
+  value: number;
+  endDate: number;
+};
 export interface IProductStatus {
   id: number;
   text: "Active";
@@ -354,6 +358,8 @@ export interface IProduct {
   image: string;
   status: ProductStatus;
   productDetails: IProductDetail[];
+  saleCount: number;
+  createdAt: number;
 }
 
 export interface IPromotionProductDetailResponse {
@@ -386,7 +392,37 @@ export interface IProductDetail {
   status: ProductStatus;
   promotionProductDetails: IPromotionProductDetailResponse[];
 }
-
+export interface IProductClient {
+  id: string;
+  code: string;
+  name: string;
+  price: {
+    min: number;
+    max: number;
+  };
+  discount: number;
+  saleCount: number;
+  offerEnd: number;
+  new: boolean;
+  variation: IVariation[];
+  image: string[];
+  description: string;
+}
+export interface IVariation {
+  color: IColor;
+  image: string[];
+  size: ISizeClient[];
+}
+export interface ISizeClient {
+  id: string;
+  name: string;
+  stock: number;
+  price: number;
+  discount: number;
+  saleCount: number;
+  offerEnd: number;
+  productDetailId: string;
+}
 export interface IPayment {
   id: string;
   order: IOrder;

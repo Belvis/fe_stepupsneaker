@@ -63,6 +63,15 @@ export const LoginPage: React.FC<LoginProps> = ({
     v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
   });
 
+  const handleLogin = (values: LoginFormTypes) => {
+    const remember = form.getFieldValue("remember");
+    if (remember && remember == true) {
+      localStorage.setItem("suns-email", values.email || "");
+      localStorage.setItem("suns-password", values.password || "");
+    }
+    login(values);
+  };
+
   const PageTitle =
     title === false ? null : (
       <div
@@ -147,7 +156,7 @@ export const LoginPage: React.FC<LoginProps> = ({
       <Form<LoginFormTypes>
         layout="vertical"
         form={form}
-        onFinish={(values) => login(values)}
+        onFinish={(values) => handleLogin(values)}
         requiredMark={false}
         initialValues={{
           remember: false,

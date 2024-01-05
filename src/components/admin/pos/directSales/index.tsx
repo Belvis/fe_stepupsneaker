@@ -90,7 +90,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
     pageSize: 5,
   });
 
-  const [brandFilter, setBrandFilter] = useState("  ");
+  const [brandFilter, setBrandFilter] = useState("");
   const [MaterialFilter, setMaterialFilter] = useState("");
   const [SoleFilter, setSoleFilter] = useState("");
   const [StyleFilter, setStyleFilter] = useState("");
