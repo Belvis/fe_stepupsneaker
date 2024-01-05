@@ -82,7 +82,7 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
     filters: {
       initial: [
         {
-          field: "product",
+          field: "products",
           operator: "eq",
           value: id,
         },
@@ -106,32 +106,32 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
         value: brand ? brand : undefined,
       });
       productDetailFilters.push({
-        field: "color",
+        field: "colors",
         operator: "eq",
         value: color ? color : undefined,
       });
       productDetailFilters.push({
-        field: "material",
+        field: "materials",
         operator: "eq",
         value: material ? material : undefined,
       });
       productDetailFilters.push({
-        field: "size",
+        field: "sizes",
         operator: "eq",
         value: size ? size : undefined,
       });
       productDetailFilters.push({
-        field: "sole",
+        field: "soles",
         operator: "eq",
         value: sole ? sole : undefined,
       });
       productDetailFilters.push({
-        field: "style",
+        field: "styles",
         operator: "eq",
         value: style ? style : undefined,
       });
       productDetailFilters.push({
-        field: "tradeMark",
+        field: "tradeMarks",
         operator: "eq",
         value: tradeMark ? tradeMark : undefined,
       });
