@@ -5,6 +5,7 @@ export * from "./auth";
 export * from "./product/productStatus";
 export * from "./product/modal/create";
 export * from "./product/modal/edit";
+export * from "./productDetails/modal/edit";
 export * from "./address/modal/create";
 export * from "./address/modal/edit";
 export * from "./address/modal/list";

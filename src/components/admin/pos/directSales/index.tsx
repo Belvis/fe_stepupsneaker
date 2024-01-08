@@ -29,25 +29,12 @@ import {
   theme,
 } from "antd";
 import { debounce } from "lodash";
-import React, {
-  Dispatch,
-  ReactNode,
-  SetStateAction,
-  useContext,
-  useEffect,
-  useState,
-} from "react";
+import React, { Dispatch, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
 import { ICustomer, IOption, IOrder, IProduct } from "../../../../interfaces";
 import { CheckOutDrawer } from "../checkOutDrawer";
 import { OrderItem } from "../orderItem";
 import { ProductItem } from "../productItem";
-import {
-  CloseButtonWrapper,
-  CustomerInfor,
-  CustomerName,
-  TextContainer,
-  UserIcon,
-} from "./styled";
+import { CloseButtonWrapper, CustomerInfor, CustomerName, TextContainer, UserIcon } from "./styled";
 import { PosFilter } from "../filterDrawer";
 import { ColorModeContext } from "../../../../contexts/color-mode";
 import ShoppingCartHeader from "../cartHeader";
@@ -58,9 +45,7 @@ type DirectSalesProps = {
   order: IOrder;
   callBack: () => void;
   setProductDetailModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedProduct: React.Dispatch<
-    React.SetStateAction<IProduct | undefined>
-  >;
+  setSelectedProduct: React.Dispatch<React.SetStateAction<IProduct | undefined>>;
   showCreateCustomerModal: () => void;
   showEditCustomerModal: () => void;
   customerOptions: IOption[];
@@ -81,9 +66,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
   const { token } = useToken();
   const [messageApi, contextHolder] = message.useMessage();
   const { mode } = useContext(ColorModeContext);
-  const [pLayout, setpLayout] = useState<"horizontal" | "vertical">(
-    "horizontal"
-  );
+  const [pLayout, setpLayout] = useState<"horizontal" | "vertical">("horizontal");
   const [products, setProducts] = useState<IProduct[]>([]);
   const [pagination, setPagination] = useState<TablePaginationConfig>({
     current: 1,
@@ -172,9 +155,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
   };
 
   const handleToggleLayout = () => {
-    setpLayout((prevLayout) =>
-      prevLayout === "horizontal" ? "vertical" : "horizontal"
-    );
+    setpLayout((prevLayout) => (prevLayout === "horizontal" ? "vertical" : "horizontal"));
   };
 
   function editOrderNote(value: string): void {
@@ -267,12 +248,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
         >
           <ShoppingCartHeader />
           {orderDetails.map((orderItem, index) => (
-            <OrderItem
-              key={orderItem.id}
-              orderDetail={orderItem}
-              callBack={callBack}
-              count={index}
-            />
+            <OrderItem key={orderItem.id} orderDetail={orderItem} callBack={callBack} count={index} />
           ))}
         </Space>
         <Card style={{ background: token.colorPrimaryBg }}>
@@ -343,15 +319,9 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                           editOrderCustomer(option.customer.id);
                         }}
                         filterOption={false}
-                        onSearch={debounce(
-                          (value: string) => setCustomerSearch(value),
-                          300
-                        )}
+                        onSearch={debounce((value: string) => setCustomerSearch(value), 300)}
                       >
-                        <Input
-                          prefix={<SearchOutlined />}
-                          placeholder={t("search.placeholder.customer")}
-                        />
+                        <Input prefix={<SearchOutlined />} placeholder={t("search.placeholder.customer")} />
                       </AutoComplete>
                       <Button
                         type="text"
@@ -361,20 +331,10 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                       ></Button>
                     </>
                   ) : (
-                    <CustomerInfor
-                      color={mode === "light" ? "#f5f5f5" : ""}
-                      span={24}
-                    >
+                    <CustomerInfor color={mode === "light" ? "#f5f5f5" : ""} span={24}>
                       <TextContainer>
-                        <UserIcon
-                          color={
-                            mode === "light" ? token.colorBgMask : "#ffffff"
-                          }
-                        />
-                        <CustomerName
-                          color={token.colorPrimary}
-                          onClick={showEditCustomerModal}
-                        >
+                        <UserIcon color={mode === "light" ? token.colorBgMask : "#ffffff"} />
+                        <CustomerName color={token.colorPrimary} onClick={showEditCustomerModal}>
                           {order.customer?.fullName}
                         </CustomerName>
                       </TextContainer>
@@ -386,10 +346,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                             <CloseOutlined
                               style={{
                                 fontSize: token.fontSize,
-                                color:
-                                  mode == "light"
-                                    ? token.colorBgMask
-                                    : "#ffffff",
+                                color: mode == "light" ? token.colorBgMask : "#ffffff",
                               }}
                             />
                           }
@@ -401,31 +358,16 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                 </Spin>
               </Col>
               <Col span={2}>
-                <Button
-                  shape="circle"
-                  type="text"
-                  icon={<UnorderedListOutlined />}
-                />
+                <Button shape="circle" type="text" icon={<UnorderedListOutlined />} />
+              </Col>
+              <Col span={2}>
+                <Button shape="circle" type="text" icon={<FilterOutlined />} onClick={showFilterDrawer} />
               </Col>
               <Col span={2}>
                 <Button
                   shape="circle"
                   type="text"
-                  icon={<FilterOutlined />}
-                  onClick={showFilterDrawer}
-                />
-              </Col>
-              <Col span={2}>
-                <Button
-                  shape="circle"
-                  type="text"
-                  icon={
-                    pLayout === "horizontal" ? (
-                      <AppstoreOutlined />
-                    ) : (
-                      <PictureOutlined />
-                    )
-                  }
+                  icon={pLayout === "horizontal" ? <AppstoreOutlined /> : <PictureOutlined />}
                   onClick={handleToggleLayout}
                 />
               </Col>
@@ -477,17 +419,8 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
           </Space>
         </Card>
       </Col>
-      <CheckOutDrawer
-        open={checkOutDrawerOpen}
-        onClose={onCheckOutDrawerClose}
-        order={order}
-        callBack={callBack}
-      />
-      <PosFilter
-        open={filterDrawerOpen}
-        onClose={onFilterDrawerClose}
-        callBack={callBack}
-      />
+      <CheckOutDrawer open={checkOutDrawerOpen} onClose={onCheckOutDrawerClose} order={order} callBack={callBack} />
+      <PosFilter open={filterDrawerOpen} onClose={onFilterDrawerClose} callBack={callBack} />
     </Row>
   );
 };
@@ -507,11 +440,7 @@ const renderItem = (title: string, imageUrl: string, customer: ICustomer) => ({
   customer: customer,
 });
 
-const itemRender = (
-  page: number,
-  type: "page" | "prev" | "next" | "jump-prev" | "jump-next",
-  element: ReactNode
-) => {
+const itemRender = (page: number, type: "page" | "prev" | "next" | "jump-prev" | "jump-next", element: ReactNode) => {
   if (type === "prev") {
     return element;
   }

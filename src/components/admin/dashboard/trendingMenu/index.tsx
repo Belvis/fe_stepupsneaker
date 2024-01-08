@@ -12,6 +12,7 @@ type TrendingMenuProps = {
 export const TrendingMenu: React.FC<TrendingMenuProps> = ({ range }) => {
   const {
     listProps,
+    setFilters,
     queryResult: { refetch },
   } = useSimpleList<IProduct>({
     resource: "products",
@@ -42,7 +43,20 @@ export const TrendingMenu: React.FC<TrendingMenuProps> = ({ range }) => {
   });
 
   useEffect(() => {
-    if (range) refetch();
+    if (range) {
+      setFilters([
+        {
+          field: "start",
+          operator: "eq",
+          value: range.start,
+        },
+        {
+          field: "end",
+          operator: "eq",
+          value: range.end,
+        },
+      ]);
+    }
   }, [range]);
 
   return (
@@ -65,10 +79,7 @@ const calculateLowestPrice = (productDetails: IProductDetail[]): number => {
   }, productDetails[0].price);
 };
 
-const MenuItem: React.FC<{ item: IProduct; index: number }> = ({
-  item,
-  index,
-}) => (
+const MenuItem: React.FC<{ item: IProduct; index: number }> = ({ item, index }) => (
   <Container key={item.id}>
     <Space size="large">
       <AvatarWrapper className="menu-item__avatar">

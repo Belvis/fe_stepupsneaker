@@ -622,7 +622,7 @@
         "overview": {
           "Revenue": "Doanh thu",
           "Order": "Đơn hàng",
-          "Customer": "Khách hàng"
+          "Customers": "Khách hàng"
         }
       }
     },
@@ -914,7 +914,12 @@
         "image": "Hình ảnh",
         "size": "Kích cỡ",
         "color": "Màu sắc",
-        "status": "Trạng thái"
+        "status": "Trạng thái",
+        "brand": "Thương hiệu",
+        "style": "Kiểu dáng",
+        "material": "Chất liệu",
+        "tradeMark":"Nhãn hiệu",
+        "sole":"Đế"
       },
       "filters": {
         "title": "Bộ lọc",
