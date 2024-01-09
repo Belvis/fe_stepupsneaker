@@ -116,7 +116,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
           onError: (error, variables, context) => {
             messageApi.open({
               type: "error",
-              content: t("orders.notification.product.add.error"),
+              content: error.message,
             });
           },
           onSuccess: (data, variables, context) => {
@@ -266,6 +266,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                 <Space>
                   <Text strong>Kích cỡ</Text>
                   <Text>{selectedProductSize.name}</Text>
+                  <Text strong>Số lượng tồn</Text>
+                  <Text>{selectedProductSize.stock}</Text>
                 </Space>
                 <Space>
                   {productClient.variation && (
@@ -339,7 +341,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                   type="primary"
                   onClick={handleFinish}
                   style={{ width: "100%" }}
-                  disabled={productClient.variation.length <= 0}
+                  disabled={
+                    productClient.variation.length <= 0 ||
+                    selectedProductSize.stock <= 0
+                  }
                 >
                   Thêm vào giỏ
                 </Button>
