@@ -769,6 +769,13 @@
           }
   
         },
+        "shippingMoney": {
+          "edit": {
+            "success": "Chỉnh sửa phí giao hàng thành công.",
+            "error": "Chỉnh sửa phí giao hàng thất bại."
+          }
+  
+        },
         "voucher": {
           "edit": {
             "success": "Chỉnh sửa giảm giá đơn hàng thành công.",

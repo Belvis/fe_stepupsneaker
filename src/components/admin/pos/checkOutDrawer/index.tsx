@@ -246,6 +246,19 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
   }
 
   function submitOrder(): void {
+    const customerPaid = (payments ?? []).reduce(
+      (acc, payment) => acc + payment.totalMoney,
+      0
+    );
+
+    if (customerPaid < totalPrice - discount) {
+      messageApi.open({
+        type: "error",
+        content: "Khách hàng thanh toán không được nhỏ hơn Khách cần trả.",
+      });
+      return;
+    }
+
     mutateUpdate(
       {
         resource: "orders",
@@ -653,14 +666,16 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           <Flex gap="middle" justify="space-between" align="center">
             <Space size="large" wrap>
               <Text strong>{t("orders.tab.customerPay")}</Text>
-              <Button
-                size="small"
-                type="text"
-                icon={
-                  <CreditCardFilled style={{ color: token.colorPrimary }} />
-                }
-                onClick={showPaymentModal}
-              />
+              <Tooltip title={"Thanh toán nhiều phương thức."}>
+                <Button
+                  size="small"
+                  type="text"
+                  icon={
+                    <CreditCardFilled style={{ color: token.colorPrimary }} />
+                  }
+                  onClick={showPaymentModal}
+                />
+              </Tooltip>
             </Space>
             <Title level={4}>
               {payments ? (
@@ -675,7 +690,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   )}
                 />
               ) : (
-                "Loading..."
+                "Đang tải..."
               )}
             </Title>
           </Flex>

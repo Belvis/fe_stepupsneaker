@@ -91,9 +91,9 @@ export const OrderItem: React.FC<OrderItemProps> = ({
               src={orderDetail.productDetail.image}
             />
             <Flex vertical>
-              <Text>{product.name}</Text>
-              <Text>Size: {size.name}</Text>
-              <Text>Color: {color.name}</Text>
+              <Text strong>{product.name}</Text>
+              <Text>Kích cỡ: {size.name}</Text>
+              <Text>Màu sắc: {color.name}</Text>
             </Flex>
           </Flex>
         </Col>

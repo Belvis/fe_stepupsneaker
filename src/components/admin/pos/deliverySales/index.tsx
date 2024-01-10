@@ -32,6 +32,7 @@ import {
   Space,
   Switch,
   TablePaginationConfig,
+  Tooltip,
   Typography,
   message,
   theme,
@@ -407,6 +408,44 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
       );
   }
 
+  function editOrderShippingMoney(value: number): void {
+    if (value !== order.shippingMoney)
+      mutateUpdate(
+        {
+          resource: "orders",
+          values: {
+            ...order,
+            customer: order.customer ? order.customer.id : null,
+            employee: order.employee ? order.employee.id : null,
+            voucher: order.voucher ? order.voucher.id : null,
+            shippingMoney: value,
+          },
+          id: order.id,
+          successNotification: () => {
+            return false;
+          },
+          errorNotification: () => {
+            return false;
+          },
+        },
+        {
+          onError: (error, variables, context) => {
+            messageApi.open({
+              type: "error",
+              content: t("orders.notification.note.edit.error"),
+            });
+          },
+          onSuccess: (data, variables, context) => {
+            callBack();
+            messageApi.open({
+              type: "success",
+              content: t("orders.notification.note.edit.success"),
+            });
+          },
+        }
+      );
+  }
+
   function editOrderCustomer(value: string | null): void {
     mutateUpdate(
       {
@@ -622,17 +661,25 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                 <Flex gap="middle" justify="space-between" align="center">
                   <Space size="large" wrap>
                     <Text>{t("orders.tab.discount")}</Text>
-                    <Button
-                      disabled={!order.customer}
-                      type="text"
-                      size="small"
-                      icon={
-                        <PlusSquareFilled
-                          style={{ color: token.colorPrimary }}
-                        />
+                    <Tooltip
+                      title={
+                        !order.customer
+                          ? "Khách lẻ không thể sử dụng giảm giá."
+                          : ""
                       }
-                      onClick={showDiscountModal}
-                    />
+                    >
+                      <Button
+                        disabled={!order.customer}
+                        type="text"
+                        size="small"
+                        icon={
+                          <PlusSquareFilled
+                            style={{ color: token.colorPrimary }}
+                          />
+                        }
+                        onClick={showDiscountModal}
+                      />
+                    </Tooltip>
                   </Space>
                   <Title level={5}>
                     <NumberField
@@ -650,7 +697,14 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                   <Space size="large" wrap>
                     <Text>{t("orders.tab.shippingMoney")}</Text>
                   </Space>
-                  <Title level={5} style={{ color: `${token.colorPrimary}` }}>
+                  <Title
+                    level={5}
+                    style={{ color: `${token.colorPrimary}` }}
+                    editable={{
+                      onChange: debounce(editOrderNote, 300),
+                      text: shippingMoney + "",
+                    }}
+                  >
                     <NumberField
                       options={{
                         currency: "VND",
@@ -904,7 +958,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           style={{ width: "100%" }}
                         >
                           <Input
-                            placeholder="Recipient's name"
+                            // placeholder="Recipient's name"
+                            placeholder="Tên người nhận"
                             bordered={false}
                             style={{
                               width: "100%",
@@ -930,7 +985,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               borderBottom: `1px solid ${token.colorPrimary}`,
                               borderRadius: 0,
                             }}
-                            placeholder="Phone number"
+                            // placeholder="Phone number"
+                            placeholder="Số điện thoại"
                             mask="(+84) 999 999 999"
                             // value={phoneInputValue}
                             // onChange={(e) => setPhoneInputValue(e.target.value)}
@@ -1046,7 +1102,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               borderBottom: `1px solid ${token.colorPrimary}`,
                               borderRadius: 0,
                             }}
-                            placeholder="Address line"
+                            // placeholder="Address line"
+                            placeholder="Địa chi chi tiết"
                           />
                         </Form.Item>
                       </Col>

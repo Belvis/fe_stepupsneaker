@@ -60,8 +60,8 @@ export const ProductDetailItem: React.FC<ProductDetailItemProps> = ({
             <Avatar shape="square" size={64} src={productDetail.image} />
             <Flex vertical>
               <Text strong>{product.name}</Text>
-              <Text>Size: {size.name}</Text>
-              <Text>Color: {color.name}</Text>
+              <Text>Kích cỡ: {size.name}</Text>
+              <Text>Màu sắc: {color.name}</Text>
             </Flex>
           </Flex>
         </Col>
