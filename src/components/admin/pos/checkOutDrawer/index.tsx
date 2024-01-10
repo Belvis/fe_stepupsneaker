@@ -30,6 +30,7 @@ import {
   Select,
   Space,
   Spin,
+  Tooltip,
   Typography,
   message,
   theme,
@@ -430,11 +431,11 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           {paymentMethods && paymentMethods.length > 0 ? (
             paymentMethods.map((method) => (
               <Radio key={method.id} value={method}>
-                {method.name}
+                {t(`paymentMethods.options.${method.name}`)}
               </Radio>
             ))
           ) : (
-            <p>No payment methods available</p>
+            <p>Không có phương thức thanh toán nào khả dụng</p>
           )}
         </Radio.Group>
 
@@ -601,15 +602,23 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   #{order.voucher.code}
                 </Text>
               ) : (
-                <Button
-                  disabled={!order.customer}
-                  type="text"
-                  size="small"
-                  icon={
-                    <PlusSquareFilled style={{ color: token.colorPrimary }} />
+                <Tooltip
+                  title={
+                    !order.customer
+                      ? "Khách lẻ không thể sử dụng giảm giá."
+                      : ""
                   }
-                  onClick={showDiscountModal}
-                />
+                >
+                  <Button
+                    disabled={!order.customer}
+                    type="text"
+                    size="small"
+                    icon={
+                      <PlusSquareFilled style={{ color: token.colorPrimary }} />
+                    }
+                    onClick={showDiscountModal}
+                  />
+                </Tooltip>
               )}
             </Space>
             <Title level={4}>

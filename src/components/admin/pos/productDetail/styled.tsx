@@ -13,6 +13,10 @@ export const Quantity = styled.div`
     font-weight: medium;
     padding: 0.5rem 1rem;
     cursor: pointer;
+
+    &:disabled {
+      cursor: not-allowed;
+    }
   }
   p {
     width: 1rem;

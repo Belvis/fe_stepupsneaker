@@ -220,12 +220,12 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                     style={{ width: "100%", marginBottom: "10px" }}
                     onClick={() => handleAddPayment(method)}
                   >
-                    {method.name}
+                    {t(`paymentMethods.options.${method.name}`)}
                   </Button>
                 </Col>
               ))
             ) : (
-              <Text>No payment methods available</Text>
+              <Text>Không có phương thức thanh toán nào khả dụng</Text>
             )}
           </Row>
         </Col>
@@ -268,7 +268,9 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       handleDeletePayment(payment.paymentMethod.id)
                     }
                   />
-                  <Text strong>{payment.paymentMethod.name}</Text>
+                  <Text strong>
+                    {t(`paymentMethods.options.${payment.paymentMethod.name}`)}
+                  </Text>
                   {payment.paymentMethod.name != "Cash" ? (
                     <Select
                       showSearch

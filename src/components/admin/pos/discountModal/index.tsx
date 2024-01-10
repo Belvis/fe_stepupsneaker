@@ -32,7 +32,6 @@ type DiscountModalProps = {
   callBack: any;
 };
 
-const { Text, Title } = Typography;
 const { useToken } = theme;
 
 export const DiscountModal: React.FC<DiscountModalProps> = ({
@@ -131,6 +130,7 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
     pagination: {
       pageSize: 5,
     },
+    syncWithLocation: false,
   });
 
   return (

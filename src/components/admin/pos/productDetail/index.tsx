@@ -56,12 +56,29 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
   const [qty, setQty] = useState(1);
 
   const decreaseQty = () => {
-    if (qty > 1) {
-      setQty(qty - 1);
+    if (qty <= 1) {
+      return messageApi.open({
+        type: "error",
+        content: "Đã đạt số lượng nhỏ nhất",
+      });
     }
+    setQty(qty - 1);
   };
 
   const increaseQty = () => {
+    if (qty >= 5) {
+      return messageApi.open({
+        type: "error",
+        content: "Chỉ có thể mua tối da 5 sản phẩm",
+      });
+    }
+
+    if (qty >= productStock) {
+      return messageApi.open({
+        type: "error",
+        content: "Rất tiếc, đã đạt giới hạn số lượng sản phẩm",
+      });
+    }
     setQty(qty + 1);
   };
 
@@ -267,7 +284,10 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                   <Text strong>Kích cỡ</Text>
                   <Text>{selectedProductSize.name}</Text>
                   <Text strong>Số lượng tồn</Text>
-                  <Text>{selectedProductSize.stock}</Text>
+                  <Text style={{ color: productStock <= 0 ? "red" : "" }}>
+                    {productStock}{" "}
+                    {productStock <= 0 ? "Sản phẩm này đã hết hàng" : ""}
+                  </Text>
                 </Space>
                 <Space>
                   {productClient.variation && (
@@ -326,11 +346,11 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             <Row align="middle">
               <Col span={12}>
                 <Quantity>
-                  <button onClick={decreaseQty}>
+                  <button onClick={decreaseQty} disabled={productStock <= 0}>
                     <AiFillMinusCircle />
                   </button>
-                  <InputNumber value={qty} />
-                  <button onClick={increaseQty}>
+                  <InputNumber value={qty} disabled={productStock <= 0} />
+                  <button onClick={increaseQty} disabled={productStock <= 0}>
                     <AiFillPlusCircle />
                   </button>
                 </Quantity>
@@ -341,10 +361,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                   type="primary"
                   onClick={handleFinish}
                   style={{ width: "100%" }}
-                  disabled={
-                    productClient.variation.length <= 0 ||
-                    selectedProductSize.stock <= 0
-                  }
+                  disabled={productStock <= 0}
                 >
                   Thêm vào giỏ
                 </Button>
