@@ -541,7 +541,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       key: "3",
       label: t("orders.fields.type.title"),
       span: 1,
-      children: "Offline",
+      children: t(`orders.fields.type.${record?.type}`),
     },
     {
       key: "4",

@@ -1,5 +1,5 @@
 import { DeleteOutlined } from "@ant-design/icons";
-import { useDelete, useTranslate } from "@refinedev/core";
+import { useDelete, useTranslate, useUpdate } from "@refinedev/core";
 import {
   Avatar,
   Button,
@@ -15,6 +15,8 @@ import {
 import { IOrderDetail } from "../../../../interfaces";
 import { NumberField } from "@refinedev/antd";
 import "./style.css";
+import { debounce, isNumber } from "lodash";
+import { orderDetailToPayload } from "../../../../utils";
 const { useToken } = theme;
 const { Text } = Typography;
 
@@ -34,6 +36,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
 
   const [messageApi, contextHolder] = message.useMessage();
   const { mutate } = useDelete();
+  const { mutate: updateQuantity } = useUpdate();
 
   function handleDelete() {
     mutate(
@@ -69,6 +72,59 @@ export const OrderItem: React.FC<OrderItemProps> = ({
 
   const { quantity, productDetail, price, totalPrice } = orderDetail;
   const { product, color, size } = productDetail;
+
+  const handleQuantityChange = (value: number | null) => {
+    if (isNumber(value) && value > 0) {
+      if (value > orderDetail.productDetail.quantity) {
+        messageApi.open({
+          type: "info",
+          content: "Rất tiếc, đã đạt giới hạn số lượng sản phẩm",
+        });
+
+        value = orderDetail.quantity;
+      }
+
+      if (value > 5) {
+        messageApi.open({
+          type: "info",
+          content: "Bạn chỉ có thể mua tối da 5 sản phẩm",
+        });
+
+        value = orderDetail.quantity;
+      }
+
+      if (value !== orderDetail.quantity) {
+        const payLoad = orderDetailToPayload([orderDetail])[0];
+        updateQuantity(
+          {
+            resource: "order-details",
+            values: {
+              ...payLoad,
+              quantity: value,
+            },
+            id: orderDetail.id,
+            errorNotification: false,
+            successNotification: false,
+          },
+          {
+            onError: (error, variables, context) => {
+              messageApi.open({
+                type: "error",
+                content: error.message,
+              });
+            },
+            onSuccess: (data, variables, context) => {
+              messageApi.open({
+                type: "success",
+                content: "Cập nhật đơn hàng thành công",
+              });
+              callBack();
+            },
+          }
+        );
+      }
+    }
+  };
 
   return (
     <Card
@@ -107,7 +163,10 @@ export const OrderItem: React.FC<OrderItemProps> = ({
               borderRadius: 0,
             }}
             value={quantity}
-            // onChange={(value) => handleQuantityChange(value as number, record)}
+            onChange={debounce(
+              (value) => handleQuantityChange(value as number),
+              300
+            )}
           />
         </Col>
         <Col span={4} style={{ textAlign: "end" }}>
