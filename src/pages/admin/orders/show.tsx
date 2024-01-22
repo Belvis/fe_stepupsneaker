@@ -8,7 +8,7 @@ import {
   HttpError,
   useParsed,
 } from "@refinedev/core";
-import { DateField, List, NumberField } from "@refinedev/antd";
+import { DateField, List, NumberField, useModal } from "@refinedev/antd";
 import {
   CarOutlined,
   CheckCircleOutlined,
@@ -64,6 +64,7 @@ import {
   ProductText,
 } from "./styled";
 import { ColumnsType } from "antd/es/table";
+import MyOrderModal from "../../../components/admin/order/MyOrderModal";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -94,27 +95,21 @@ const InitialEventData: IEvent[] = [
 export const OrderShow: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
   const screens = useBreakpoint();
-  const { queryResult } = useShow<IOrder>();
-  const { data } = queryResult;
+  const {
+    queryResult: { refetch, data },
+  } = useShow<IOrder>();
   const { mutate } = useUpdate();
   const record = data?.data;
-  const [discount, setDiscount] = useState(0);
-  const [total, setTotal] = useState(0);
-
-  useEffect(() => {
-    if (record && record.voucher && record.voucher.type) {
-      if (record.voucher.type === "PERCENTAGE") {
-        setDiscount((record.voucher.value / 100) * record.totalMoney);
-      } else {
-        setDiscount(record.voucher.value);
-      }
-      setTotal(record.totalMoney + record.shippingMoney - discount);
-    }
-  }, [record]);
 
   const { id } = useParsed();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const {
+    show,
+    close,
+    modalProps: { visible, ...restModalProps },
+  } = useModal();
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -230,10 +225,24 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       if (record && status) {
         mutate(
           {
-            resource: "orders",
+            resource: "orders/confirmation-order",
             id: record.id,
             values: {
               status: status,
+            },
+            successNotification(data, values, resource) {
+              return {
+                message: "Cập nhật đơn hàng thành công",
+                description: "Thành công",
+                type: "success",
+              };
+            },
+            errorNotification(error, values, resource) {
+              return {
+                message: "Cập nhật đơn hàng thất bại: " + error?.message,
+                description: "Đã xảy ra lỗi",
+                type: "success",
+              };
             },
           },
           {
@@ -366,23 +375,6 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             </EmployeeInfoText>
           </Employee>
         </Col>
-
-        <EmployeeBoxContainer xl={12} lg={14} md={24}>
-          {employeeInfoBox(
-            t("employees.fields.phoneNumber"),
-            <MobileOutlined style={{ color: "#ffff", fontSize: 32 }} />,
-            record && record.employee && record.employee.phoneNumber
-              ? record.employee.phoneNumber
-              : "N/A"
-          )}
-          {employeeInfoBox(
-            t("employees.fields.email"),
-            <MailOutlined style={{ color: "#ffff", fontSize: 32 }} />,
-            record && record.employee && record.employee.email
-              ? record.employee.email
-              : "N/A"
-          )}
-        </EmployeeBoxContainer>
       </Row>
     </Card>
   );
@@ -480,6 +472,14 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       }
       headerButtons={() => (
         <>
+          <Button
+            type="primary"
+            ghost
+            disabled={record && record?.status !== "WAIT_FOR_CONFIRMATION"}
+            onClick={show}
+          >
+            Chỉnh sửa đơn hàng
+          </Button>
           <Button type="primary" onClick={showModal}>
             Xem lịch sử
           </Button>
@@ -574,7 +574,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             currency: "VND",
             style: "currency",
           }}
-          value={total}
+          value={record?.originMoney ?? 0}
         />
       ),
     },
@@ -587,7 +587,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             currency: "VND",
             style: "currency",
           }}
-          value={discount}
+          value={record?.reduceMoney ?? 0}
         />
       ),
     },
@@ -772,7 +772,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     <>
       <Space size={20} direction="vertical" style={{ width: "100%" }}>
         {renderOrderSteps()}
-        {renderEmployeeInfo()}
+        {record?.employee && renderEmployeeInfo()}
         {renderDeliverables()}
         {renderOrderInfor()}
       </Space>
@@ -781,6 +781,15 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         open={isModalVisible}
         handleOk={handleModalOk}
         handleCancel={handleModalCancel}
+      />
+      <MyOrderModal
+        restModalProps={restModalProps}
+        order={record ?? ({} as IOrder)}
+        callBack={refetch}
+        close={close}
+        showCancel={function (): void {
+          throw new Error("Function not implemented.");
+        }}
       />
     </>
   );

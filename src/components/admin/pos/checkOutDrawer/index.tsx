@@ -1,6 +1,7 @@
 import {
   CloseOutlined,
   CreditCardFilled,
+  GiftOutlined,
   PlusSquareFilled,
   SearchOutlined,
 } from "@ant-design/icons";
@@ -44,6 +45,7 @@ import {
   IPayment,
   IPaymentConvertedPayload,
   IPaymentMethod,
+  IVoucherList,
 } from "../../../../interfaces";
 import { formatTimestamp } from "../../../../utils";
 import {
@@ -55,6 +57,8 @@ import {
 } from "../deliverySales/styled";
 import { PaymentModal } from "../paymentModal";
 import { DiscountModal } from "../discountModal";
+import _ from "lodash";
+import styled from "styled-components";
 
 const { Text, Title } = Typography;
 const { useToken } = theme;
@@ -114,6 +118,28 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
       }
     }
   }, [order.voucher]);
+
+  const [legitVouchers, setLegitVouchers] = useState<IVoucherList[]>([]);
+
+  useEffect(() => {
+    if (order && order.customer && order.customer.customerVoucherList) {
+      const convertedLegitVoucher = _.cloneDeep(
+        order.customer.customerVoucherList
+      );
+      convertedLegitVoucher.map((single) => {
+        const updatedVoucher = { ...single };
+        if (single.voucher.type === "PERCENTAGE") {
+          updatedVoucher.voucher.value =
+            (single.voucher.value * calculateTotalPrice(order)) / 100;
+        }
+        return updatedVoucher;
+      });
+
+      convertedLegitVoucher.sort((a, b) => b.voucher.value - a.voucher.value);
+
+      setLegitVouchers(convertedLegitVoucher);
+    }
+  }, [order.customer]);
 
   const suggestedMoney = [0, 100000, 200000, 300000];
 
@@ -695,6 +721,46 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
             </Title>
           </Flex>
         </Col>
+        <Col span={24}>
+          {(() => {
+            const voucherDifference =
+              legitVouchers && legitVouchers.length > 0
+                ? calculateTotalPrice(order) <
+                  legitVouchers[0].voucher.constraint
+                  ? legitVouchers[0].voucher.constraint -
+                    calculateTotalPrice(order)
+                  : 0
+                : 0;
+
+            const shouldDisplayVoucher = voucherDifference > 0;
+
+            if (shouldDisplayVoucher) {
+              return (
+                <DiscountMessage>
+                  <GiftOutlined /> Mua thêm{" "}
+                  <DiscountMoney>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                      currencyDisplay: "symbol",
+                    }).format(voucherDifference)}
+                  </DiscountMoney>{" "}
+                  để được giảm tới{" "}
+                  <DiscountMoney>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                      currencyDisplay: "symbol",
+                    }).format(legitVouchers[0].voucher.value)}
+                  </DiscountMoney>
+                </DiscountMessage>
+              );
+            } else {
+              return null;
+            }
+          })()}
+        </Col>
+
         <Divider />
         <Col span={24}>
           {payments?.length === 1 && renderMethodGroup(payments)}
@@ -776,3 +842,23 @@ function convertToPayload(
     transactionCode: payment.transactionCode,
   }));
 }
+
+const DiscountMessage = styled.h5`
+  color: #fb5231;
+  line-height: 1.3rem;
+`;
+
+const DiscountMoney = styled.span`
+  color: #fb5231;
+  font-weight: bold;
+`;
+
+const calculateTotalPrice = (order: IOrder): number => {
+  if (!order || !order.orderDetails) {
+    return 0;
+  }
+
+  return order.orderDetails.reduce((total, orderDetail) => {
+    return total + orderDetail.totalPrice;
+  }, 0);
+};

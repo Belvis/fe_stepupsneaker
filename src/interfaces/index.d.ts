@@ -79,12 +79,15 @@ export interface IOrder {
   id: string;
   customer: ICustomer;
   employee: IEmployee;
-  voucher: IVoucher;
+  voucher?: IVoucher;
   address: IAddress;
   phoneNumber: string;
   fullName: string;
   totalMoney: number;
   shippingMoney: number;
+  totalMoney: number;
+  originMoney: number;
+  reduceMoney: number;
   confirmationDate: number;
   expectedDeliveryDate: number;
   deliveryStartDate: number;
@@ -285,6 +288,10 @@ export interface IVoucher {
   image: string;
 }
 
+export interface IVoucherList {
+  id: string;
+  voucher: IVoucherResponse;
+}
 export interface IPromotion {
   id: string;
   code: string;
@@ -316,6 +323,7 @@ export interface ICustomer {
   gender: string;
   image: string;
   addressList: IAddress[];
+  customerVoucherList: IVoucherList[];
 }
 
 export interface IEmployee {
