@@ -76,21 +76,17 @@ export const OrderItem: React.FC<OrderItemProps> = ({
   const handleQuantityChange = (value: number | null) => {
     if (isNumber(value) && value > 0) {
       if (value > orderDetail.productDetail.quantity) {
-        messageApi.open({
+        return messageApi.open({
           type: "info",
           content: "Rất tiếc, đã đạt giới hạn số lượng sản phẩm",
         });
-
-        value = orderDetail.quantity;
       }
 
       if (value > 5) {
-        messageApi.open({
+        return messageApi.open({
           type: "info",
           content: "Bạn chỉ có thể mua tối da 5 sản phẩm",
         });
-
-        value = orderDetail.quantity;
       }
 
       if (value !== orderDetail.quantity) {

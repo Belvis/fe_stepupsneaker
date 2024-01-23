@@ -1,28 +1,30 @@
 import {
   CaretDownOutlined,
   CaretUpOutlined,
+  DeleteOutlined,
   GiftOutlined,
   InfoCircleOutlined,
   MinusCircleOutlined,
   PlusCircleOutlined,
-  DeleteOutlined,
 } from "@ant-design/icons";
+import { useModal } from "@refinedev/antd";
 import {
   Authenticated,
-  HttpError,
   useCustom,
   useCustomMutation,
   useGetIdentity,
-  useOne,
   useUpdate,
 } from "@refinedev/core";
 import {
   Avatar,
   Badge,
   Button,
+  Col,
   Form,
   Input,
+  InputNumber,
   Modal,
+  Row,
   Select,
   Space,
   Table,
@@ -30,11 +32,13 @@ import {
   Typography,
   message,
 } from "antd";
-import _ from "lodash";
+import { ColumnsType } from "antd/es/table";
+import _, { debounce, isNumber } from "lodash";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
-import { useModal } from "@refinedev/antd";
+import styled from "styled-components";
+import { FREE_SHIPPING_THRESHOLD } from "../../../constants";
 import {
   ICustomer,
   IDistrict,
@@ -44,11 +48,8 @@ import {
   IVoucherList,
   IWard,
 } from "../../../interfaces";
-import { FREE_SHIPPING_THRESHOLD } from "../../../constants";
 import { showWarningConfirmDialog } from "../../../utils";
-import styled from "styled-components";
 import VoucherModal from "../pos/discountModal/VoucherModal";
-import { ColumnsType } from "antd/es/table";
 
 const { Text } = Typography;
 
@@ -162,12 +163,11 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
 
   useEffect(() => {
     if (viewOrder.voucher) {
-      console.log("ran here");
       if (viewOrder.voucher !== order.voucher) {
         const newReduceMoney =
           viewOrder.voucher.type === "PERCENTAGE"
             ? (viewOrder.voucher.value * viewOrder.originMoney) / 100
-            : 0;
+            : viewOrder.voucher.value;
         const newTotalMoney =
           viewOrder.originMoney + viewOrder.shippingMoney - newReduceMoney;
         setViewOrder((prev) => ({
@@ -403,6 +403,9 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
   const showCaretUpGrandTotal = viewOrder.totalMoney > order.totalMoney;
   const showCaretDownGrandTotal = viewOrder.totalMoney < order.totalMoney;
 
+  console.log("viewOrder.totalMoney", viewOrder.totalMoney);
+  console.log("order.totalMoney", order.totalMoney);
+
   const showBadgeCartTotal = viewOrder.originMoney !== order.originMoney;
   const showCaretUpCartTotal = viewOrder.originMoney > order.originMoney;
   const showCaretDownCartTotal = viewOrder.originMoney < order.originMoney;
@@ -459,6 +462,76 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
     });
   };
 
+  const handleQuantityChange = (value: number | null, record: IOrderDetail) => {
+    if (isNumber(value) && value > 0) {
+      if (value > record.productDetail.quantity) {
+        return messageApi.open({
+          type: "info",
+          content: "Rất tiếc, đã đạt giới hạn số lượng sản phẩm",
+        });
+      }
+
+      if (value > 5) {
+        return messageApi.open({
+          type: "info",
+          content: "Bạn chỉ có thể mua tối da 5 sản phẩm",
+        });
+      }
+
+      if (value !== record.quantity) {
+        setViewOrder((prev) => ({
+          ...prev,
+          orderDetails: prev.orderDetails.map((detail) => {
+            if (detail.id === record.id) {
+              const newQuantity = value;
+
+              return {
+                ...detail,
+                quantity: newQuantity,
+                totalPrice: detail.price * newQuantity,
+              };
+            } else {
+              return detail;
+            }
+          }),
+        }));
+      }
+    }
+  };
+
+  const handleRemoveItem = (record: IOrderDetail) => {
+    const cartCount = viewOrder.orderDetails.length;
+    if (cartCount == 1) {
+      showWarningConfirmDialog({
+        options: {
+          message:
+            "Loại bỏ sản phẩm duy nhất tương đương với việc huỷ đơn hàng",
+          accept: () => {
+            close();
+            showCancel();
+          },
+          reject: () => {},
+        },
+        t: t,
+      });
+    } else {
+      showWarningConfirmDialog({
+        options: {
+          accept: () => {
+            setViewOrder((prev) => ({
+              ...prev,
+              orderDetails: prev.orderDetails.filter(
+                (detail) => detail.id !== record.id
+              ),
+            }));
+          },
+          reject: () => {},
+        },
+        t: t,
+      });
+    }
+  };
+
   const columns: ColumnsType<IOrderDetail> = [
     {
       title: "Ảnh",
@@ -490,7 +563,7 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
               to={"/product/" + record.productDetail.product.id}
               style={{
                 color: "black",
-                fontWeight: "bold",
+                fontWeight: "500",
               }}
             >
               {record.productDetail.product.name}
@@ -509,24 +582,59 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
       key: "unitPrice",
       dataIndex: "price",
       align: "center",
+      render(value) {
+        return (
+          <>
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+              currencyDisplay: "symbol",
+            }).format(value)}
+          </>
+        );
+      },
     },
     {
       title: "Số lượng",
       key: "quantity",
       dataIndex: "quantity",
       align: "center",
+      render(value, record) {
+        return (
+          <InputNumber
+            value={Number(value)}
+            onChange={debounce(
+              (value) => handleQuantityChange(value as number, record),
+              300
+            )}
+          />
+        );
+      },
     },
     {
       title: "Thành tiền",
       key: "totalPrice",
       dataIndex: "totalPrice",
       align: "center",
+      width: "200px",
+      render(value) {
+        return (
+          <>
+            {new Intl.NumberFormat("vi-VN", {
+              style: "currency",
+              currency: "VND",
+              currencyDisplay: "symbol",
+            }).format(value)}
+          </>
+        );
+      },
     },
     {
       title: "Hành động",
       key: "quantity",
       dataIndex: "quantity",
       align: "center",
+      width: "10%",
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title={t("actions.delete")}>
@@ -534,13 +642,184 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
               danger
               size="small"
               icon={<DeleteOutlined />}
-              // onClick={() => handleDelete(record.id)}
+              onClick={() => handleRemoveItem(record)}
             />
           </Tooltip>
         </Space>
       ),
     },
   ];
+
+  const Footer = (
+    <Row justify="end" style={{ marginRight: "1rem" }}>
+      <Col span={12} style={{ textAlign: "end" }}>
+        <Row>
+          <Col span={16}>
+            <Badge count={cartTotalBadgeCount}>
+              <h4>THÀNH TIỀN</h4>
+            </Badge>
+          </Col>
+          <Col span={8}>
+            <h4 style={{ fontWeight: "normal" }}>
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+                currencyDisplay: "symbol",
+              }).format(viewOrder.originMoney)}
+            </h4>
+          </Col>
+        </Row>
+        <Row>
+          <Col span={16}>
+            <Badge count={shippingBadgeCount}>
+              <h4>PHÍ SHIP</h4>
+            </Badge>
+          </Col>
+          <Col span={8}>
+            {showBadgeShipping ? (
+              <h4 style={{ fontWeight: "normal" }}>
+                {new Intl.NumberFormat("vi-VN", {
+                  style: "currency",
+                  currency: "VND",
+                  currencyDisplay: "symbol",
+                }).format(viewOrder.shippingMoney)}
+              </h4>
+            ) : (
+              <h4
+                className="free-shipping"
+                style={{
+                  color: "#fb5231",
+                  textTransform: "uppercase",
+                }}
+              >
+                Miễn phí vận chuyển
+              </h4>
+            )}
+          </Col>
+        </Row>
+        <Row>
+          <Col span={16}>
+            <h4>
+              {viewOrder.voucher ? (
+                <Tooltip title="Gỡ voucher">
+                  <MinusCircleOutlined
+                    className="remove-voucher"
+                    onClick={() => {
+                      showWarningConfirmDialog({
+                        options: {
+                          accept: () => {
+                            setViewOrder((prev) => {
+                              const { voucher, ...rest } = prev;
+                              return rest;
+                            });
+                          },
+                          reject: () => {},
+                        },
+                        t: t,
+                      });
+                    }}
+                  />
+                </Tooltip>
+              ) : (
+                <Tooltip title="Thêm voucher">
+                  <PlusCircleOutlined className="add-voucher" onClick={show} />
+                </Tooltip>
+              )}{" "}
+              GIẢM GIÁ
+            </h4>
+          </Col>
+          <Col span={8}>
+            <h4 style={{ fontWeight: "normal" }}>
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+                currencyDisplay: "symbol",
+              }).format(viewOrder.reduceMoney)}
+            </h4>
+          </Col>
+        </Row>
+        <Row align="middle">
+          <Col span={16}>
+            <Badge count={grandTotalBadgeCount}>
+              <h3 className="grand-total-title">TỔNG CỘNG</h3>
+            </Badge>
+          </Col>
+          <Col span={8}>
+            <h3 style={{ margin: 0 }}>
+              {new Intl.NumberFormat("vi-VN", {
+                style: "currency",
+                currency: "VND",
+                currencyDisplay: "symbol",
+              }).format(viewOrder.totalMoney)}
+            </h3>
+          </Col>
+        </Row>
+        <Row justify="end" style={{ marginTop: "0.5rem" }}>
+          {(() => {
+            const freeShippingDifference =
+              viewOrder.originMoney < FREE_SHIPPING_THRESHOLD
+                ? FREE_SHIPPING_THRESHOLD - viewOrder.originMoney
+                : Infinity;
+
+            const voucherDifference =
+              legitVouchers && legitVouchers.length > 0
+                ? viewOrder.originMoney < legitVouchers[0].voucher.constraint
+                  ? legitVouchers[0].voucher.constraint - viewOrder.originMoney
+                  : Infinity
+                : Infinity;
+
+            const shouldDisplayFreeShipping =
+              freeShippingDifference > 0 &&
+              freeShippingDifference !== Infinity &&
+              freeShippingDifference <= voucherDifference;
+            const shouldDisplayVoucher =
+              voucherDifference > 0 &&
+              voucherDifference !== Infinity &&
+              voucherDifference < freeShippingDifference;
+
+            if (shouldDisplayFreeShipping) {
+              return (
+                <DiscountMessage>
+                  <GiftOutlined /> Mua thêm{" "}
+                  <DiscountMoney>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                      currencyDisplay: "symbol",
+                    }).format(freeShippingDifference)}
+                  </DiscountMoney>{" "}
+                  để được miễn phí vận chuyển
+                </DiscountMessage>
+              );
+            } else if (shouldDisplayVoucher) {
+              return (
+                <DiscountMessage>
+                  <GiftOutlined /> Mua thêm{" "}
+                  <DiscountMoney>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                      currencyDisplay: "symbol",
+                    }).format(voucherDifference)}
+                  </DiscountMoney>{" "}
+                  để được giảm tới{" "}
+                  <DiscountMoney>
+                    {new Intl.NumberFormat("vi-VN", {
+                      style: "currency",
+                      currency: "VND",
+                      currencyDisplay: "symbol",
+                    }).format(legitVouchers[0].voucher.value)}
+                  </DiscountMoney>
+                </DiscountMessage>
+              );
+            } else {
+              return null;
+            }
+          })()}
+        </Row>
+      </Col>
+    </Row>
+  );
 
   return (
     <Modal
@@ -568,6 +847,7 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
               rowKey="id"
               columns={columns}
               dataSource={viewOrder.orderDetails}
+              footer={() => Footer}
             />
           </div>
         </div>
@@ -720,9 +1000,10 @@ const filterOption = (
   option?: { label: string; value: number | string }
 ) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
-const DiscountMessage = styled.h5`
+const DiscountMessage = styled.h4`
   color: #fb5231;
   line-height: 1.3rem;
+  font-weight: normal;
 `;
 
 const DiscountMoney = styled.span`

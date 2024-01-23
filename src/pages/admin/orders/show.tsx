@@ -249,6 +249,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             onError: (error, variables, context) => {},
             onSuccess: (data, variables, context) => {
               refetchOrderHistory();
+              refetch();
             },
           }
         );
@@ -266,7 +267,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         extra={[
           <Button
             disabled={!canRejectOrder}
-            key="accept"
+            key="force-confirm"
             icon={<CheckCircleOutlined />}
             type="primary"
             onClick={() =>
@@ -375,6 +376,22 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             </EmployeeInfoText>
           </Employee>
         </Col>
+        <EmployeeBoxContainer xl={12} lg={14} md={24}>
+          {employeeInfoBox(
+            t("employees.fields.phoneNumber"),
+            <MobileOutlined style={{ color: "#ffff", fontSize: 32 }} />,
+            record && record.employee && record.employee.phoneNumber
+              ? record.employee.phoneNumber
+              : "N/A"
+          )}
+          {employeeInfoBox(
+            t("employees.fields.email"),
+            <MailOutlined style={{ color: "#ffff", fontSize: 32 }} />,
+            record && record.employee && record.employee.email
+              ? record.employee.email
+              : "N/A"
+          )}
+        </EmployeeBoxContainer>
       </Row>
     </Card>
   );

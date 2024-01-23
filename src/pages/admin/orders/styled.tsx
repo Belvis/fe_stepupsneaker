@@ -85,7 +85,7 @@ export const ProductFooter = styled.div`
   font-weight: 800;
 
   & > span:first-child {
-    margin-right: 10px;
+    margin-right: 2rem;
     color: #67be23;
   }
 
