@@ -65,6 +65,8 @@ import {
 } from "./styled";
 import { ColumnsType } from "antd/es/table";
 import MyOrderModal from "../../../components/admin/order/MyOrderModal";
+import { showWarningConfirmDialog } from "../../../utils";
+import CancelReasonModal from "../../../components/admin/order/CancelReasonModal";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -109,6 +111,12 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     show,
     close,
     modalProps: { visible, ...restModalProps },
+  } = useModal();
+
+  const {
+    show: showCancel,
+    close: closeCancle,
+    modalProps: { visible: vi, ...restProps },
   } = useModal();
 
   const showModal = () => {
@@ -208,6 +216,53 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     .filter((screen) => !!screen[1])
     .map((screen) => screen[0]);
 
+  const handleMutate = (status: OrderStatus | null) => {
+    if (record && status) {
+      mutate(
+        {
+          resource: "orders/confirmation-order",
+          id: record.id,
+          values: {
+            status: status,
+          },
+          successNotification() {
+            return {
+              message: "Cập nhật đơn hàng thành công",
+              description: "Thành công",
+              type: "success",
+            };
+          },
+          errorNotification(error) {
+            return {
+              message: "Cập nhật đơn hàng thất bại: " + error?.message,
+              description: "Đã xảy ra lỗi",
+              type: "success",
+            };
+          },
+        },
+        {
+          onError: () => {},
+          onSuccess: () => {
+            refetchOrderHistory();
+            refetch();
+          },
+        }
+      );
+    }
+  };
+
+  const handleConfirmUpdate = (status: OrderStatus | null) => {
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          handleMutate(status);
+        },
+        reject: () => {},
+      },
+      t: t,
+    });
+  };
+
   const renderOrderSteps = () => {
     const notFinishedCurrentStep = (event: IEvent, index: number) =>
       event.status !== "CANCELED" &&
@@ -219,41 +274,6 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       if (event.status === "CANCELED") return "error";
       if (notFinishedCurrentStep(event, index)) return "process";
       return "finish";
-    };
-
-    const handleMutate = (status: OrderStatus | null) => {
-      if (record && status) {
-        mutate(
-          {
-            resource: "orders/confirmation-order",
-            id: record.id,
-            values: {
-              status: status,
-            },
-            successNotification(data, values, resource) {
-              return {
-                message: "Cập nhật đơn hàng thành công",
-                description: "Thành công",
-                type: "success",
-              };
-            },
-            errorNotification(error, values, resource) {
-              return {
-                message: "Cập nhật đơn hàng thất bại: " + error?.message,
-                description: "Đã xảy ra lỗi",
-                type: "success",
-              };
-            },
-          },
-          {
-            onError: (error, variables, context) => {},
-            onSuccess: (data, variables, context) => {
-              refetchOrderHistory();
-              refetch();
-            },
-          }
-        );
-      }
     };
 
     // useOrderCustomKbarActions(record);
@@ -270,9 +290,9 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             key="force-confirm"
             icon={<CheckCircleOutlined />}
             type="primary"
-            onClick={() =>
-              handleMutate(getNextStatus(record?.status ?? "PENDING"))
-            }
+            onClick={() => {
+              handleConfirmUpdate(getNextStatus(record?.status ?? "PENDING"));
+            }}
           >
             {t("buttons.forceConfirm")}
           </Button>,
@@ -281,7 +301,9 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             key="accept"
             icon={<CheckCircleOutlined />}
             type="primary"
-            onClick={() => handleMutate("WAIT_FOR_DELIVERY")}
+            onClick={() => {
+              handleConfirmUpdate("WAIT_FOR_DELIVERY");
+            }}
           >
             {t("buttons.accept")}
           </Button>,
@@ -290,7 +312,9 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             key="reject"
             danger
             icon={<CloseCircleOutlined />}
-            onClick={() => handleMutate("CANCELED")}
+            onClick={() => {
+              showCancel();
+            }}
           >
             {t("buttons.reject")}
           </Button>,
@@ -804,9 +828,13 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         order={record ?? ({} as IOrder)}
         callBack={refetch}
         close={close}
-        showCancel={function (): void {
-          throw new Error("Function not implemented.");
-        }}
+        showCancel={showCancel}
+      />
+      <CancelReasonModal
+        restModalProps={restProps}
+        close={closeCancle}
+        order={record ?? ({} as IOrder)}
+        callBack={refetch}
       />
     </>
   );

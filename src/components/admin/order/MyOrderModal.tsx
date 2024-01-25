@@ -50,6 +50,7 @@ import {
 } from "../../../interfaces";
 import { showWarningConfirmDialog } from "../../../utils";
 import VoucherModal from "../pos/discountModal/VoucherModal";
+import { AddressModal } from "../address/modal/list";
 
 const { Text } = Typography;
 
@@ -112,8 +113,6 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
 
   const [shippingMoney, setShippingMoney] = useState<number>(0);
 
-  const { data: user, refetch } = useGetIdentity<ICustomer>();
-
   const [legitVouchers, setLegitVouchers] = useState<IVoucherList[]>([]);
 
   // Reset on open
@@ -138,28 +137,6 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
   }, [order, restModalProps]);
 
   // Update money
-
-  useEffect(() => {
-    if (viewOrder.orderDetails) {
-      const newOriginMoney = viewOrder.orderDetails.reduce(
-        (accumulator, detail) => accumulator + detail.totalPrice,
-        0
-      );
-      const newShippingMoney =
-        newOriginMoney < FREE_SHIPPING_THRESHOLD
-          ? shippingMoney === 0
-            ? viewOrder.shippingMoney
-            : shippingMoney
-          : 0;
-
-      setViewOrder((prev) => ({
-        ...prev,
-        originMoney: newOriginMoney,
-        shippingMoney: newShippingMoney,
-        totalMoney: newOriginMoney + newShippingMoney - prev.reduceMoney,
-      }));
-    }
-  }, [viewOrder.orderDetails]);
 
   useEffect(() => {
     if (viewOrder.voucher) {
@@ -191,8 +168,14 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
   // Convert vouchers list
 
   useEffect(() => {
-    if (user && user.customerVoucherList && viewOrder.originMoney) {
-      const convertedLegitVoucher = _.cloneDeep(user.customerVoucherList);
+    if (
+      order.customer &&
+      order.customer.customerVoucherList &&
+      viewOrder.originMoney
+    ) {
+      const convertedLegitVoucher = _.cloneDeep(
+        order.customer.customerVoucherList
+      );
       convertedLegitVoucher.map((single) => {
         const updatedVoucher = { ...single };
         if (single.voucher.type === "PERCENTAGE") {
@@ -205,7 +188,7 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
       convertedLegitVoucher.sort((a, b) => b.voucher.value - a.voucher.value);
       setLegitVouchers(convertedLegitVoucher);
     }
-  }, [user, viewOrder.originMoney]);
+  }, [order.customer, viewOrder.originMoney]);
 
   const { mutate: calculateFeeMutate, isLoading: isLoadingFee } =
     useCustomMutation<any>();
@@ -403,9 +386,6 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
   const showCaretUpGrandTotal = viewOrder.totalMoney > order.totalMoney;
   const showCaretDownGrandTotal = viewOrder.totalMoney < order.totalMoney;
 
-  console.log("viewOrder.totalMoney", viewOrder.totalMoney);
-  console.log("order.totalMoney", order.totalMoney);
-
   const showBadgeCartTotal = viewOrder.originMoney !== order.originMoney;
   const showCaretUpCartTotal = viewOrder.originMoney > order.originMoney;
   const showCaretDownCartTotal = viewOrder.originMoney < order.originMoney;
@@ -474,33 +454,93 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
       if (value > 5) {
         return messageApi.open({
           type: "info",
-          content: "Bạn chỉ có thể mua tối da 5 sản phẩm",
+          content: "Bạn chỉ có thể mua tối đa 5 sản phẩm",
         });
       }
 
       if (value !== record.quantity) {
-        setViewOrder((prev) => ({
-          ...prev,
-          orderDetails: prev.orderDetails.map((detail) => {
-            if (detail.id === record.id) {
-              const newQuantity = value;
+        setViewOrder((prev) => {
+          const newQuantity = value;
+          const newTotalPrice = record.price * newQuantity;
+          const newOriginMoney =
+            newTotalPrice + (viewOrder.originMoney - record.totalPrice);
+          const currentVoucherThreshold = viewOrder.voucher?.constraint ?? 0;
 
-              return {
-                ...detail,
-                quantity: newQuantity,
-                totalPrice: detail.price * newQuantity,
-              };
-            } else {
-              return detail;
-            }
-          }),
-        }));
+          const newShippingMoney =
+            newOriginMoney < FREE_SHIPPING_THRESHOLD
+              ? shippingMoney === 0
+                ? viewOrder.shippingMoney
+                : shippingMoney
+              : 0;
+          const newTotalMoney =
+            newOriginMoney + newShippingMoney - prev.reduceMoney;
+
+          if (newOriginMoney < currentVoucherThreshold) {
+            showWarningConfirmDialog({
+              options: {
+                header: "Bạn có chắc?",
+                message:
+                  "Tổng tiền của đơn hàng đang được giảm xuống dưới ngưỡng giảm giá hiện tại, tương đương với việc gỡ giảm giá khỏi đơn.",
+                accept: () => {
+                  setViewOrder({
+                    ...prev,
+                    orderDetails: prev.orderDetails.map((detail) =>
+                      detail.id === record.id
+                        ? {
+                            ...detail,
+                            quantity: newQuantity,
+                            totalPrice: newTotalPrice,
+                          }
+                        : detail
+                    ),
+                    voucher: undefined,
+                    originMoney: newOriginMoney,
+                    shippingMoney: newShippingMoney,
+                    totalMoney: newTotalMoney,
+                  });
+                },
+                reject: () => {
+                  return prev;
+                },
+              },
+              t: t,
+            });
+            return prev;
+          } else {
+            return {
+              ...prev,
+              orderDetails: prev.orderDetails.map((detail) =>
+                detail.id === record.id
+                  ? {
+                      ...detail,
+                      quantity: newQuantity,
+                      totalPrice: newTotalPrice,
+                    }
+                  : detail
+              ),
+              originMoney: newOriginMoney,
+              shippingMoney: newShippingMoney,
+              totalMoney: newTotalMoney,
+            };
+          }
+        });
       }
     }
   };
 
   const handleRemoveItem = (record: IOrderDetail) => {
     const cartCount = viewOrder.orderDetails.length;
+    const newOriginMoney = viewOrder.orderDetails.reduce(
+      (accumulator, detail) => accumulator + detail.totalPrice,
+      0
+    );
+    const newShippingMoney =
+      newOriginMoney < FREE_SHIPPING_THRESHOLD
+        ? shippingMoney === 0
+          ? viewOrder.shippingMoney
+          : shippingMoney
+        : 0;
+
     if (cartCount == 1) {
       showWarningConfirmDialog({
         options: {
@@ -523,6 +563,9 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
               orderDetails: prev.orderDetails.filter(
                 (detail) => detail.id !== record.id
               ),
+              originMoney: newOriginMoney,
+              shippingMoney: newShippingMoney,
+              totalMoney: newOriginMoney + newShippingMoney - prev.reduceMoney,
             }));
           },
           reject: () => {},
@@ -980,14 +1023,19 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
       <Authenticated fallback={false}>
         <VoucherModal
           restModalProps={restVoucherModalProps}
-          vouchers={user?.customerVoucherList || []}
+          vouchers={order.customer?.customerVoucherList || []}
+          type="apply"
+          setViewOrder={setViewOrder}
+          close={voucherClose}
         />
-        {/* <ListAddressModal
-          customer={user}
-          modalProps={restAddressModalProps}
-          close={closeAddress}
+        <AddressModal
+          customer={order.customer}
           setAddresses={setAddresses}
-        /> */}
+          open={restAddressModalProps.open ?? false}
+          handleOk={closeAddress}
+          handleCancel={closeAddress}
+          order={order}
+        />
       </Authenticated>
     </Modal>
   );

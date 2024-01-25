@@ -1,21 +1,29 @@
 import { Card, Row, Col, Image, message } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { IVoucher } from "../../../../interfaces";
+import { IOrder, IVoucher } from "../../../../interfaces";
 
 interface VoucherProps {
   item: IVoucher;
+  type?: "apply" | "copy";
+  setViewOrder?: React.Dispatch<React.SetStateAction<IOrder>>;
+  close?: () => void;
 }
 
-const Voucher: React.FC<VoucherProps> = ({ item }) => {
-  const { image, endDate, value, type, constraint, code } = item;
+const Voucher: React.FC<VoucherProps> = ({
+  item,
+  type,
+  setViewOrder,
+  close,
+}) => {
+  const { image, endDate, value, type: voucherType, constraint, code } = item;
 
   const [messageApi, contextHolder] = message.useMessage();
 
   const [text, setText] = useState<string>("Dùng ngay");
 
   const cashPrice =
-    type === "CASH" ? (
+    voucherType === "CASH" ? (
       <>
         {new Intl.NumberFormat("vi-VN", {
           style: "currency",
@@ -49,6 +57,34 @@ const Voucher: React.FC<VoucherProps> = ({ item }) => {
       setTimeout(() => {
         setText("Dùng ngay");
       }, 3000);
+    }
+  };
+
+  const handleApplyVoucher = async () => {
+    if (type === "apply" && setViewOrder && close) {
+      try {
+        setViewOrder((prev) => {
+          if (prev.originMoney > item.constraint) {
+            return {
+              ...prev,
+              voucher: item,
+            };
+          } else {
+            messageApi.open({
+              type: "error",
+              content: "Đơn hàng chưa đủ điều kiện để được áp dụng giảm giá",
+            });
+            return prev;
+          }
+        });
+
+        return close();
+      } catch (error: any) {
+        return messageApi.open({
+          type: "error",
+          content: "Áp dụng voucher không thành công: " + error.message,
+        });
+      }
     }
   };
 
@@ -109,7 +145,12 @@ const Voucher: React.FC<VoucherProps> = ({ item }) => {
               }}
             >
               <div className="sharpen-btn" style={{ width: "100%" }}>
-                <button onClick={handleCopyCode} style={{ width: "100%" }}>
+                <button
+                  onClick={
+                    type === "copy" ? handleCopyCode : handleApplyVoucher
+                  }
+                  style={{ width: "100%" }}
+                >
                   {text}
                 </button>
               </div>
