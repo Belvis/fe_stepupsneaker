@@ -603,13 +603,19 @@
       },
       "timeline": {
         "title": "Mốc thời gian",
-        "orderStatuses": {
-          "pending": "Đang chuẩn bị đơn hàng",
-          "ready": "Đơn hàng đã sẵn sàng",
-          "on the way": "Đơn hàng đang trên đường tới",
-          "wait for delivery": "Đơn hàng đang đợi để được giao",
-          "delivered": "Đơn hàng đã được giao thành công",
-          "cancelled": "Đơn hàng bị hủy"
+        "type": {
+          "unknown": "Unknown",
+          "insert": "Đơn hàng đã được tạo",
+          "update": "Đơn hàng đã được cập nhật",
+          "delete": "Đơn hàng đã được xoá"
+        },
+        "changes": {
+          "address": "Địa chỉ",
+          "orderDetails": "Giỏ hàng",
+          "voucher": "Phiếu giảm giá",
+          "phoneNumber": "Số điện thoại",
+          "status": "Trạng thái",
+          "note":"Ghi chú"
         }
       },
       "recentOrders": {
@@ -1038,5 +1044,13 @@
     },
     "transactions": {
         "title": "Giao dịch"
+    },
+    "sse": {
+      "message": {
+        "ORDER_PLACED": " vừa đặt đơn hàng ",
+        "ORDER_CHANGED": " vừa bị thay đổi ",
+        "ORDER_PENDING": " vừa đặt đơn hàng ",
+        "PRODUCT_LOW_STOCK": " vừa đặt đơn hàng "
+      }
     }
   }

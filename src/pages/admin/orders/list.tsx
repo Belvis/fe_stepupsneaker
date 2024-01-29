@@ -16,6 +16,7 @@ import {
   useTable,
 } from "@refinedev/antd";
 import {
+  Badge,
   Button,
   Card,
   Col,
@@ -24,6 +25,8 @@ import {
   InputNumber,
   Popover,
   Row,
+  Segmented,
+  SegmentedProps,
   Select,
   Space,
   Table,
@@ -38,7 +41,18 @@ import {
   getOrderTypeOptions,
   tablePaginationSettings,
 } from "../../../constants";
-import { IOrder, IOrderFilterVariables } from "../../../interfaces";
+import {
+  IOrder,
+  IOrderFilterVariables,
+  IOrderNotification,
+} from "../../../interfaces";
+import { useEffect, useState } from "react";
+import { AxiosInstance } from "axios";
+import { axiosInstance } from "../../../utils";
+import { stringify } from "query-string";
+import { SegmentedValue } from "antd/es/segmented";
+
+const httpClient: AxiosInstance = axiosInstance;
 
 const { Text } = Typography;
 
@@ -250,6 +264,133 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
     searchFormProps.form?.submit();
   };
 
+  const [allStatusCount, setAllStatusCount] = useState<number>(0);
+  const [confirmStatusCount, setConfirmStatusCount] = useState<number>(0);
+  const [deliveryStatusCount, setDeliveryStatusCount] = useState<number>(0);
+  const [deliveringStatusCount, setDeliveringStatusCount] = useState<number>(0);
+  const [completedStatusCount, setCompletedStatusCount] = useState<number>(0);
+  const [canceledStatusCount, setCanceledStatusCount] = useState<number>(0);
+
+  // useEffect(() => {
+  //   // Todo: refetch whenever get new noti
+  // }, [confirmStatusCount]);
+
+  const url = "http://localhost:8080/admin/notifications/orders/sse";
+
+  // Hàm để cập nhật các state dựa trên notifications
+  const updateStatusCounts = (newNotifications: IOrderNotification[]) => {
+    let confirmCount = 0;
+    let deliveryCount = 0;
+    let deliveringCount = 0;
+    let completedCount = 0;
+    let canceledCount = 0;
+
+    newNotifications.forEach((notification) => {
+      switch (notification.status) {
+        case "WAIT_FOR_CONFIRMATION":
+          confirmCount += notification.count;
+          break;
+        case "WAIT_FOR_DELIVERY":
+          deliveryCount += notification.count;
+          break;
+        case "DELIVERING":
+          deliveringCount += notification.count;
+          break;
+        case "COMPLETED":
+          completedCount += notification.count;
+          break;
+        case "CANCELED":
+          canceledCount += notification.count;
+          break;
+        default:
+          break;
+      }
+    });
+
+    setConfirmStatusCount(confirmCount);
+    setDeliveryStatusCount(deliveryCount);
+    setDeliveringStatusCount(deliveringCount);
+    setCompletedStatusCount(completedCount);
+    setCanceledStatusCount(canceledCount);
+    setAllStatusCount(
+      confirmCount +
+        deliveringCount +
+        deliveryCount +
+        completedCount +
+        canceledCount
+    );
+  };
+
+  useEffect(() => {
+    const eventSource = new EventSource(url);
+
+    eventSource.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data && data.length > 0) {
+        updateStatusCounts(data);
+      }
+    };
+
+    eventSource.addEventListener("close", () => {
+      console.log("Connection closed");
+    });
+
+    return () => {
+      eventSource.close();
+    };
+  }, []);
+
+  const options: SegmentedProps["options"] = [
+    {
+      label: (
+        <Badge count={allStatusCount} size="small">
+          <Text>Tất cả</Text>
+        </Badge>
+      ),
+      value: "ALL",
+    },
+    {
+      label: (
+        <Badge count={confirmStatusCount} size="small">
+          <Text>Chờ xác nhận</Text>
+        </Badge>
+      ),
+      value: "WAIT_FOR_CONFIRMATION",
+    },
+    {
+      label: (
+        <Badge count={deliveryStatusCount} size="small">
+          <Text>Chờ vận chuyển</Text>
+        </Badge>
+      ),
+      value: "WAIT_FOR_DELIVERY",
+    },
+    {
+      label: (
+        <Badge count={deliveringStatusCount} size="small">
+          <Text>Đang vận chuyển</Text>
+        </Badge>
+      ),
+      value: "DELIVERING",
+    },
+    {
+      label: (
+        <Badge count={completedStatusCount} size="small">
+          <Text>Hoàn thành</Text>
+        </Badge>
+      ),
+      value: "COMPLETED",
+    },
+    {
+      label: (
+        <Badge count={canceledStatusCount} size="small">
+          <Text>Huỷ</Text>
+        </Badge>
+      ),
+      value: "CANCELED",
+    },
+  ];
+
   return (
     <List>
       <Row gutter={[8, 12]}>
@@ -340,6 +481,19 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
                 </Button>
               </Space>
             </Form>
+          </Card>
+        </Col>
+        <Col span={24}>
+          <Card>
+            <Segmented
+              size="large"
+              block
+              options={options}
+              onChange={(value: SegmentedValue) => {
+                searchFormProps.form?.setFieldValue("status", value);
+                searchFormProps.form?.submit();
+              }}
+            />
           </Card>
         </Col>
         <Col span={24}>

@@ -1,7 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
 
-import { useList, useMany } from "@refinedev/core";
-
 import { BellOutlined } from "@ant-design/icons";
 import {
   Badge,
@@ -18,14 +16,14 @@ import dayjs from "dayjs";
 
 const { Text } = Typography;
 
+import { AxiosInstance } from "axios";
+import { stringify } from "query-string";
+import { Link } from "react-router-dom";
+import { ColorModeContext } from "../../../contexts/color-mode";
+import { INotification } from "../../../interfaces";
+import { axiosInstance } from "../../../utils";
 import { CustomAvatar } from "./custom-avatar";
 import { NotificationMessage } from "./notifications-message";
-import { AxiosInstance } from "axios";
-import { axiosInstance } from "../../../utils";
-import { INotification } from "../../../interfaces";
-import { Link } from "react-router-dom";
-import { stringify } from "query-string";
-import { ColorModeContext } from "../../../contexts/color-mode";
 
 const httpClient: AxiosInstance = axiosInstance;
 
@@ -166,7 +164,10 @@ export const Notifications: React.FC = () => {
                     name={noti.content}
                   />
                   <Space direction="vertical" size={0}>
-                    <NotificationMessage content={noti.content} />
+                    <NotificationMessage
+                      content={noti.content}
+                      type={noti.notificationType}
+                    />
                     <Text type="secondary">
                       {dayjs(new Date(noti.createdAt)).fromNow()}
                     </Text>

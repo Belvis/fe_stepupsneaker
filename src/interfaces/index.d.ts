@@ -33,6 +33,10 @@ export interface INotification {
   createdAt: number;
   loading: boolean;
 }
+export interface IOrderNotification {
+  status: OrderStatus;
+  count: number;
+}
 
 export interface ConfirmDialogOptions {
   message?: string;
@@ -75,6 +79,19 @@ export interface ISalesChart {
   value: number;
 }
 
+export interface IOrderAudit {
+  revisionType: RevisionType;
+  revisionNumber: number;
+  entity: IOrder;
+  changes: {
+    [key: string]: {
+      oldValue: any;
+      newValue: any;
+    };
+  };
+  creator: string;
+  at: number;
+}
 export interface IOrder {
   id: string;
   customer: ICustomer;
@@ -218,6 +235,7 @@ export type OrderStatus =
   | "EXPIRED"
   | "RETURNED"
   | "EXCHANGED";
+export type RevisionType = "UNKNOWN" | "INSERT" | "UPDATE" | "DELETE";
 
 type IDiscountInfo = {
   value: number;

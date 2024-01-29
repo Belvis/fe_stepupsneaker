@@ -48,7 +48,7 @@ import {
   IVoucherList,
   IWard,
 } from "../../../interfaces";
-import { showWarningConfirmDialog } from "../../../utils";
+import { orderToPayload, showWarningConfirmDialog } from "../../../utils";
 import VoucherModal from "../pos/discountModal/VoucherModal";
 import { AddressModal } from "../address/modal/list";
 
@@ -334,7 +334,10 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
       viewOrder.orderDetails.map((item) => {
         return { id: item.productDetail.id, quantity: item.quantity };
       });
+    const orderPayload = orderToPayload(order);
+
     const submitData = {
+      ...orderPayload,
       fullName: form.getFieldValue("fullName"),
       email: form.getFieldValue("email"),
       phoneNumber: form.getFieldValue("phoneNumber"),

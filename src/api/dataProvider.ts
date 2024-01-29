@@ -49,6 +49,7 @@ export const dataProvider = (
     );
 
     const { content } = response.data;
+
     const data = content.data;
     const totalElements = content.totalElements;
     const startIndex =
