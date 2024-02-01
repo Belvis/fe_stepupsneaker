@@ -615,7 +615,9 @@
           "voucher": "Phiếu giảm giá",
           "phoneNumber": "Số điện thoại",
           "status": "Trạng thái",
-          "note":"Ghi chú"
+          "note":"Ghi chú",
+          "originMoney": "Thành tiền",
+          "totalMoney": "Tổng số tiền"
         }
       },
       "recentOrders": {
