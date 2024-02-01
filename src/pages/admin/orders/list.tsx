@@ -347,7 +347,7 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
           <Text>Tất cả</Text>
         </Badge>
       ),
-      value: "ALL",
+      value: null as any,
     },
     {
       label: (
@@ -423,12 +423,8 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
                   noStyle
                   label={t("orders.fields.status")}
                   name="status"
-                >
-                  <Select
-                    placeholder={t("orders.filters.status.placeholder")}
-                    options={getOrderStatusOptions(t)}
-                  />
-                </Form.Item>
+                  hidden={true}
+                />
                 <Form.Item noStyle label={t("orders.fields.type")} name="type">
                   <Select
                     placeholder={t("orders.filters.type.placeholder")}
