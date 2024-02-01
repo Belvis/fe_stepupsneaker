@@ -374,8 +374,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({ order, callBack })
       );
   }
 
-  function editOrderShippingMoney(value: number): void {
-    if (value !== order.shippingMoney)
+  function editOrderShippingMoney(value: string): void {
+    if (value !== order.shippingMoney.toString())
       mutateUpdate(
         {
           resource: "orders",
@@ -651,7 +651,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({ order, callBack })
                     level={5}
                     style={{ color: `${token.colorPrimary}` }}
                     editable={{
-                      onChange: debounce(editOrderNote, 300),
+                      onChange: debounce(editOrderShippingMoney, 300),
                       text: shippingMoney + "",
                     }}
                   >
@@ -972,10 +972,13 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({ order, callBack })
                             loading={isLoadingDistrict}
                             onChange={handleDistrictChange}
                             filterOption={filterOption}
-                            options={districts.map((district) => ({
-                              label: district.DistrictName,
-                              value: district.DistrictID,
-                            }))}
+                            options={
+                              districts &&
+                              districts.map((district) => ({
+                                label: district.DistrictName,
+                                value: district.DistrictID,
+                              }))
+                            }
                           />
                         </Form.Item>
                       </Col>
@@ -1000,10 +1003,13 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({ order, callBack })
                             loading={isLoadingWard}
                             onChange={handleWardChange}
                             filterOption={filterOption}
-                            options={wards.map((ward) => ({
-                              label: ward.WardName,
-                              value: ward.WardCode,
-                            }))}
+                            options={
+                              wards &&
+                              wards.map((ward) => ({
+                                label: ward.WardName,
+                                value: ward.WardCode,
+                              }))
+                            }
                           />
                         </Form.Item>
                       </Col>
