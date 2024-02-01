@@ -1,10 +1,4 @@
-import {
-  CheckOutlined,
-  CloseOutlined,
-  CreditCardFilled,
-  PlusSquareFilled,
-  SearchOutlined,
-} from "@ant-design/icons";
+import { CheckOutlined, CloseOutlined, CreditCardFilled, PlusSquareFilled, SearchOutlined } from "@ant-design/icons";
 import {
   HttpError,
   useCreateMany,
@@ -57,13 +51,7 @@ import {
 } from "../../../../interfaces";
 import { formatTimestamp } from "../../../../utils";
 import { OrderItem } from "../orderItem";
-import {
-  CloseButtonWrapper,
-  CustomerInfor,
-  CustomerName,
-  TextContainer,
-  UserIcon,
-} from "./styled";
+import { CloseButtonWrapper, CustomerInfor, CustomerName, TextContainer, UserIcon } from "./styled";
 import { PaymentModal } from "../paymentModal";
 import { NumberField } from "@refinedev/antd";
 import { DiscountModal } from "../discountModal";
@@ -75,24 +63,17 @@ const GHN_API_BASE_URL = import.meta.env.VITE_GHN_API_BASE_URL;
 const GHN_SHOP_ID = import.meta.env.VITE_GHN_SHOP_ID;
 const GHN_TOKEN = import.meta.env.VITE_GHN_USER_TOKEN;
 
-const filterOption = (
-  input: string,
-  option?: { label: string; value: number }
-) => (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
+const filterOption = (input: string, option?: { label: string; value: number }) =>
+  (option?.label ?? "").toLowerCase().includes(input.toLowerCase());
 
 type DeliverySalesProps = {
   order: IOrder;
   callBack: () => void;
   setProductDetailModalVisible: React.Dispatch<React.SetStateAction<boolean>>;
-  setSelectedProduct: React.Dispatch<
-    React.SetStateAction<IProduct | undefined>
-  >;
+  setSelectedProduct: React.Dispatch<React.SetStateAction<IProduct | undefined>>;
 };
 
-export const DeliverySales: React.FC<DeliverySalesProps> = ({
-  order,
-  callBack,
-}) => {
+export const DeliverySales: React.FC<DeliverySalesProps> = ({ order, callBack }) => {
   const t = useTranslate();
   const { token } = useToken();
   const [messageApi, contextHolder] = message.useMessage();
@@ -132,11 +113,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
       enabled: false,
       onSuccess: (data) => {
         const customerOptions = data.data.map((item) =>
-          renderItemCustomer(
-            `${item.fullName} - ${item.email}`,
-            item.image,
-            item
-          )
+          renderItemCustomer(`${item.fullName} - ${item.email}`, item.image, item)
         );
         if (customerOptions.length > 0) {
           setCustomerOptions(customerOptions);
@@ -176,9 +153,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
     ],
   });
 
-  const { isLoading: isLoadingProvince, refetch: refetchProvince } = useCustom<
-    IProvince[]
-  >({
+  const { isLoading: isLoadingProvince, refetch: refetchProvince } = useCustom<IProvince[]>({
     url: `${GHN_API_BASE_URL}/master-data/province`,
     method: "get",
     config: {
@@ -194,9 +169,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
     },
   });
 
-  const { isLoading: isLoadingDistrict, refetch: refetchDistrict } = useCustom<
-    IDistrict[]
-  >({
+  const { isLoading: isLoadingDistrict, refetch: refetchDistrict } = useCustom<IDistrict[]>({
     url: `${GHN_API_BASE_URL}/master-data/district`,
     method: "get",
     config: {
@@ -215,26 +188,24 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
     },
   });
 
-  const { isLoading: isLoadingWard, refetch: refetchWard } = useCustom<IWard[]>(
-    {
-      url: `${GHN_API_BASE_URL}/master-data/ward`,
-      method: "get",
-      config: {
-        headers: {
-          token: GHN_TOKEN,
-        },
-        query: {
-          district_id: districtId,
-        },
+  const { isLoading: isLoadingWard, refetch: refetchWard } = useCustom<IWard[]>({
+    url: `${GHN_API_BASE_URL}/master-data/ward`,
+    method: "get",
+    config: {
+      headers: {
+        token: GHN_TOKEN,
       },
-      queryOptions: {
-        enabled: false,
-        onSuccess: (data: any) => {
-          setWards(data.response.data);
-        },
+      query: {
+        district_id: districtId,
       },
-    }
-  );
+    },
+    queryOptions: {
+      enabled: false,
+      onSuccess: (data: any) => {
+        setWards(data.response.data);
+      },
+    },
+  });
 
   useEffect(() => {
     setProvinces([]);
@@ -311,10 +282,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
 
   useEffect(() => {
     if (payments) {
-      const customerPaid = payments.reduce(
-        (acc, payment) => acc + payment.totalMoney,
-        0
-      );
+      const customerPaid = payments.reduce((acc, payment) => acc + payment.totalMoney, 0);
       const changeAmount = customerPaid - (totalPrice - discount);
       setChange(changeAmount);
     }
@@ -355,9 +323,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
   };
 
   if (order.customer) {
-    const defaultAddress = order?.customer.addressList.find(
-      (address) => address.isDefault === true
-    );
+    const defaultAddress = order?.customer.addressList.find((address) => address.isDefault === true);
 
     if (defaultAddress) {
       form.setFieldsValue({
@@ -408,8 +374,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
       );
   }
 
-  function editOrderShippingMoney(value: number): void {
-    if (value !== order.shippingMoney)
+  function editOrderShippingMoney(value: string): void {
+    if (value !== order.shippingMoney.toString())
       mutateUpdate(
         {
           resource: "orders",
@@ -546,8 +512,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         onError: (error, variables, context) => {
           // An error occurred!
         },
-        onSuccess: (data, variables, context) => {
-          setShippingMoney(data?.data.total);
+        onSuccess: (data: any, variables, context) => {
+          setShippingMoney(data?.response.data.total as number);
         },
       }
     );
@@ -578,8 +544,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         },
         onSuccess: (data, variables, context) => {
           callBack();
-          const convertedPayload: IPaymentConvertedPayload[] =
-            convertToPayload(payments);
+          const convertedPayload: IPaymentConvertedPayload[] = convertToPayload(payments);
           paymentMutateCreateMany(
             {
               resource: "payments",
@@ -617,12 +582,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         >
           <ShoppingCartHeader />
           {orderDetails.map((orderItem, index) => (
-            <OrderItem
-              key={orderItem.id}
-              orderDetail={orderItem}
-              callBack={callBack}
-              count={index}
-            />
+            <OrderItem key={orderItem.id} orderDetail={orderItem} callBack={callBack} count={index} />
           ))}
         </Space>
         <Card style={{ background: token.colorPrimaryBg }}>
@@ -661,22 +621,12 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                 <Flex gap="middle" justify="space-between" align="center">
                   <Space size="large" wrap>
                     <Text>{t("orders.tab.discount")}</Text>
-                    <Tooltip
-                      title={
-                        !order.customer
-                          ? "Khách lẻ không thể sử dụng giảm giá."
-                          : ""
-                      }
-                    >
+                    <Tooltip title={!order.customer ? "Khách lẻ không thể sử dụng giảm giá." : ""}>
                       <Button
                         disabled={!order.customer}
                         type="text"
                         size="small"
-                        icon={
-                          <PlusSquareFilled
-                            style={{ color: token.colorPrimary }}
-                          />
-                        }
+                        icon={<PlusSquareFilled style={{ color: token.colorPrimary }} />}
                         onClick={showDiscountModal}
                       />
                     </Tooltip>
@@ -701,7 +651,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                     level={5}
                     style={{ color: `${token.colorPrimary}` }}
                     editable={{
-                      onChange: debounce(editOrderNote, 300),
+                      onChange: debounce(editOrderShippingMoney, 300),
                       text: shippingMoney + "",
                     }}
                   >
@@ -736,10 +686,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         </Card>
       </Col>
       <Col span={12}>
-        <Card
-          style={{ background: token.colorPrimaryBg, height: "100%" }}
-          bodyStyle={{ height: "100%" }}
-        >
+        <Card style={{ background: token.colorPrimaryBg, height: "100%" }} bodyStyle={{ height: "100%" }}>
           <Space
             direction="vertical"
             style={{
@@ -763,23 +710,16 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           editOrderEmployee(option.employee.id);
                         }}
                         filterOption={false}
-                        onSearch={debounce(
-                          (value: string) => setValueEmployee(value),
-                          300
-                        )}
+                        onSearch={debounce((value: string) => setValueEmployee(value), 300)}
                       >
-                        <Input
-                          placeholder={t("search.placeholder.employee")}
-                          suffix={<SearchOutlined />}
-                        />
+                        <Input placeholder={t("search.placeholder.employee")} suffix={<SearchOutlined />} />
                       </AutoComplete>
                     ) : (
                       <CustomerInfor span={24}>
                         <TextContainer>
                           <UserIcon color={token.colorBgMask} />
                           <CustomerName color={token.colorPrimary}>
-                            {order.employee?.fullName} -{" "}
-                            {order.employee.phoneNumber}
+                            {order.employee?.fullName} - {order.employee.phoneNumber}
                           </CustomerName>
                         </TextContainer>
                         <CloseButtonWrapper>
@@ -821,23 +761,15 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           editOrderCustomer(option.customer.id);
                         }}
                         filterOption={false}
-                        onSearch={debounce(
-                          (value: string) => setValue(value),
-                          300
-                        )}
+                        onSearch={debounce((value: string) => setValue(value), 300)}
                       >
-                        <Input
-                          placeholder={t("search.placeholder.customer")}
-                          suffix={<SearchOutlined />}
-                        />
+                        <Input placeholder={t("search.placeholder.customer")} suffix={<SearchOutlined />} />
                       </AutoComplete>
                     ) : (
                       <CustomerInfor span={24}>
                         <TextContainer>
                           <UserIcon color={token.colorBgMask} />
-                          <CustomerName color={token.colorPrimary}>
-                            {order.customer?.fullName}
-                          </CustomerName>
+                          <CustomerName color={token.colorPrimary}>{order.customer?.fullName}</CustomerName>
                         </TextContainer>
                         <CloseButtonWrapper>
                           <Button
@@ -882,11 +814,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                         <Button
                           size="small"
                           type="text"
-                          icon={
-                            <CreditCardFilled
-                              style={{ color: token.colorPrimary }}
-                            />
-                          }
+                          icon={<CreditCardFilled style={{ color: token.colorPrimary }} />}
                           onClick={showModal}
                         />
                       </Space>
@@ -897,10 +825,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               currency: "VND",
                               style: "currency",
                             }}
-                            value={payments.reduce(
-                              (acc, payment) => acc + payment.totalMoney,
-                              0
-                            )}
+                            value={payments.reduce((acc, payment) => acc + payment.totalMoney, 0)}
                           />
                         ) : (
                           "Loading..."
@@ -1015,9 +940,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               borderBottom: `1px solid ${token.colorPrimary}`,
                               borderRadius: 0,
                             }}
-                            placeholder={t(
-                              "customers.fields.province.placeholder"
-                            )}
+                            placeholder={t("customers.fields.province.placeholder")}
                             loading={isLoadingProvince}
                             onChange={handleProvinceChange}
                             filterOption={filterOption}
@@ -1045,16 +968,17 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               borderBottom: `1px solid ${token.colorPrimary}`,
                               borderRadius: 0,
                             }}
-                            placeholder={t(
-                              "customers.fields.district.placeholder"
-                            )}
+                            placeholder={t("customers.fields.district.placeholder")}
                             loading={isLoadingDistrict}
                             onChange={handleDistrictChange}
                             filterOption={filterOption}
-                            options={districts.map((district) => ({
-                              label: district.DistrictName,
-                              value: district.DistrictID,
-                            }))}
+                            options={
+                              districts &&
+                              districts.map((district) => ({
+                                label: district.DistrictName,
+                                value: district.DistrictID,
+                              }))
+                            }
                           />
                         </Form.Item>
                       </Col>
@@ -1079,10 +1003,13 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                             loading={isLoadingWard}
                             onChange={handleWardChange}
                             filterOption={filterOption}
-                            options={wards.map((ward) => ({
-                              label: ward.WardName,
-                              value: ward.WardCode,
-                            }))}
+                            options={
+                              wards &&
+                              wards.map((ward) => ({
+                                label: ward.WardName,
+                                value: ward.WardCode,
+                              }))
+                            }
                           />
                         </Form.Item>
                       </Col>
@@ -1213,9 +1140,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                             </Form.Item>
                           </Col>
                           <Col span={7} style={{ textAlign: "center" }}>
-                            <Text style={{ fontSize: "12px" }}>
-                              length x width x height (cm)
-                            </Text>
+                            <Text style={{ fontSize: "12px" }}>length x width x height (cm)</Text>
                             <Button
                               type="primary"
                               size={"small"}
@@ -1271,11 +1196,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
   );
 };
 
-const renderItemCustomer = (
-  title: string,
-  imageUrl: string,
-  customer: ICustomer
-) => ({
+const renderItemCustomer = (title: string, imageUrl: string, customer: ICustomer) => ({
   value: title,
   label: (
     <Row style={{ display: "flex", alignItems: "center" }}>
@@ -1290,12 +1211,7 @@ const renderItemCustomer = (
   customer: customer,
 });
 
-const renderItemEmployee = (
-  name: string,
-  phoneNumber: string,
-  imageUrl: string,
-  employee: IEmployee
-) => ({
+const renderItemEmployee = (name: string, phoneNumber: string, imageUrl: string, employee: IEmployee) => ({
   value: name,
   label: (
     <Row style={{ display: "flex", alignItems: "center" }}>
@@ -1313,9 +1229,7 @@ const renderItemEmployee = (
   employee: employee,
 });
 
-function convertToPayload(
-  payments: IPayment[] | undefined
-): IPaymentConvertedPayload[] {
+function convertToPayload(payments: IPayment[] | undefined): IPaymentConvertedPayload[] {
   if (!payments) return [];
   return payments.map((payment) => ({
     order: payment.order.id,
