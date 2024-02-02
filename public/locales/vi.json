@@ -1048,6 +1048,13 @@
         "title": "Giao dịch"
     },
     "sse": {
+      "notification": {
+        "SEGMENT": {
+          "ALL": "Tất cả",
+          "UNREAD": "Chưa đọc"
+        },
+        "NO_NOTIFICATION": "Bạn không có thông báo mới"
+      },
       "message": {
         "ORDER_PLACED": " vừa đặt đơn hàng ",
         "ORDER_CHANGED": " vừa bị thay đổi ",
