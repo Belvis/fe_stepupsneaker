@@ -535,15 +535,15 @@
           "validation": "phải là 1080x1080 px"
         },
         "province": {
-          "label": "Tỉnh",
+          "label": "Tỉnh/Thành phố",
           "placeholder": "Chọn tỉnh"
         },
         "district": {
-          "label": "Huyện",
+          "label": "Quận/Huyện",
           "placeholder": "Chọn quận"
         },
         "ward": {
-          "label": "Phường",
+          "label": "Phường/Xã",
           "placeholder": "Chọn phường"
         },
         "more": "Số nhà"
@@ -693,7 +693,8 @@
           "title": "Loại",
           "ONLINE": "Trực tuyến",
           "OFFLINE": "Tại quầy"
-        }
+        },
+        "address": "Địa chỉ hoá đơn"
       },
       "filters": {
         "title": "Bộ lọc",
