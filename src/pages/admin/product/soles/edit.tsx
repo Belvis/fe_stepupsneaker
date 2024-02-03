@@ -50,6 +50,7 @@ export const EditSole: React.FC<EditSoleProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

@@ -202,6 +202,7 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
             rules={[
               {
                 required: true,
+                whitespace: true,
               },
             ]}
           >
@@ -288,6 +289,7 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
             rules={[
               {
                 required: true,
+                whitespace: true,
               },
             ]}
           >

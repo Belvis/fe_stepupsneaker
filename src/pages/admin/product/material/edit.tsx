@@ -50,6 +50,7 @@ export const EditMaterial: React.FC<EditMaterialProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

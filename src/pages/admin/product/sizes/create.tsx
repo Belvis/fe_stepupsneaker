@@ -45,6 +45,7 @@ export const CreateSize: React.FC<CreateSizeProps> = ({
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

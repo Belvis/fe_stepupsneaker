@@ -165,6 +165,7 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                 name="code"
                 rules={[
                   {
+                    whitespace: true,
                     required: true,
                   },
                 ]}
@@ -176,6 +177,7 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                 name="name"
                 rules={[
                   {
+                    whitespace: true,
                     required: true,
                   },
                 ]}
@@ -187,6 +189,7 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                 name="description"
                 rules={[
                   {
+                    whitespace: true,
                     required: true,
                   },
                 ]}

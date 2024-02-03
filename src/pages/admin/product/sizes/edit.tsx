@@ -50,6 +50,7 @@ export const EditSize: React.FC<EditSizeProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

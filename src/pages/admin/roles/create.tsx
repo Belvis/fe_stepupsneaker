@@ -40,6 +40,7 @@ export const CreateRole: React.FC<CreateRoleProps> = ({
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

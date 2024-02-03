@@ -152,7 +152,10 @@ export const RegisterPage: React.FC<RegisterProps> = ({
           name="email"
           label={translate("pages.register.email", "Email")}
           rules={[
-            { required: true },
+            {
+              whitespace: true,
+              required: true,
+            },
             {
               type: "email",
               message: translate(
@@ -170,7 +173,12 @@ export const RegisterPage: React.FC<RegisterProps> = ({
         <Form.Item
           name="password"
           label={translate("pages.register.fields.password", "Password")}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              whitespace: true,
+              required: true,
+            },
+          ]}
         >
           <Input.Password type="password" placeholder="●●●●●●●●" size="large" />
         </Form.Item>

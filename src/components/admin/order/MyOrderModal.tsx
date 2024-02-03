@@ -1011,6 +1011,7 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
               name="line"
               rules={[
                 {
+                  whitespace: true,
                   required: true,
                 },
               ]}

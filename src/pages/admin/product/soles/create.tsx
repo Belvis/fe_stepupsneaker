@@ -45,6 +45,7 @@ export const CreateSole: React.FC<CreateSoleProps> = ({
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

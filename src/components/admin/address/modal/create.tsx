@@ -160,6 +160,7 @@ export const CreateAddress: React.FC<CreateAddressProps> = ({
           rules={[
             {
               required: true,
+              whitespace: true,
             },
           ]}
         >
@@ -246,6 +247,7 @@ export const CreateAddress: React.FC<CreateAddressProps> = ({
           rules={[
             {
               required: true,
+              whitespace: true,
             },
           ]}
         >

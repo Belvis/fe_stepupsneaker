@@ -50,6 +50,7 @@ export const EditTradeMark: React.FC<EditTradeMarkProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

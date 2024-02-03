@@ -49,6 +49,7 @@ export const EditRole: React.FC<EditRoleProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

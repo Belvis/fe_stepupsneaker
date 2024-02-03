@@ -49,6 +49,7 @@ export const EditPaymentMethod: React.FC<EditPaymentMethodProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

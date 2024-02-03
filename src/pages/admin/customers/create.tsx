@@ -368,6 +368,7 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                     name="fullName"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}
@@ -380,6 +381,7 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                     rules={[
                       {
                         required: true,
+                        whitespace: true,
                         type: "email",
                       },
                     ]}
@@ -516,6 +518,7 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                     name="more"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}

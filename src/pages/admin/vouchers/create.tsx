@@ -226,6 +226,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               name="name"
               rules={[
                 {
+                  whitespace: true,
                   required: true,
                 },
               ]}
@@ -237,6 +238,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               name="code"
               rules={[
                 {
+                  whitespace: true,
                   required: true,
                 },
               ]}

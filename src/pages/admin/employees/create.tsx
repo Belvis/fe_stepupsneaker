@@ -236,6 +236,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     name="fullName"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}
@@ -247,6 +248,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     name="email"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                         type: "email",
                       },
@@ -261,6 +263,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     name="phoneNumber"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}
@@ -317,6 +320,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     name="address"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}
