@@ -1,26 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
 
-import {
-  BellOutlined,
-  CheckOutlined,
-  MoreOutlined,
-  SelectOutlined,
-  SettingOutlined,
-} from "@ant-design/icons";
-import {
-  Badge,
-  Button,
-  Col,
-  Divider,
-  Flex,
-  Popover,
-  Row,
-  Segmented,
-  Skeleton,
-  Space,
-  Spin,
-  Typography,
-} from "antd";
+import { BellOutlined, CheckOutlined, MoreOutlined, SelectOutlined, SettingOutlined } from "@ant-design/icons";
+import { Badge, Button, Col, Divider, Flex, Popover, Row, Segmented, Skeleton, Space, Spin, Typography } from "antd";
 import dayjs from "dayjs";
 
 const { Text, Title } = Typography;
@@ -34,6 +15,7 @@ import { axiosInstance } from "../../../utils";
 import { CustomAvatar } from "./custom-avatar";
 import { NotificationMessage } from "./notifications-message";
 import styled from "styled-components";
+import { SegmentedValue } from "antd/es/segmented";
 
 const httpClient: AxiosInstance = axiosInstance;
 
@@ -51,6 +33,7 @@ export const Notifications: React.FC = () => {
 
   const [initLoading, setInitLoading] = useState(true);
   const [loading, setLoading] = useState(false);
+  const [segment, setSegment] = useState("Tất cả");
 
   const query: {
     pageSize: number;
@@ -63,11 +46,16 @@ export const Notifications: React.FC = () => {
   const url = "http://localhost:8080/admin/notifications";
 
   const getAllNotifs = () => {
-    return httpClient.get(`${url}?${stringify(query)}`);
+    const path = segment === "Tất cả" ? "" : "/unread";
+    return httpClient.get(`${url}${path}?${stringify(query)}`);
   };
 
   const changeNotifStatusToRead = (notifID: string) => {
     return httpClient.put(`${url}/read/` + notifID);
+  };
+
+  const readAll = () => {
+    return httpClient.get(`${url}/read-all`);
   };
 
   const fetchData = async () => {
@@ -83,14 +71,23 @@ export const Notifications: React.FC = () => {
 
   const onLoadMore = () => {
     setLoading(true);
-    setNotifications((prev) =>
-      prev.concat([...new Array(3)].map(() => ({} as INotification)))
-    );
+    setNotifications((prev) => prev.concat([...new Array(3)].map(() => ({} as INotification))));
     query.pageSize += 5;
     fetchData().then(() => {
       setLoading(false);
       window.dispatchEvent(new Event("resize"));
     });
+  };
+
+  const handleReadAll = async () => {
+    setLoading(true);
+    await readAll();
+    await fetchData();
+    setLoading(false);
+  };
+
+  const onSegmentedChange = (value: SegmentedValue) => {
+    setSegment(value.toString());
   };
 
   const loadMore =
@@ -130,10 +127,12 @@ export const Notifications: React.FC = () => {
   }, []);
 
   useEffect(() => {
+    fetchData();
+  }, [segment]);
+
+  useEffect(() => {
     if (notifications) {
-      const unreadNotifications = notifications.filter(
-        (notification) => !notification.read && notification.id != null
-      );
+      const unreadNotifications = notifications.filter((notification) => !notification.read && notification.id != null);
       setUnreadCount(unreadNotifications.length);
     }
   }, [notifications]);
@@ -156,7 +155,9 @@ export const Notifications: React.FC = () => {
           <CheckOutlined />
         </Col>
         <Col span={21}>
-          <Text strong>Đánh dấu là đã đọc</Text>
+          <Text strong onClick={handleReadAll}>
+            Đánh dấu là đã đọc
+          </Text>
         </Col>
       </MoreContent>
       <MoreContent gutter={[16, 24]}>
@@ -204,14 +205,11 @@ export const Notifications: React.FC = () => {
           </Popover>
         </Row>
         <Row style={{ marginTop: "0.25rem" }}>
-          <Segmented options={["Tất cả", "Chưa đọc"]} />
+          <Segmented onChange={onSegmentedChange} options={["Tất cả", "Chưa đọc"]} />
         </Row>
       </div>
-      <Space
-        direction="vertical"
-        split={<Divider style={{ margin: 0 }} />}
-        style={{ width: "100%" }}
-      >
+      <Space direction="vertical" split={<Divider style={{ margin: 0 }} />} style={{ width: "100%" }}>
+        {notifications && notifications.length <= 0 && <p className="text-center">Bạn không có thông báo nào</p>}
         {notifications &&
           notifications.length > 0 &&
           notifications.map((noti, index) => (
@@ -223,13 +221,7 @@ export const Notifications: React.FC = () => {
               }}
               key={index}
             >
-              <Skeleton
-                avatar
-                title={false}
-                loading={!noti.id}
-                active
-                key={index}
-              >
+              <Skeleton avatar title={false} loading={!noti.id} active key={index}>
                 <Flex justify="space-between" align="center" key={index}>
                   <Space key={index}>
                     <CustomAvatar
@@ -243,13 +235,8 @@ export const Notifications: React.FC = () => {
                       name={noti.content}
                     />
                     <Space direction="vertical" size={0}>
-                      <NotificationMessage
-                        content={noti.content}
-                        type={noti.notificationType}
-                      />
-                      <Text type="secondary">
-                        {dayjs(new Date(noti.createdAt)).fromNow()}
-                      </Text>
+                      <NotificationMessage content={noti.content} type={noti.notificationType} />
+                      <Text type="secondary">{dayjs(new Date(noti.createdAt)).fromNow()}</Text>
                     </Space>
                   </Space>
                   <div>{!noti.read && <Badge status="processing" />}</div>
