@@ -40,6 +40,7 @@ export const CreatePaymentMethod: React.FC<CreatePaymentMethodProps> = ({
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

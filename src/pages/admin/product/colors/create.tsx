@@ -65,6 +65,7 @@ export const CreateColor: React.FC<CreateColorProps> = ({
           name="code"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}
@@ -80,6 +81,7 @@ export const CreateColor: React.FC<CreateColorProps> = ({
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

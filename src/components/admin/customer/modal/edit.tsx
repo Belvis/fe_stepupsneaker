@@ -415,6 +415,7 @@ export const EditCustomerModal: React.FC<EditCustomerModalProps> = ({
                   rules={[
                     {
                       required: true,
+                      whitespace: true,
                     },
                   ]}
                 >
@@ -427,6 +428,7 @@ export const EditCustomerModal: React.FC<EditCustomerModalProps> = ({
                     {
                       required: true,
                       type: "email",
+                      whitespace: true,
                     },
                   ]}
                 >
@@ -492,6 +494,7 @@ export const EditCustomerModal: React.FC<EditCustomerModalProps> = ({
                   name="phoneNumber"
                   rules={[
                     {
+                      whitespace: true,
                       required: true,
                     },
                   ]}
@@ -582,6 +585,7 @@ export const EditCustomerModal: React.FC<EditCustomerModalProps> = ({
                   name="more"
                   rules={[
                     {
+                      whitespace: true,
                       required: true,
                     },
                   ]}

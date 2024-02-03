@@ -51,6 +51,7 @@ export const EditStyle: React.FC<EditStyleProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

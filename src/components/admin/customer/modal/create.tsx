@@ -394,6 +394,7 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="fullName"
                   rules={[
                     {
+                      whitespace: true,
                       required: true,
                     },
                   ]}
@@ -406,6 +407,7 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   rules={[
                     {
                       required: true,
+                      whitespace: true,
                       type: "email",
                     },
                   ]}
@@ -452,6 +454,7 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="phoneNumber"
                   rules={[
                     {
+                      whitespace: true,
                       required: true,
                     },
                   ]}
@@ -543,6 +546,7 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   rules={[
                     {
                       required: true,
+                      whitespace: true,
                     },
                   ]}
                 >
