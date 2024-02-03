@@ -702,9 +702,45 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         </>
       ),
     },
-
     {
       key: "13",
+      label: t("orders.fields.address"),
+      span: 4,
+      children: (
+        <>
+          {record?.address ? (
+            <>
+              <div>
+                <strong>{t("customers.fields.phoneNumber")}</strong>:{" "}
+                {record.address.phoneNumber}
+              </div>
+              <div>
+                <strong>{t("customers.fields.province.label")}</strong>:{" "}
+                {record.address.provinceName}
+              </div>
+              <div>
+                <strong>{t("customers.fields.district.label")}</strong>:{" "}
+                {record.address.districtName}
+              </div>
+              <div>
+                <strong>{t("customers.fields.ward.label")}</strong>:{" "}
+                {record.address.wardName}
+              </div>
+              <div>
+                <strong>{t("customers.fields.more")}</strong>:{" "}
+                {record.address.more}
+              </div>
+            </>
+          ) : (
+            <div>
+              <Empty />
+            </div>
+          )}
+        </>
+      ),
+    },
+    {
+      key: "14",
       label: t("orders.fields.customer"),
       span: 2,
       children: (
@@ -759,7 +795,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       ),
     },
     {
-      key: "14",
+      key: "15",
       label: t("orders.fields.employee"),
       span: 2,
       children: (
