@@ -4,7 +4,12 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { List, useModalForm, useTable } from "@refinedev/antd";
+import {
+  List,
+  getDefaultSortOrder,
+  useModalForm,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -43,26 +48,23 @@ export const PaymentMethodList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
 
   const { mutate: mutateDelete } = useDelete();
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IPaymentMethod,
-    HttpError,
-    IPaymentMethodFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q }) => {
-      const paymentMethodFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<IPaymentMethod, HttpError, IPaymentMethodFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q }) => {
+        const paymentMethodFilters: CrudFilters = [];
 
-      paymentMethodFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        paymentMethodFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return paymentMethodFilters;
-    },
-  });
+        return paymentMethodFilters;
+      },
+    });
 
   const {
     modalProps: createModalProps,
@@ -91,12 +93,28 @@ export const PaymentMethodList: React.FC<IResourceComponentsProps> = () => {
   const columns: ColumnsType<IPaymentMethod> = [
     {
       title: "#",
-      key: "index",
+      key: "createdAt",
+      dataIndex: "createdAt",
       align: "center",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("payment-methods.fields.name"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("name", sorters),
       dataIndex: "name",
       key: "name",
     },

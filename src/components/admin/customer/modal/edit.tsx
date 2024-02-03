@@ -1,16 +1,13 @@
-import { QrcodeOutlined } from "@ant-design/icons";
 import { getValueFromEvent, useForm } from "@refinedev/antd";
 import {
   useCreate,
   useCustom,
   useOne,
-  useParsed,
   useTranslate,
   useUpdate,
 } from "@refinedev/core";
 import {
   Avatar,
-  Button,
   Col,
   DatePicker,
   Divider,
@@ -39,12 +36,7 @@ import {
   getUserStatusOptions,
 } from "../../../../constants";
 import { ICustomer, IDistrict, IProvince, IWard } from "../../../../interfaces";
-import {
-  getBase64Image,
-  parseQRCodeResult,
-  showWarningConfirmDialog,
-} from "../../../../utils";
-import { QRScannerModal } from "../../../qrScanner";
+import { getBase64Image, showWarningConfirmDialog } from "../../../../utils";
 
 const { Text } = Typography;
 const { TextArea } = Input;

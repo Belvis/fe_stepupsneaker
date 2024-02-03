@@ -21,3 +21,80 @@
 .ant-tabs, .ant-spin-container, .ant-spin-nested-loading, .ant-tabs-content-holder, .ant-tabs-content, .ant-tabs-tabpane{
     height: 100%;
 }
+
+/* Kích thước mặc định cho nút */
+.sharpen-btn button {
+	font-size: 14px;
+	font-weight: 500;
+	padding: 13px 42px 12px;
+	cursor: pointer;
+	transition: all 0.3s ease 0s;
+	text-transform: uppercase;
+	color: #fff;
+	border: medium none;
+	background-color: #fb5231; /* Thay đổi màu chủ đạo tại đây */
+  }
+  
+  /* Hover state cho nút */
+  .sharpen-btn button:hover {
+	background-color: #333;
+  }
+  
+  /* Media query cho các kích thước màn hình nhỏ hơn */
+  @media (max-width: 768px) {
+	.sharpen-btn button {
+	  font-size: 12px;
+	  padding: 10px 30px 9px;
+	}
+  }
+
+  .auto-group-xh3i-y16 {
+    margin-right: 0.3rem;
+    width: 17.4rem;
+    height: 100%;
+    flex-shrink: 0;
+  }
+  .auto-group-xh3i-y16 .group-3-WFv {
+    margin-bottom: 0.6rem;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  }
+  .auto-group-xh3i-y16 .group-3-WFv .gim-1000000-ed2 {
+    margin-bottom: 0.4rem;
+    font-size: 2rem;
+    font-weight: 600;
+    line-height: 1.2175;
+    color: #fb5231;
+
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .auto-group-xh3i-y16 .group-3-WFv .cc-ruy-to-qqv {
+    font-size: 1.2rem;
+    font-weight: 500;
+    line-height: 1.2175;
+    color: #fb5231;
+
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .auto-group-xh3i-y16 .c-hiu-lc-n-12102024-xfe {
+    margin-bottom: 1.2rem;
+    font-size: 0.8rem;
+    font-weight: 500;
+    line-height: 1.2175;
+    color: rgba(0, 0, 0, 0.400000006);
+
+    white-space: nowrap;
+  }
+  .auto-group-xh3i-y16 .chi-tit--Fue {
+    font-size: 1rem;
+    font-weight: 500;
+    line-height: 1.2175;
+    color: rgba(251, 82, 49, 0.8000000119);
+
+    white-space: nowrap;
+  }
+
+  

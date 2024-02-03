@@ -63,7 +63,7 @@ export const GenderCustomersPie: React.FC = () => {
       <div style={{ textAlign: "center", padding: "5px" }}>
         <Text strong>{t(`dashboard.genderCustomerPie.title`)}</Text>
       </div>
-      <Pie height={300} style={{ maxHeight: "300px" }} {...config} />
+      <Pie {...config} />
     </div>
   );
 };

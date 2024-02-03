@@ -1,5 +1,11 @@
 import { CheckSquareOutlined, UndoOutlined } from "@ant-design/icons";
-import { EditButton, Show, useSelect, useTable } from "@refinedev/antd";
+import {
+  EditButton,
+  Show,
+  useModalForm,
+  useSelect,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -30,8 +36,11 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { ProductStatus } from "../../../../components";
-import { getProductStatusOptions, tablePaginationSettings } from "../../../../constants";
+import { EditProductDetail, ProductStatus } from "../../../../components";
+import {
+  getProductStatusOptions,
+  tablePaginationSettings,
+} from "../../../../constants";
 import {
   IBrand,
   IColor,
@@ -56,10 +65,25 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
   const { id } = useParsed();
   const API_URL = useApiUrl();
 
-  const { mutate: mutateUpdateMany } = useCustomMutation<IProductDetail>();
+  const { mutate: mutateUpdateMany, isLoading } =
+    useCustomMutation<IProductDetail>();
 
   const [productDetails, setProductDetails] = useState<IProductDetail[]>([]);
-  const [productDetailsSave, setProductDetailsSave] = useState<IProductDetail[]>([]);
+  const [productDetailsSave, setProductDetailsSave] = useState<
+    IProductDetail[]
+  >([]);
+
+  const {
+    modalProps: editModalProps,
+    formProps: editFormProps,
+    show: editModalShow,
+    id: editId,
+    onFinish: editOnFinish,
+  } = useModalForm<IProductDetail>({
+    action: "edit",
+    warnWhenUnsavedChanges: true,
+    resource: "product-details",
+  });
 
   const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
     IProductDetail,
@@ -70,7 +94,7 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
     filters: {
       initial: [
         {
-          field: "product",
+          field: "products",
           operator: "eq",
           value: id,
         },
@@ -79,7 +103,19 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
     pagination: {
       pageSize: 5,
     },
-    onSearch: ({ status, brand, color, material, priceMax, priceMin, quantity, size, sole, style, tradeMark }) => {
+    onSearch: ({
+      status,
+      brand,
+      color,
+      material,
+      priceMax,
+      priceMin,
+      quantity,
+      size,
+      sole,
+      style,
+      tradeMark,
+    }) => {
       const productDetailFilters: CrudFilters = [];
 
       productDetailFilters.push({
@@ -94,32 +130,32 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
         value: brand ? brand : undefined,
       });
       productDetailFilters.push({
-        field: "color",
+        field: "colors",
         operator: "eq",
         value: color ? color : undefined,
       });
       productDetailFilters.push({
-        field: "material",
+        field: "materials",
         operator: "eq",
         value: material ? material : undefined,
       });
       productDetailFilters.push({
-        field: "size",
+        field: "sizes",
         operator: "eq",
         value: size ? size : undefined,
       });
       productDetailFilters.push({
-        field: "sole",
+        field: "soles",
         operator: "eq",
         value: sole ? sole : undefined,
       });
       productDetailFilters.push({
-        field: "style",
+        field: "styles",
         operator: "eq",
         value: style ? style : undefined,
       });
       productDetailFilters.push({
-        field: "tradeMark",
+        field: "tradeMarks",
         operator: "eq",
         value: tradeMark ? tradeMark : undefined,
       });
@@ -145,7 +181,9 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
 
   useEffect(() => {
     if (tableProps && tableProps.dataSource) {
-      const fetchedProductDetails: IProductDetail[] = [...tableProps.dataSource];
+      const fetchedProductDetails: IProductDetail[] = [
+        ...tableProps.dataSource,
+      ];
       setProductDetails(fetchedProductDetails);
     }
   }, [tableProps.dataSource]);
@@ -246,8 +284,13 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
     searchFormProps.form?.submit();
   };
 
-  const updateProductDetailsSaveQuantity = (record: IProductDetail, value: number) => {
-    const existingIndex = productDetailsSave.findIndex((productDetail) => productDetail.id === record.id);
+  const updateProductDetailsSaveQuantity = (
+    record: IProductDetail,
+    value: number
+  ) => {
+    const existingIndex = productDetailsSave.findIndex(
+      (productDetail) => productDetail.id === record.id
+    );
     const updatedDetails = [...productDetailsSave];
     if (existingIndex !== -1) {
       updatedDetails[existingIndex].quantity = value;
@@ -264,15 +307,22 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
   };
 
   const handleQuantityChange = (value: number, record: IProductDetail) => {
-    const index = productDetails.findIndex((productDetail) => productDetail.id === record.id);
+    const index = productDetails.findIndex(
+      (productDetail) => productDetail.id === record.id
+    );
 
     updateProductDetailsSaveQuantity(record, value);
 
     updateProductDetailsQuantity(index, value);
   };
 
-  const updateProductDetailsSavePrice = (record: IProductDetail, value: number) => {
-    const existingIndex = productDetailsSave.findIndex((productDetail) => productDetail.id === record.id);
+  const updateProductDetailsSavePrice = (
+    record: IProductDetail,
+    value: number
+  ) => {
+    const existingIndex = productDetailsSave.findIndex(
+      (productDetail) => productDetail.id === record.id
+    );
     const updatedDetails = [...productDetailsSave];
     if (existingIndex !== -1) {
       updatedDetails[existingIndex].price = value;
@@ -288,13 +338,18 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
     setProductDetails(updatedProducts);
   };
 
-  const handlePriceChange = debounce((value: number, record: IProductDetail) => {
-    const index = productDetails.findIndex((productDetail) => productDetail.id === record.id);
+  const handlePriceChange = debounce(
+    (value: number, record: IProductDetail) => {
+      const index = productDetails.findIndex(
+        (productDetail) => productDetail.id === record.id
+      );
 
-    updateProductDetailsSavePrice(record, value);
+      updateProductDetailsSavePrice(record, value);
 
-    updateProductDetailsPrice(index, value);
-  }, 500);
+      updateProductDetailsPrice(index, value);
+    },
+    500
+  );
 
   const columns: ColumnsType<IProductDetail> = [
     {
@@ -313,8 +368,11 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "image",
       key: "image",
       render: (_, { image, promotionProductDetails }) => {
-        if (promotionProductDetails.length > 0) {
-          const value = promotionProductDetails[0].promotion.value;
+        const promotionProductDetailsActive = promotionProductDetails.filter(
+          (productDetail) => productDetail.promotion.status == "ACTIVE"
+        );
+        if (promotionProductDetailsActive.length > 0) {
+          const value = promotionProductDetailsActive[0].promotion.value;
           return (
             <Badge.Ribbon text={`${value} %`} color="red">
               <Avatar shape="square" size={74} src={image} />
@@ -356,7 +414,9 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       align: "center",
       render: (_, record) => (
         <InputNumber
-          formatter={(value) => `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+          formatter={(value) =>
+            `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+          }
           parser={(value) => {
             const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
             return isNaN(parsedValue) ? 0 : parsedValue;
@@ -372,7 +432,9 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       key: "size",
       dataIndex: "size",
       align: "center",
-      render: (_, record) => <Text style={{ width: "100%" }}>{record.size.name}</Text>,
+      render: (_, record) => (
+        <Text style={{ width: "100%" }}>{record.size.name}</Text>
+      ),
     },
     {
       title: t("productDetails.fields.color"),
@@ -380,7 +442,10 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "color",
       align: "center",
       render: (_, record) => (
-        <Tag style={{ width: "100%" }} color={`#${record.color.code}`}>{`#${record.color.code}`}</Tag>
+        <Tag
+          style={{ width: "100%" }}
+          color={`#${record.color.code}`}
+        >{`#${record.color.code}`}</Tag>
       ),
     },
     {
@@ -400,7 +465,12 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       render: (_, record) => (
         <Space size="middle">
           <Tooltip title={t("actions.edit")}>
-            <EditButton style={{ color: "#52c41a", borderColor: "#52c41a" }} hideText size="small" onClick={() => {}} />
+            <EditButton
+              style={{ color: "#52c41a", borderColor: "#52c41a" }}
+              hideText
+              size="small"
+              onClick={() => editModalShow(record.id)}
+            />
           </Tooltip>
         </Space>
       ),
@@ -408,7 +478,8 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
   ];
 
   const handleSubmit = async () => {
-    const convertedPayload: IProductDetailConvertedPayload[] = convertToPayload(productDetailsSave);
+    const convertedPayload: IProductDetailConvertedPayload[] =
+      convertToPayload(productDetailsSave);
     try {
       mutateUpdateMany(
         {
@@ -471,76 +542,127 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
               <Row gutter={[16, 24]}>
                 <Col span={24}>
                   <Space wrap style={{ width: "100%" }}>
-                    <Form.Item noStyle label={t("productDetails.fields.color")} name="color">
+                    <Form.Item
+                      noStyle
+                      label={t("productDetails.fields.color")}
+                      name="color"
+                    >
                       <Select
                         {...colorSelectProps}
                         mode="multiple"
                         allowClear
                         options={colorSelectProps.options?.map((item) =>
-                          renderColor(item.value as string, item.label as string)
+                          renderColor(
+                            item.value as string,
+                            item.label as string
+                          )
                         )}
-                        placeholder={t("productDetails.filters.color.placeholder")}
+                        placeholder={t(
+                          "productDetails.filters.color.placeholder"
+                        )}
                         style={{ width: "200px" }}
                       />
                     </Form.Item>
-                    <Form.Item noStyle label={t("productDetails.fields.size")} name="size">
+                    <Form.Item
+                      noStyle
+                      label={t("productDetails.fields.size")}
+                      name="size"
+                    >
                       <Select
                         {...sizeSelectProps}
                         mode="multiple"
                         allowClear
-                        placeholder={t("productDetails.filters.size.placeholder")}
+                        placeholder={t(
+                          "productDetails.filters.size.placeholder"
+                        )}
                         style={{ width: "200px" }}
                       />
                     </Form.Item>
-                    <Form.Item noStyle label={t("productDetails.fields.status")} name="status">
+                    <Form.Item
+                      noStyle
+                      label={t("productDetails.fields.status")}
+                      name="status"
+                    >
                       <Select
-                        placeholder={t("productDetails.filters.status.placeholder")}
+                        placeholder={t(
+                          "productDetails.filters.status.placeholder"
+                        )}
                         style={{ width: "200px" }}
                         options={getProductStatusOptions(t)}
                       />
                     </Form.Item>
-                    <Form.Item noStyle label={t("productDetails.fields.brand")} name="brand">
+                    <Form.Item
+                      noStyle
+                      label={t("productDetails.fields.brand")}
+                      name="brand"
+                    >
                       <Select
                         {...brandSelectProps}
                         mode="multiple"
                         allowClear
-                        placeholder={t("productDetails.filters.brand.placeholder")}
+                        placeholder={t(
+                          "productDetails.filters.brand.placeholder"
+                        )}
                         style={{ width: "200px" }}
                       />
                     </Form.Item>
-                    <Form.Item noStyle label={t("productDetails.fields.material")} name="material">
+                    <Form.Item
+                      noStyle
+                      label={t("productDetails.fields.material")}
+                      name="material"
+                    >
                       <Select
                         {...materialSelectProps}
                         mode="multiple"
                         allowClear
-                        placeholder={t("productDetails.filters.material.placeholder")}
+                        placeholder={t(
+                          "productDetails.filters.material.placeholder"
+                        )}
                         style={{ width: "200px" }}
                       />
                     </Form.Item>
-                    <Form.Item noStyle label={t("productDetails.fields.sole")} name="sole">
+                    <Form.Item
+                      noStyle
+                      label={t("productDetails.fields.sole")}
+                      name="sole"
+                    >
                       <Select
                         {...soleSelectProps}
                         mode="multiple"
                         allowClear
-                        placeholder={t("productDetails.filters.sole.placeholder")}
+                        placeholder={t(
+                          "productDetails.filters.sole.placeholder"
+                        )}
                         style={{ width: "200px" }}
                       />
                     </Form.Item>
-                    <Form.Item noStyle label={t("productDetails.fields.style")} name="style">
+                    <Form.Item
+                      noStyle
+                      label={t("productDetails.fields.style")}
+                      name="style"
+                    >
                       <Select
                         {...styleSelectProps}
                         mode="multiple"
                         allowClear
-                        placeholder={t("productDetails.filters.style.placeholder")}
+                        placeholder={t(
+                          "productDetails.filters.style.placeholder"
+                        )}
                         style={{ width: "200px" }}
                       />
                     </Form.Item>
-                    <Form.Item noStyle label={t("productDetails.fields.tradeMark")} name="tradeMark">
+                    <Form.Item
+                      noStyle
+                      label={t("productDetails.fields.tradeMark")}
+                      name="tradeMark"
+                    >
                       <Select
                         {...tradeMarkSelectProps}
                         mode="multiple"
                         allowClear
-                        placeholder={t("productDetails.filters.tradeMark.placeholder")}
+                        placeholder={t(
+                          "productDetails.filters.tradeMark.placeholder"
+                        )}
                         style={{ width: "200px" }}
                       />
                     </Form.Item>
@@ -548,27 +670,46 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
                 </Col>
                 <Col span={24}>
                   <Space wrap style={{ width: "100%" }}>
-                    <Form.Item label={t("productDetails.filters.priceMin.label")} name="priceMin">
+                    <Form.Item
+                      label={t("productDetails.filters.priceMin.label")}
+                      name="priceMin"
+                    >
                       <InputNumber
-                        formatter={(value) => `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        formatter={(value) =>
+                          `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
                         parser={(value) => {
-                          const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
+                          const parsedValue = parseInt(
+                            value!.replace(/₫\s?|(,*)/g, ""),
+                            10
+                          );
                           return isNaN(parsedValue) ? 0 : parsedValue;
                         }}
                         style={{ width: "100%" }}
                       />
                     </Form.Item>
-                    <Form.Item label={t("productDetails.filters.priceMax.label")} name="priceMax">
+                    <Form.Item
+                      label={t("productDetails.filters.priceMax.label")}
+                      name="priceMax"
+                    >
                       <InputNumber
-                        formatter={(value) => `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                        formatter={(value) =>
+                          `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                        }
                         parser={(value) => {
-                          const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
+                          const parsedValue = parseInt(
+                            value!.replace(/₫\s?|(,*)/g, ""),
+                            10
+                          );
                           return isNaN(parsedValue) ? 0 : parsedValue;
                         }}
                         style={{ width: "100%" }}
                       />
                     </Form.Item>
-                    <Form.Item label={t("productDetails.filters.quantity.label")} name="quantity">
+                    <Form.Item
+                      label={t("productDetails.filters.quantity.label")}
+                      name="quantity"
+                    >
                       <InputNumber width={100} style={{ width: "100%" }} />
                     </Form.Item>
                   </Space>
@@ -576,7 +717,10 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
               </Row>
             </Col>
             <Col span={3}>
-              <Button icon={<UndoOutlined />} onClick={() => handleClearFilters()}>
+              <Button
+                icon={<UndoOutlined />}
+                onClick={() => handleClearFilters()}
+              >
                 {t("actions.clear")}
               </Button>
             </Col>
@@ -586,6 +730,7 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       <Card
         extra={
           <Button
+            loading={isLoading}
             type="primary"
             icon={<CheckSquareOutlined />}
             onClick={() => {
@@ -615,11 +760,19 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
           columns={columns}
         />
       </Card>
+      <EditProductDetail
+        onFinish={editOnFinish}
+        id={editId}
+        modalProps={editModalProps}
+        formProps={editFormProps}
+      />
     </Show>
   );
 };
 
-function convertToPayload(productDetails: IProductDetail[]): IProductDetailConvertedPayload[] {
+function convertToPayload(
+  productDetails: IProductDetail[]
+): IProductDetailConvertedPayload[] {
   return productDetails.map((detail) => ({
     id: detail.id,
     product: detail.product.id,

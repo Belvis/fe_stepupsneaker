@@ -8,13 +8,18 @@ import {
   HttpError,
   useParsed,
 } from "@refinedev/core";
-import { DateField, List, NumberField } from "@refinedev/antd";
+import { DateField, List, NumberField, useModal } from "@refinedev/antd";
 import {
+  CarOutlined,
   CheckCircleOutlined,
+  CheckOutlined,
   CloseCircleOutlined,
+  DropboxOutlined,
+  FileProtectOutlined,
   LoadingOutlined,
   MailOutlined,
   MobileOutlined,
+  QuestionOutlined,
 } from "@ant-design/icons";
 import {
   Row,
@@ -36,7 +41,7 @@ import {
 import dayjs from "dayjs";
 
 // import { Map, MapMarker } from "../../components";
-import { BikeWhiteIcon, OrderHistoryTimeLine } from "../../../components";
+import { OrderHistoryTimeLine } from "../../../components";
 // import { useOrderCustomKbarActions } from "../../hooks";
 import {
   IEvent,
@@ -44,6 +49,7 @@ import {
   IOrderDetail,
   IOrderHistory,
   IProduct,
+  OrderStatus,
 } from "../../../interfaces";
 
 import {
@@ -58,11 +64,18 @@ import {
   ProductText,
 } from "./styled";
 import { ColumnsType } from "antd/es/table";
+import MyOrderModal from "../../../components/admin/order/MyOrderModal";
+import { showWarningConfirmDialog } from "../../../utils";
+import CancelReasonModal from "../../../components/admin/order/CancelReasonModal";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
 
 const InitialEventData: IEvent[] = [
+  {
+    date: undefined,
+    status: "PLACE_ORDER",
+  },
   {
     date: undefined,
     status: "WAIT_FOR_CONFIRMATION",
@@ -84,27 +97,27 @@ const InitialEventData: IEvent[] = [
 export const OrderShow: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
   const screens = useBreakpoint();
-  const { queryResult } = useShow<IOrder>();
-  const { data } = queryResult;
+  const {
+    queryResult: { refetch, data },
+  } = useShow<IOrder>();
   const { mutate } = useUpdate();
   const record = data?.data;
-  const [discount, setDiscount] = useState(0);
-  const [total, setTotal] = useState(0);
-
-  useEffect(() => {
-    if (record && record.voucher && record.voucher.type) {
-      if (record.voucher.type === "PERCENTAGE") {
-        setDiscount((record.voucher.value / 100) * record.totalMoney);
-      } else {
-        setDiscount(record.voucher.value);
-      }
-      setTotal(record.totalMoney + record.shippingMoney - discount);
-    }
-  }, [record]);
 
   const { id } = useParsed();
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+
+  const {
+    show,
+    close,
+    modalProps: { visible, ...restModalProps },
+  } = useModal();
+
+  const {
+    show: showCancel,
+    close: closeCancle,
+    modalProps: { visible: vi, ...restProps },
+  } = useModal();
 
   const showModal = () => {
     setIsModalVisible(true);
@@ -141,6 +154,11 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       onSuccess: (data) => {
         const updatedEvents = InitialEventData.map((event) => {
           switch (event.status) {
+            case "PLACE_ORDER":
+              return {
+                ...event,
+                date: data.data[0].createdAt,
+              };
             case "COMPLETED":
               const canceledReturnedOrExchangedOrder = data.data.find(
                 (orderHistory) =>
@@ -198,6 +216,53 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     .filter((screen) => !!screen[1])
     .map((screen) => screen[0]);
 
+  const handleMutate = (status: OrderStatus | null) => {
+    if (record && status) {
+      mutate(
+        {
+          resource: "orders/confirmation-order",
+          id: record.id,
+          values: {
+            status: status,
+          },
+          successNotification() {
+            return {
+              message: "Cập nhật đơn hàng thành công",
+              description: "Thành công",
+              type: "success",
+            };
+          },
+          errorNotification(error) {
+            return {
+              message: "Cập nhật đơn hàng thất bại: " + error?.message,
+              description: "Đã xảy ra lỗi",
+              type: "success",
+            };
+          },
+        },
+        {
+          onError: () => {},
+          onSuccess: () => {
+            refetchOrderHistory();
+            refetch();
+          },
+        }
+      );
+    }
+  };
+
+  const handleConfirmUpdate = (status: OrderStatus | null) => {
+    showWarningConfirmDialog({
+      options: {
+        accept: () => {
+          handleMutate(status);
+        },
+        reject: () => {},
+      },
+      t: t,
+    });
+  };
+
   const renderOrderSteps = () => {
     const notFinishedCurrentStep = (event: IEvent, index: number) =>
       event.status !== "CANCELED" &&
@@ -211,18 +276,6 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       return "finish";
     };
 
-    const handleMutate = (status: string) => {
-      if (record) {
-        mutate({
-          resource: "orders",
-          id: record.id,
-          values: {
-            status: status,
-          },
-        });
-      }
-    };
-
     // useOrderCustomKbarActions(record);
 
     return (
@@ -233,11 +286,24 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         subTitle={`#${record?.code.toUpperCase() ?? ""}`}
         extra={[
           <Button
+            disabled={!canRejectOrder}
+            key="force-confirm"
+            icon={<CheckCircleOutlined />}
+            type="primary"
+            onClick={() => {
+              handleConfirmUpdate(getNextStatus(record?.status ?? "PENDING"));
+            }}
+          >
+            {t("buttons.forceConfirm")}
+          </Button>,
+          <Button
             disabled={!canAcceptOrder}
             key="accept"
             icon={<CheckCircleOutlined />}
             type="primary"
-            onClick={() => handleMutate("WAIT_FOR_DELIVERY")}
+            onClick={() => {
+              handleConfirmUpdate("WAIT_FOR_DELIVERY");
+            }}
           >
             {t("buttons.accept")}
           </Button>,
@@ -246,7 +312,9 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             key="reject"
             danger
             icon={<CloseCircleOutlined />}
-            onClick={() => handleMutate("CANCELED")}
+            onClick={() => {
+              showCancel();
+            }}
           >
             {t("buttons.reject")}
           </Button>,
@@ -266,7 +334,11 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                   key={index}
                   title={t(`enum.orderStatuses.${event.status}`)}
                   icon={
-                    notFinishedCurrentStep(event, index) && <LoadingOutlined />
+                    notFinishedCurrentStep(event, index) ? (
+                      <LoadingOutlined />
+                    ) : (
+                      getIconByStatus(event.status)
+                    )
                   }
                   description={
                     event.date && dayjs(new Date(event.date)).format("L LT")
@@ -328,7 +400,6 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             </EmployeeInfoText>
           </Employee>
         </Col>
-
         <EmployeeBoxContainer xl={12} lg={14} md={24}>
           {employeeInfoBox(
             t("employees.fields.phoneNumber"),
@@ -442,6 +513,14 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       }
       headerButtons={() => (
         <>
+          <Button
+            type="primary"
+            ghost
+            disabled={record && record?.status !== "WAIT_FOR_CONFIRMATION"}
+            onClick={show}
+          >
+            Chỉnh sửa đơn hàng
+          </Button>
           <Button type="primary" onClick={showModal}>
             Xem lịch sử
           </Button>
@@ -503,7 +582,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       key: "3",
       label: t("orders.fields.type.title"),
       span: 1,
-      children: "Offline",
+      children: t(`orders.fields.type.${record?.type}`),
     },
     {
       key: "4",
@@ -536,7 +615,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             currency: "VND",
             style: "currency",
           }}
-          value={total}
+          value={record?.originMoney ?? 0}
         />
       ),
     },
@@ -549,7 +628,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             currency: "VND",
             style: "currency",
           }}
-          value={discount}
+          value={record?.reduceMoney ?? 0}
         />
       ),
     },
@@ -623,9 +702,45 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         </>
       ),
     },
-
     {
       key: "13",
+      label: t("orders.fields.address"),
+      span: 4,
+      children: (
+        <>
+          {record?.address ? (
+            <>
+              <div>
+                <strong>{t("customers.fields.phoneNumber")}</strong>:{" "}
+                {record.address.phoneNumber}
+              </div>
+              <div>
+                <strong>{t("customers.fields.province.label")}</strong>:{" "}
+                {record.address.provinceName}
+              </div>
+              <div>
+                <strong>{t("customers.fields.district.label")}</strong>:{" "}
+                {record.address.districtName}
+              </div>
+              <div>
+                <strong>{t("customers.fields.ward.label")}</strong>:{" "}
+                {record.address.wardName}
+              </div>
+              <div>
+                <strong>{t("customers.fields.more")}</strong>:{" "}
+                {record.address.more}
+              </div>
+            </>
+          ) : (
+            <div>
+              <Empty />
+            </div>
+          )}
+        </>
+      ),
+    },
+    {
+      key: "14",
       label: t("orders.fields.customer"),
       span: 2,
       children: (
@@ -680,7 +795,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       ),
     },
     {
-      key: "14",
+      key: "15",
       label: t("orders.fields.employee"),
       span: 2,
       children: (
@@ -734,46 +849,71 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     <>
       <Space size={20} direction="vertical" style={{ width: "100%" }}>
         {renderOrderSteps()}
-        {/* <div style={{ height: "500px", width: "100%" }}>
-          <Map
-            center={{
-              lat: 40.73061,
-              lng: -73.935242,
-            }}
-            zoom={9}
-          >
-            <MapMarker
-              key={`user-marker-${record?.user.id}`}
-              icon={{
-                url: "/images/marker-location.svg",
-              }}
-              position={{
-                lat: Number(record?.adress.coordinate[0]),
-                lng: Number(record?.adress.coordinate[1]),
-              }}
-            />
-            <MapMarker
-              key={`user-marker-${record?.user.id}`}
-              icon={{
-                url: "/images/marker-employee.svg",
-              }}
-              position={{
-                lat: Number(record?.store.address.coordinate[0]),
-                lng: Number(record?.store.address.coordinate[1]),
-              }}
-            />
-          </Map>
-        </div> */}
-        {renderEmployeeInfo()}
+        {record?.employee && renderEmployeeInfo()}
         {renderDeliverables()}
         {renderOrderInfor()}
       </Space>
       <OrderHistoryTimeLine
-        orderHistories={record?.orderHistories || []}
+        id={id as string}
         open={isModalVisible}
         handleOk={handleModalOk}
         handleCancel={handleModalCancel}
       />
+      <MyOrderModal
+        restModalProps={restModalProps}
+        order={record ?? ({} as IOrder)}
+        callBack={refetch}
+        close={close}
+        showCancel={showCancel}
+      />
+      <CancelReasonModal
+        restModalProps={restProps}
+        close={closeCancle}
+        order={record ?? ({} as IOrder)}
+        callBack={refetch}
+      />
     </>
   );
+};
+
+const getIconByStatus = (status: OrderStatus) => {
+  switch (status) {
+    case "PLACE_ORDER":
+      return <DropboxOutlined />;
+    case "WAIT_FOR_CONFIRMATION":
+      return <QuestionOutlined />;
+    case "WAIT_FOR_DELIVERY":
+      return <CheckOutlined />;
+    case "DELIVERING":
+      return <CarOutlined />;
+    case "COMPLETED":
+      return <FileProtectOutlined />;
+    default:
+      return null;
+  }
+};
+
+export const getNextStatus = (
+  currentStatus: OrderStatus
+): OrderStatus | null => {
+  switch (currentStatus) {
+    case "WAIT_FOR_CONFIRMATION":
+      return "WAIT_FOR_DELIVERY";
+    case "WAIT_FOR_DELIVERY":
+      return "DELIVERING";
+    case "DELIVERING":
+      return "COMPLETED";
+    case "COMPLETED":
+      return null;
+    case "CANCELED":
+      return null;
+    case "EXPIRED":
+      return null;
+    case "RETURNED":
+      return null;
+    case "EXCHANGED":
+      return null;
+    default:
+      return null;
+  }
 };

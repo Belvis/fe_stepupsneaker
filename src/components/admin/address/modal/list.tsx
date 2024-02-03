@@ -20,16 +20,19 @@ import {
 } from "antd";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { IAddress, ICustomer } from "../../../../interfaces";
+import { IAddress, ICustomer, IOrder } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { CreateAddress } from "./create";
 import { EditAddress } from "./edit";
+import _ from "lodash";
 
 type AddressModalProps = {
   open: boolean;
   handleOk: () => void;
   handleCancel: () => void;
   customer: ICustomer | undefined;
+  setAddresses?: (order: IOrder) => void;
+  order?: IOrder;
 };
 
 export const AddressModal: React.FC<AddressModalProps> = ({
@@ -37,6 +40,8 @@ export const AddressModal: React.FC<AddressModalProps> = ({
   handleOk,
   handleCancel,
   customer,
+  order,
+  setAddresses: setViewAddress,
 }) => {
   const t = useTranslate();
   const breakpoint = Grid.useBreakpoint();
@@ -96,6 +101,9 @@ export const AddressModal: React.FC<AddressModalProps> = ({
       customerResponse,
       phoneNumber,
       isDefault,
+      provinceId,
+      districtId,
+      wardCode,
     } = item;
     const defaultTag = isDefault ? <Tag color="green">Default</Tag> : null;
 
@@ -123,6 +131,33 @@ export const AddressModal: React.FC<AddressModalProps> = ({
             >
               {t("actions.setDefault")}
             </Button>
+
+            {setViewAddress && order && (
+              <Button
+                size="small"
+                onClick={() => {
+                  const newOrder = _.cloneDeep({
+                    ...order,
+                    phoneNumber: phoneNumber,
+                    address: {
+                      ...order.address,
+                      phoneNumber: phoneNumber,
+                      provinceName: provinceName,
+                      districtName: districtName,
+                      wardName: wardName,
+                      provinceId: provinceId,
+                      districtId: districtId,
+                      wardCode: wardCode,
+                      more: more,
+                    },
+                  });
+                  setViewAddress(newOrder);
+                  handleCancel();
+                }}
+              >
+                Chọn
+              </Button>
+            )}
           </Space>,
         ]}
       >
@@ -205,11 +240,7 @@ export const AddressModal: React.FC<AddressModalProps> = ({
       onOk={handleOk}
       onCancel={handleCancel}
       open={open}
-      footer={(_, { OkBtn }) => (
-        <>
-          <OkBtn />
-        </>
-      )}
+      footer={(_, { OkBtn }) => <></>}
     >
       <Row gutter={[16, 24]}>
         <Col span={24}>

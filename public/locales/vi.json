@@ -1,7 +1,7 @@
 {
     "pages": {
       "login": {
-        "title": "Đăng nhập vào tài khoản của bạn",
+        "title": "Đăng nhập",
         "signin": "Đăng nhập",
         "signup": "Đăng ký",
         "divider": "hoặc",
@@ -16,7 +16,7 @@
           "submit": "Đăng nhập",
           "forgotPassword": "Quên mật khẩu?",
           "noAccount": "Bạn chưa có tài khoản?",
-          "rememberMe": "Tìm lại mật khẩu cũ"
+          "rememberMe": "Lưu thông tin đăng nhập"
         }
       },
       "forgotPassword": {
@@ -113,7 +113,8 @@
       "checkSelected": "Xem lựa chọn của bạn",
       "addAndGo": "Thêm và hoàn tất",
       "go": "Hoàn tất",
-      "addAndContinue": "Xác nhận và tiếp tục"
+      "addAndContinue": "Xác nhận và tiếp tục",
+      "forceConfirm": "Chủ động xác nhận"
     },
     "loading": "Đang tải",
     "tags": {
@@ -365,7 +366,14 @@
       "steps": {
         "content": "Nội dung",
         "relations": "quan hệ"
+      },
+      "table":{
+        "title": {
+          "eligible": "Danh sách khách hàng đã được áp dụng cho Phiếu giảm giá",
+          "ineligible": "Danh sách khách hàng chưa được áp dụng cho Phiếu giảm giá"
+        }
       }
+
     },
     "promotionProductDetail": {
       "table":{
@@ -527,15 +535,15 @@
           "validation": "phải là 1080x1080 px"
         },
         "province": {
-          "label": "Tỉnh",
+          "label": "Tỉnh/Thành phố",
           "placeholder": "Chọn tỉnh"
         },
         "district": {
-          "label": "Huyện",
+          "label": "Quận/Huyện",
           "placeholder": "Chọn quận"
         },
         "ward": {
-          "label": "Phường",
+          "label": "Phường/Xã",
           "placeholder": "Chọn phường"
         },
         "more": "Số nhà"
@@ -576,10 +584,10 @@
         "title": "Tổng doanh thu"
       },
       "dailyRevenue": {
-        "title": "Doanh số hàng ngày"
+        "title": "Doanh số"
       },
       "dailyOrders": {
-        "title": "Đơn hàng hàng ngày"
+        "title": "Đơn hàng"
       },
       "newCustomers": {
         "title": "Những khách hàng mới"
@@ -595,23 +603,40 @@
       },
       "timeline": {
         "title": "Mốc thời gian",
-        "orderStatuses": {
-          "pending": "Đang chuẩn bị đơn hàng",
-          "ready": "Đơn hàng đã sẵn sàng",
-          "on the way": "Đơn hàng đang trên đường tới",
-          "delivered": "Đơn hàng được giao",
-          "cancelled": "Đơn hàng bị hủy"
+        "type": {
+          "unknown": "Unknown",
+          "insert": "Đơn hàng đã được tạo",
+          "update": "Đơn hàng đã được cập nhật",
+          "delete": "Đơn hàng đã được xoá"
+        },
+        "changes": {
+          "address": "Địa chỉ",
+          "orderDetails": "Giỏ hàng",
+          "voucher": "Phiếu giảm giá",
+          "phoneNumber": "Số điện thoại",
+          "status": "Trạng thái",
+          "note":"Ghi chú",
+          "originMoney": "Thành tiền",
+          "totalMoney": "Tổng số tiền"
         }
       },
       "recentOrders": {
         "title": "Đơn đơn hàng gần đây"
       },
       "trendingMenus": {
-        "title": "Xu hướng hàng ngày"
+        "title": "Xu hướng"
+      },
+      "overviewTab": {
+        "overview": {
+          "Revenue": "Doanh thu",
+          "Order": "Đơn hàng",
+          "Customers": "Khách hàng"
+        }
       }
     },
     "enum": {
       "orderStatuses": {
+        "PLACE_ORDER": "Đặt hàng",
         "PENDING": "Chưa giải quyết",
         "WAIT_FOR_CONFIRMATION": "Đang chờ xác nhận",
         "WAIT_FOR_DELIVERY": "Sẵn sàng",
@@ -668,7 +693,8 @@
           "title": "Loại",
           "ONLINE": "Trực tuyến",
           "OFFLINE": "Tại quầy"
-        }
+        },
+        "address": "Địa chỉ hoá đơn"
       },
       "filters": {
         "title": "Bộ lọc",
@@ -749,6 +775,13 @@
           "edit": {
             "success": "Chỉnh sửa ghi chú đơn hàng thành công.",
             "error": "Chỉnh sửa ghi chú đơn hàng thất bại."
+          }
+  
+        },
+        "shippingMoney": {
+          "edit": {
+            "success": "Chỉnh sửa phí giao hàng thành công.",
+            "error": "Chỉnh sửa phí giao hàng thất bại."
           }
   
         },
@@ -897,7 +930,12 @@
         "image": "Hình ảnh",
         "size": "Kích cỡ",
         "color": "Màu sắc",
-        "status": "Trạng thái"
+        "status": "Trạng thái",
+        "brand": "Thương hiệu",
+        "style": "Kiểu dáng",
+        "material": "Chất liệu",
+        "tradeMark":"Nhãn hiệu",
+        "sole":"Đế"
       },
       "filters": {
         "title": "Bộ lọc",
@@ -1009,5 +1047,20 @@
     },
     "transactions": {
         "title": "Giao dịch"
+    },
+    "sse": {
+      "notification": {
+        "SEGMENT": {
+          "ALL": "Tất cả",
+          "UNREAD": "Chưa đọc"
+        },
+        "NO_NOTIFICATION": "Bạn không có thông báo mới"
+      },
+      "message": {
+        "ORDER_PLACED": " vừa đặt đơn hàng ",
+        "ORDER_CHANGED": " vừa bị thay đổi ",
+        "ORDER_PENDING": " vừa đặt đơn hàng ",
+        "PRODUCT_LOW_STOCK": " vừa đặt đơn hàng "
+      }
     }
   }

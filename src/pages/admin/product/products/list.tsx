@@ -4,7 +4,13 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { List, NumberField, useModalForm, useTable } from "@refinedev/antd";
+import {
+  List,
+  NumberField,
+  getDefaultSortOrder,
+  useModalForm,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -63,43 +69,56 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     warnWhenUnsavedChanges: true,
   });
 
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IProduct,
-    HttpError,
-    IProductFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q, status }) => {
-      const productFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<IProduct, HttpError, IProductFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q, status }) => {
+        const productFilters: CrudFilters = [];
 
-      productFilters.push({
-        field: "status",
-        operator: "eq",
-        value: status ? status : undefined,
-      });
+        productFilters.push({
+          field: "status",
+          operator: "eq",
+          value: status ? status : undefined,
+        });
 
-      productFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        productFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return productFilters;
-    },
-  });
+        return productFilters;
+      },
+    });
 
   const columns: ColumnsType<IProduct> = [
     {
       title: "#",
-      key: "index",
+      key: "createdAt",
+      dataIndex: "createdAt",
       width: "1rem",
       align: "center",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("products.fields.code"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("code", sorters),
       key: "code",
       dataIndex: "code",
       width: "2rem",
@@ -107,6 +126,8 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("products.fields.name"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("name", sorters),
       dataIndex: "name",
       width: "25%",
       key: "name",
@@ -187,6 +208,8 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     {
       title: t("products.fields.price"),
       dataIndex: "price",
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("price", sorters),
       key: "price",
       align: "center",
       render: (_, { productDetails }) => {
@@ -212,6 +235,8 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("products.fields.quantity"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("quantity", sorters),
       key: "quantity",
       dataIndex: "quantity",
       align: "center",
@@ -227,6 +252,8 @@ export const ProductList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("products.fields.status"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("status", sorters),
       key: "status",
       dataIndex: "status",
       align: "center",

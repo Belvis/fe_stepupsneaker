@@ -21,6 +21,7 @@ import dayjs from "dayjs";
 import React, { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { ColorModeContext } from "../../../contexts/color-mode";
+import { Notifications } from "./notifications";
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -39,7 +40,8 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   const { i18n } = useTranslation();
   const locale = useGetLocale();
   const changeLanguage = useSetLocale();
-  const { data: user } = useGetIdentity<IUser>();
+  const { data } = useGetIdentity<any>();
+
   const { mode, setMode } = useContext(ColorModeContext);
 
   const currentLocale = locale();
@@ -79,6 +81,12 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
   return (
     <AntdLayout.Header style={headerStyles}>
       <Space>
+        <Switch
+          checkedChildren="🌛"
+          unCheckedChildren="🔆"
+          onChange={() => setMode(mode === "light" ? "dark" : "light")}
+          defaultChecked={mode === "dark"}
+        />
         <Dropdown
           menu={{
             items: menuItems,
@@ -93,15 +101,10 @@ export const AdminHeader: React.FC<RefineThemedLayoutV2HeaderProps> = ({
             </Space>
           </Button>
         </Dropdown>
-        <Switch
-          checkedChildren="🌛"
-          unCheckedChildren="🔆"
-          onChange={() => setMode(mode === "light" ? "dark" : "light")}
-          defaultChecked={mode === "dark"}
-        />
+        <Notifications />
         <Space style={{ marginLeft: "8px" }} size="middle">
-          {user?.name && <Text strong>{user.name}</Text>}
-          {user?.avatar && <Avatar src={user?.avatar} alt={user?.name} />}
+          {data?.fullName && <Text strong>{data.fullName}</Text>}
+          {data?.image && <Avatar src={data.image} alt={data.fullName} />}
         </Space>
       </Space>
     </AntdLayout.Header>

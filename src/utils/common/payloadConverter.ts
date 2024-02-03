@@ -35,7 +35,7 @@ export const orderDetailToPayload = (
   if (!orderDetails) return [];
   return orderDetails.map((detail) => ({
     id: detail.id,
-    order: detail.id,
+    order: detail.order.id,
     productDetail: detail.productDetail.id,
     quantity: detail.quantity,
     price: detail.price,

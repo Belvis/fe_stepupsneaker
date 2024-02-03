@@ -17,6 +17,26 @@ export interface IOption {
   value: string;
   label: string | React.ReactNode;
 }
+export interface INotification {
+  id: string;
+  content: string;
+  employee: IEmployee;
+  customer: ICustomer;
+  href: string;
+  notificationType:
+    | "ORDER_PLACED"
+    | "ORDER_PENDING"
+    | "ORDER_CHANGED"
+    | "PRODUCT_LOW_STOCK";
+  read: boolean;
+  delivered: boolean;
+  createdAt: number;
+  loading: boolean;
+}
+export interface IOrderNotification {
+  status: OrderStatus;
+  count: number;
+}
 
 export interface ConfirmDialogOptions {
   message?: string;
@@ -59,16 +79,32 @@ export interface ISalesChart {
   value: number;
 }
 
+export interface IOrderAudit {
+  revisionType: RevisionType;
+  revisionNumber: number;
+  entity: IOrder;
+  changes: {
+    [key: string]: {
+      oldValue: any;
+      newValue: any;
+    };
+  };
+  creator: string;
+  at: number;
+}
 export interface IOrder {
   id: string;
   customer: ICustomer;
   employee: IEmployee;
-  voucher: IVoucher;
+  voucher?: IVoucher;
   address: IAddress;
   phoneNumber: string;
   fullName: string;
   totalMoney: number;
   shippingMoney: number;
+  totalMoney: number;
+  originMoney: number;
+  reduceMoney: number;
   confirmationDate: number;
   expectedDeliveryDate: number;
   deliveryStartDate: number;
@@ -189,6 +225,7 @@ export type PromotionStatus = "ACTIVE" | "IN_ACTIVE" | "EXPIRED";
 export type VoucherType = "PERCENTAGE" | "CASH";
 export type OrderType = "ONLINE" | "OFFLINE";
 export type OrderStatus =
+  | "PLACE_ORDER"
   | "PENDING"
   | "WAIT_FOR_CONFIRMATION"
   | "WAIT_FOR_DELIVERY"
@@ -198,7 +235,12 @@ export type OrderStatus =
   | "EXPIRED"
   | "RETURNED"
   | "EXCHANGED";
+export type RevisionType = "UNKNOWN" | "INSERT" | "UPDATE" | "DELETE";
 
+type IDiscountInfo = {
+  value: number;
+  endDate: number;
+};
 export interface IProductStatus {
   id: number;
   text: "Active";
@@ -211,6 +253,7 @@ export interface IColor {
   code: string;
   name: string;
   status: ProductStatus;
+  createdAt: number;
 }
 
 export interface IBrand {
@@ -263,6 +306,10 @@ export interface IVoucher {
   image: string;
 }
 
+export interface IVoucherList {
+  id: string;
+  voucher: IVoucherResponse;
+}
 export interface IPromotion {
   id: string;
   code: string;
@@ -294,6 +341,7 @@ export interface ICustomer {
   gender: string;
   image: string;
   addressList: IAddress[];
+  customerVoucherList: IVoucherList[];
 }
 
 export interface IEmployee {
@@ -336,6 +384,8 @@ export interface IProduct {
   image: string;
   status: ProductStatus;
   productDetails: IProductDetail[];
+  saleCount: number;
+  createdAt: number;
 }
 
 export interface IPromotionProductDetailResponse {
@@ -368,7 +418,37 @@ export interface IProductDetail {
   status: ProductStatus;
   promotionProductDetails: IPromotionProductDetailResponse[];
 }
-
+export interface IProductClient {
+  id: string;
+  code: string;
+  name: string;
+  price: {
+    min: number;
+    max: number;
+  };
+  discount: number;
+  saleCount: number;
+  offerEnd: number;
+  new: boolean;
+  variation: IVariation[];
+  image: string[];
+  description: string;
+}
+export interface IVariation {
+  color: IColor;
+  image: string[];
+  size: ISizeClient[];
+}
+export interface ISizeClient {
+  id: string;
+  name: string;
+  stock: number;
+  price: number;
+  discount: number;
+  saleCount: number;
+  offerEnd: number;
+  productDetailId: string;
+}
 export interface IPayment {
   id: string;
   order: IOrder;

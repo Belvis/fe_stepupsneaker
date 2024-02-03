@@ -1,27 +1,27 @@
+import { DollarOutlined, PercentageOutlined } from "@ant-design/icons";
+import { DateField, useSimpleList } from "@refinedev/antd";
 import { HttpError, useTranslate, useUpdate } from "@refinedev/core";
 import {
+  List as AntdList,
+  Avatar,
+  Checkbox,
   Col,
   Grid,
   Modal,
   Row,
-  Typography,
   message,
   theme,
-  List as AntdList,
-  Checkbox,
-  Avatar,
 } from "antd";
+import dayjs from "dayjs";
+import { useContext, useEffect, useState } from "react";
+import { ColorModeContext } from "../../../../contexts/color-mode";
 import {
   ICustomer,
   IOrder,
   IVoucher,
   IVoucherFilterVariables,
 } from "../../../../interfaces";
-import { DateField, useSimpleList } from "@refinedev/antd";
-import { useContext, useEffect, useState } from "react";
-import { ColorModeContext } from "../../../../contexts/color-mode";
-import dayjs from "dayjs";
-import { DollarOutlined, PercentageOutlined } from "@ant-design/icons";
+import Voucher from "./Voucher";
 
 type DiscountModalProps = {
   open: boolean;
@@ -32,7 +32,6 @@ type DiscountModalProps = {
   callBack: any;
 };
 
-const { Text, Title } = Typography;
 const { useToken } = theme;
 
 export const DiscountModal: React.FC<DiscountModalProps> = ({
@@ -131,12 +130,13 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
     pagination: {
       pageSize: 5,
     },
+    syncWithLocation: false,
   });
 
   return (
     <Modal
       title={t("vouchers.vouchers")}
-      width={breakpoint.sm ? "800px" : "100%"}
+      width={breakpoint.sm ? "1000px" : "100%"}
       zIndex={1001}
       onOk={handleFinish}
       onCancel={onCancel}
@@ -152,62 +152,9 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
             bordered
             style={{ padding: "1rem" }}
             renderItem={(item) => {
-              const {
-                id,
-                image,
-                code,
-                name,
-                constraint,
-                quantity,
-                type,
-                startDate,
-                endDate,
-                value,
-              } = item;
-              const isChecked = selectedVoucherId === id;
-
-              const icon =
-                type === "PERCENTAGE" ? (
-                  <PercentageOutlined />
-                ) : (
-                  <DollarOutlined />
-                );
-
               return (
-                <AntdList.Item
-                  key={id}
-                  actions={[
-                    <Checkbox checked={isChecked} onChange={() => {}} />,
-                  ]}
-                  onClick={() => handleRowClick(id)}
-                  style={{
-                    cursor: "pointer",
-                    backgroundColor:
-                      mode === "light" && isChecked ? "#fff2e8" : undefined,
-                  }}
-                >
-                  <AntdList.Item.Meta
-                    avatar={<Avatar size={100} shape="square" src={image} />}
-                    title={
-                      <span>
-                        {name} - {code} {icon}
-                      </span>
-                    }
-                    description={
-                      <span>
-                        {value} | {constraint} | x{quantity} from{" "}
-                        <DateField
-                          value={dayjs(new Date(startDate || 0))}
-                          format="LLL"
-                        />{" "}
-                        to{" "}
-                        <DateField
-                          value={dayjs(new Date(endDate || 0))}
-                          format="LLL"
-                        />
-                      </span>
-                    }
-                  />
+                <AntdList.Item key={item.id}>
+                  <Voucher item={item} />
                 </AntdList.Item>
               );
             }}

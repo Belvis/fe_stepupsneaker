@@ -24,6 +24,7 @@ import {
   Space,
   Spin,
   TablePaginationConfig,
+  Tooltip,
   Typography,
   message,
   theme,
@@ -90,7 +91,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
     pageSize: 5,
   });
 
-  const [brandFilter, setBrandFilter] = useState("  ");
+  const [brandFilter, setBrandFilter] = useState("");
   const [MaterialFilter, setMaterialFilter] = useState("");
   const [SoleFilter, setSoleFilter] = useState("");
   const [StyleFilter, setStyleFilter] = useState("");
@@ -232,14 +233,14 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
         onError: (error, variables, context) => {
           messageApi.open({
             type: "error",
-            content: t("orders.notification.editCustomer.error"),
+            content: t("orders.notification.customer.edit.error"),
           });
         },
         onSuccess: (data, variables, context) => {
           callBack();
           messageApi.open({
             type: "success",
-            content: t("orders.notification.editCustomer.success"),
+            content: t("orders.notification.customer.edit.success"),
           });
         },
       }
@@ -464,14 +465,23 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                 />
               </Col>
               <Col span={16} style={{ padding: 0 }}>
-                <Button
-                  type="primary"
-                  size={"large"}
-                  style={{ width: "100%", fontWeight: "500" }}
-                  onClick={showCheckOutDrawer}
+                <Tooltip
+                  title={
+                    orderDetails.length <= 0
+                      ? "Vui lòng thêm sản phẩm vào trước."
+                      : ""
+                  }
                 >
-                  {t("actions.proceedPay")}
-                </Button>
+                  <Button
+                    type="primary"
+                    size={"large"}
+                    style={{ width: "100%", fontWeight: "500" }}
+                    onClick={showCheckOutDrawer}
+                    disabled={orderDetails.length <= 0}
+                  >
+                    {t("actions.proceedPay")}
+                  </Button>
+                </Tooltip>
               </Col>
             </Row>
           </Space>

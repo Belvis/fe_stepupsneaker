@@ -1,14 +1,16 @@
-import { useContext, useMemo } from "react";
-import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
-import { Typography } from "antd";
 import { Column } from "@ant-design/charts";
 import { ColumnConfig } from "@ant-design/plots/lib/components/column";
+import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
+import { Typography } from "antd";
+import { useContext, useMemo } from "react";
 
-import { IncreaseIcon, DecreaseIcon } from "../../../icons";
+import { DecreaseIcon, IncreaseIcon } from "../../../icons";
 
-import { DailyOrderWrapper, TitleAreNumber, TitleArea } from "./styled";
-import { ISalesChart } from "../../../../interfaces";
+import dayjs from "dayjs";
 import { DashboardContext } from "../../../../contexts/admin/dashboard";
+import { ISalesChart } from "../../../../interfaces";
+import { HeaderNumbers } from "../newCustomers/styled";
+import { DailyOrderWrapper, TitleArea } from "./styled";
 
 export const DailyOrders: React.FC = () => {
   const t = useTranslate();
@@ -52,7 +54,9 @@ export const DailyOrders: React.FC = () => {
       color: "rgba(255, 255, 255, 0.5)",
       tooltip: {
         customContent: (title, data) => {
-          return `<div style="padding: 8px 4px; font-size:16px; font-weight:600">${data[0]?.value}</div>`;
+          return `<div style="padding: 8px 4px; font-size:16px; font-weight:600">${dayjs(
+            new Date(Number(title) * 1000)
+          ).format("LL")}: ${data[0]?.value} đơn</div>`;
         },
       },
 
@@ -66,6 +70,15 @@ export const DailyOrders: React.FC = () => {
         grid: null,
         tickLine: null,
       },
+      label: {
+        // type: "outer",
+        position: "middle",
+        style: {
+          fill: "#FFFFFF",
+          fontWeight: 700,
+          opacity: 0.6,
+        },
+      },
     };
 
     return config;
@@ -75,11 +88,14 @@ export const DailyOrders: React.FC = () => {
     <DailyOrderWrapper>
       <TitleArea>
         <Title level={3}>{t("dashboard.dailyOrders.title")}</Title>
-        <TitleAreNumber>
+        <HeaderNumbers>
           <Text strong>{data?.data.total ?? 0} </Text>
 
-          {(data?.data?.trend ?? 0) > 0 ? <IncreaseIcon /> : <DecreaseIcon />}
-        </TitleAreNumber>
+          <div>
+            <Text strong>{data?.data.trend ?? 0}%</Text>
+            {(data?.data?.trend ?? 0) > 0 ? <IncreaseIcon /> : <DecreaseIcon />}
+          </div>
+        </HeaderNumbers>
       </TitleArea>
       <Column
         style={{ padding: 0, height: 135 }}

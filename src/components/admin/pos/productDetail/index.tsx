@@ -12,17 +12,24 @@ import {
   InputNumber,
   Button,
   message,
+  Badge,
 } from "antd";
 import {
   IColor,
+  IDiscountInfo,
   IProduct,
+  IProductClient,
   IProductDetail,
+  IPromotionProductDetailResponse,
   ISize,
+  ISizeClient,
+  IVariation,
 } from "../../../../interfaces";
 import { useEffect, useState } from "react";
 import { Quantity } from "./styled";
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { NumberField } from "@refinedev/antd";
+import { SaleIcon } from "../../../icons/icon-sale";
 const { Text, Title, Paragraph } = Typography;
 
 type ProductDetailProps = {
@@ -49,92 +56,69 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
   const [qty, setQty] = useState(1);
 
   const decreaseQty = () => {
-    if (qty > 1) {
-      setQty(qty - 1);
+    if (qty <= 1) {
+      return messageApi.open({
+        type: "error",
+        content: "Đã đạt số lượng nhỏ nhất",
+      });
     }
+    setQty(qty - 1);
   };
 
   const increaseQty = () => {
+    if (qty >= 5) {
+      return messageApi.open({
+        type: "error",
+        content: "Chỉ có thể mua tối da 5 sản phẩm",
+      });
+    }
+
+    if (qty >= productStock) {
+      return messageApi.open({
+        type: "error",
+        content: "Rất tiếc, đã đạt giới hạn số lượng sản phẩm",
+      });
+    }
     setQty(qty + 1);
   };
 
-  const [selectedColor, setSelectedColor] = useState<IColor>();
-  const [selectedSize, setSelectedSize] = useState<ISize>();
-  const [selectedProductDetail, setSelectedProductDetail] =
-    useState<IProductDetail>();
+  const [productData, setProductData] = useState(
+    initializeProductClient(product)
+  );
+
+  const {
+    productClient,
+    initialSelectedColor,
+    initialSelectedSize,
+    initialProductStock,
+  } = productData;
+
+  const [selectedProductColor, setSelectedProductColor] =
+    useState(initialSelectedColor);
+
+  const [selectedProductSize, setSelectedProductSize] =
+    useState(initialSelectedSize);
+
+  const [selectedVariant, setSelectedVariant] = useState(
+    productClient.variation[0]
+  );
+
+  const [productStock, setProductStock] = useState(initialProductStock);
 
   const { mutate: mutateCreate, isLoading } = useCreate();
 
-  useEffect(() => {
-    if (open) {
-      setSelectedColor(undefined);
-      setSelectedSize(undefined);
-      setSelectedProductDetail(undefined);
-    }
-  }, [open]);
-
-  const productDetails = product.productDetails ?? [];
-
-  const lowestPrice =
-    productDetails.length > 0
-      ? productDetails.reduce((minPrice, productDetail) => {
-          const currentPrice = productDetail.price;
-          return currentPrice < minPrice ? currentPrice : minPrice;
-        }, productDetails[0].price)
-      : 0;
-
-  const colors: IColor[] = Object.values(
-    productDetails.reduce((uniqueColorMap: any, productDetail) => {
-      const colorCode = productDetail.color.code;
-      if (!uniqueColorMap[colorCode]) {
-        uniqueColorMap[colorCode] = productDetail.color;
-      }
-      return uniqueColorMap;
-    }, {})
-  );
-
-  const sizes: ISize[] = Object.values(
-    productDetails.reduce((uniqueSizeMap: any, productDetail) => {
-      const sizeId = productDetail.size.id;
-      if (!uniqueSizeMap[sizeId]) {
-        uniqueSizeMap[sizeId] = productDetail.size;
-      }
-      return uniqueSizeMap;
-    }, {})
-  );
-
-  const handleColorChange = (color: IColor, checked: boolean) => {
-    setSelectedColor(checked ? color : undefined);
-  };
-
-  const handleSizeChange = (size: ISize, checked: boolean) => {
-    setSelectedSize(checked ? size : undefined);
-  };
-
-  useEffect(() => {
-    const selectedProductDetail = product.productDetails.find(
-      (productDetail) => {
-        return (
-          productDetail.color.id === selectedColor?.id &&
-          productDetail.size.id === selectedSize?.id
-        );
-      }
-    );
-    setSelectedProductDetail(selectedProductDetail);
-  }, [selectedColor, selectedSize]);
-
   const handleFinish = () => {
-    if (selectedProductDetail) {
+    if (selectedVariant) {
       mutateCreate(
         {
           resource: "order-details",
           values: [
             {
-              productDetail: selectedProductDetail?.id,
+              productDetail: selectedProductSize.productDetailId,
               order: orderId,
               quantity: qty,
-              price: selectedProductDetail?.price,
-              totalPrice: selectedProductDetail?.price * qty,
+              price: selectedProductSize.price,
+              totalPrice: selectedProductSize.price * qty,
               status: "COMPLETED",
             },
           ],
@@ -149,7 +133,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
           onError: (error, variables, context) => {
             messageApi.open({
               type: "error",
-              content: t("orders.notification.product.add.error"),
+              content: error.message,
             });
           },
           onSuccess: (data, variables, context) => {
@@ -170,6 +154,24 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
     }
   };
 
+  useEffect(() => {
+    const selectedVariant = productClient.variation.find(
+      (variation) => variation.color.id === selectedProductColor.id
+    );
+    if (selectedVariant) setSelectedVariant(selectedVariant);
+  }, [selectedProductColor]);
+
+  useEffect(() => {
+    if (open && product) {
+      const initData = initializeProductClient(product);
+      setProductData(initData);
+
+      setSelectedProductColor(initData.initialSelectedColor);
+      setSelectedProductSize(initData.initialSelectedSize);
+      setProductStock(initData.initialProductStock);
+    }
+  }, [open]);
+
   return (
     <Modal
       title={t("productDetails.productDetails")}
@@ -182,15 +184,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={12}>
-          <Image.PreviewGroup>
-            <Image src={product.image} />
-          </Image.PreviewGroup>
+          <Image src={productClient.image[0]} />
         </Col>
         <Col span={12}>
           <Flex gap="middle" vertical>
             <Col span={24}>
               <Title level={3}>
-                {product.name} / #{product.code}
+                {productClient.name} / #{productClient.code}
               </Title>
             </Col>
             <Col span={24}>
@@ -201,47 +201,78 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                     style: "currency",
                   }}
                   value={
-                    selectedProductDetail
-                      ? selectedProductDetail.price
-                      : lowestPrice
+                    selectedProductSize
+                      ? selectedProductSize.price
+                      : productClient.price.min
                   }
                 />
               </Title>
             </Col>
             <Col span={24}>
               <Space direction="vertical">
-                <Text strong>Description</Text>
-                <Paragraph>{product.description}</Paragraph>
+                <Text strong>Mô tả</Text>
+                <Paragraph>{productClient.description}</Paragraph>
               </Space>
             </Col>
             <Col span={24}>
               <Space direction="vertical">
                 <Space>
-                  <Text strong>Color</Text>
-                  <Text>{selectedColor?.name}</Text>
+                  <Text strong>Màu sắc</Text>
+                  <Text>{selectedProductColor.name}</Text>
                 </Space>
                 <Space>
-                  {colors.length > 0 && (
+                  {productClient.variation && (
                     <>
-                      {colors.map((color, index) => (
-                        <Tag.CheckableTag
-                          key={index}
-                          checked={selectedColor === color}
-                          style={{
-                            width: "30px",
-                            height: "30px",
-                            borderRadius: "50%",
-                            backgroundColor: "#" + color.code,
-                            border:
-                              selectedColor === color
-                                ? "2px solid #fb5231"
-                                : "2px solid transparent",
-                          }}
-                          onChange={(checked) =>
-                            handleColorChange(color, checked)
-                          }
-                        />
-                      ))}
+                      {productClient.variation.map((single, key) => {
+                        const hasSale = single.size.some(
+                          (size) =>
+                            typeof size.discount === "number" &&
+                            size.discount > 0
+                        );
+
+                        return (
+                          <Badge
+                            offset={[20, 0]}
+                            key={key}
+                            count={
+                              hasSale ? (
+                                <SaleIcon
+                                  style={{
+                                    color: "red",
+                                    fontSize: "24px",
+                                    zIndex: 2,
+                                  }}
+                                />
+                              ) : (
+                                0
+                              )
+                            }
+                          >
+                            <Tag.CheckableTag
+                              key={key}
+                              checked={
+                                selectedProductColor.id === single.color.id
+                              }
+                              style={{
+                                width: "30px",
+                                height: "30px",
+                                borderRadius: "50%",
+                                backgroundColor: "#" + single.color.code,
+                                border:
+                                  selectedProductColor.id === single.color.id
+                                    ? "2px solid #fb5231"
+                                    : "2px solid transparent",
+                              }}
+                              onChange={() => {
+                                setSelectedProductColor(single.color);
+                                setSelectedProductSize(single.size[0]);
+                                setProductStock(single.size[0].stock);
+                                setQty(1);
+                              }}
+                            />
+                          </Badge>
+                        );
+                      })}
                     </>
                   )}
                 </Space>
@@ -250,31 +281,63 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             <Col span={24}>
               <Space direction="vertical">
                 <Space>
-                  <Text strong>Size</Text>
-                  <Text>{selectedSize?.name}</Text>
+                  <Text strong>Kích cỡ</Text>
+                  <Text>{selectedProductSize.name}</Text>
+                  <Text strong>Số lượng tồn</Text>
+                  <Text style={{ color: productStock <= 0 ? "red" : "" }}>
+                    {productStock}{" "}
+                    {productStock <= 0 ? "Sản phẩm này đã hết hàng" : ""}
+                  </Text>
                 </Space>
                 <Space>
-                  {sizes.length > 0 && (
+                  {productClient.variation && (
                     <>
-                      {sizes.map((size, index) => (
-                        <Tag.CheckableTag
-                          key={index}
-                          checked={selectedSize === size}
-                          style={{
-                            border:
-                              selectedSize === size
-                                ? "1px solid #fb5231"
-                                : "1px solid #000000",
-                            borderRadius: "0",
-                            padding: "6px 12px",
-                          }}
-                          onChange={(checked) =>
-                            handleSizeChange(size, checked)
-                          }
-                        >
-                          {size.name}
-                        </Tag.CheckableTag>
-                      ))}
+                      {productClient.variation.map((single) => {
+                        return single.color.id === selectedProductColor.id
+                          ? single.size.map((singleSize, key) => {
+                              const hasSale = singleSize.discount > 0;
+                              return (
+                                <Badge
+                                  count={
+                                    hasSale ? (
+                                      <SaleIcon
+                                        style={{
+                                          color: "red",
+                                          fontSize: "24px",
+                                          zIndex: 2,
+                                        }}
+                                      />
+                                    ) : (
+                                      0
+                                    )
+                                  }
+                                >
+                                  <Tag.CheckableTag
+                                    key={key}
+                                    checked={
+                                      selectedProductSize.id === singleSize.id
+                                    }
+                                    style={{
+                                      border:
+                                        selectedProductSize.id === singleSize.id
+                                          ? "1px solid #fb5231"
+                                          : "1px solid #000000",
+                                      borderRadius: "0",
+                                      padding: "6px 12px",
+                                    }}
+                                    onChange={() => {
+                                      setSelectedProductSize(singleSize);
+                                      setProductStock(singleSize.stock);
+                                      setQty(1);
+                                    }}
+                                  >
+                                    {singleSize.name}
+                                  </Tag.CheckableTag>
+                                </Badge>
+                              );
+                            })
+                          : "";
+                      })}
                     </>
                   )}
                 </Space>
@@ -283,12 +346,11 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             <Row align="middle">
               <Col span={12}>
                 <Quantity>
-                  <span>Quantity</span>
-                  <button onClick={decreaseQty}>
+                  <button onClick={decreaseQty} disabled={productStock <= 0}>
                     <AiFillMinusCircle />
                   </button>
-                  <InputNumber value={qty} />
-                  <button onClick={increaseQty}>
+                  <InputNumber value={qty} disabled={productStock <= 0} />
+                  <button onClick={increaseQty} disabled={productStock <= 0}>
                     <AiFillPlusCircle />
                   </button>
                 </Quantity>
@@ -299,9 +361,9 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                   type="primary"
                   onClick={handleFinish}
                   style={{ width: "100%" }}
-                  disabled={productDetails.length <= 0}
+                  disabled={productStock <= 0}
                 >
-                  Add To Cart
+                  Thêm vào giỏ
                 </Button>
               </Col>
             </Row>
@@ -310,4 +372,163 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
       </Row>
     </Modal>
   );
+};
+
+const mapProductResponseToClient = (
+  productResponse: IProduct
+): IProductClient => {
+  const variations: IVariation[] = [];
+  const images: string[] = [productResponse.image];
+  let minPrice = Number.MAX_SAFE_INTEGER;
+  let maxPrice = Number.MIN_SAFE_INTEGER;
+  let discountInfo = {
+    value: 0,
+    endDate: 0,
+  } as IDiscountInfo;
+  const thresholdInMilliseconds = 7 * 24 * 60 * 60 * 1000;
+  const currentTime = new Date().getTime();
+  const isNew =
+    currentTime - productResponse.createdAt < thresholdInMilliseconds;
+
+  productResponse.productDetails.forEach((productDetail) => {
+    images.push(productDetail.image);
+    const existingVariation = variations.find(
+      (v) => v.color.id === productDetail.color.id
+    );
+    if (existingVariation) {
+      existingVariation.size.push(mapSizeToSizeClient(productDetail));
+      existingVariation.image.push(productDetail.image);
+
+      minPrice = Math.min(minPrice, productDetail.price);
+      maxPrice = Math.max(maxPrice, productDetail.price);
+    } else {
+      const newVariation: IVariation = {
+        color: productDetail.color,
+        image: [productDetail.image],
+        size: [mapSizeToSizeClient(productDetail)],
+      };
+      variations.push(newVariation);
+
+      minPrice = Math.min(minPrice, productDetail.price);
+      maxPrice = Math.max(maxPrice, productDetail.price);
+    }
+
+    const currentDiscountInfo = getDiscountInfo(
+      productDetail.promotionProductDetails
+    );
+
+    if (currentDiscountInfo) {
+      if (!discountInfo || currentDiscountInfo.value > discountInfo.value) {
+        discountInfo = currentDiscountInfo;
+      }
+    }
+  });
+
+  if (productResponse.productDetails.length === 0) {
+    minPrice = 0;
+    maxPrice = 0;
+  }
+
+  return {
+    id: productResponse.id,
+    code: productResponse.code,
+    name: productResponse.name,
+    price: {
+      min: minPrice,
+      max: maxPrice,
+    },
+    discount: discountInfo.value,
+    saleCount: productResponse.saleCount,
+    offerEnd: discountInfo.endDate,
+    new: isNew,
+    variation: variations,
+    image: images,
+    description: productResponse.description,
+  };
+};
+
+const mapSizeToSizeClient = (detail: IProductDetail): ISizeClient => {
+  const discountInfo = getDiscountInfo(detail.promotionProductDetails);
+
+  return {
+    id: detail.size?.id || "",
+    name: detail.size?.name || "",
+    stock: detail.quantity || 0,
+    price: detail.price,
+    discount: discountInfo?.value ?? 0,
+    offerEnd: discountInfo?.endDate ?? 0,
+    saleCount: 0,
+    productDetailId: detail.id,
+  };
+};
+
+export const getDiscountInfo = (
+  promotionProductDetails: IPromotionProductDetailResponse[]
+): IDiscountInfo | null => {
+  if (!promotionProductDetails || promotionProductDetails.length === 0) {
+    return null;
+  }
+
+  const activePromotions = promotionProductDetails
+    .map((detail) => detail.promotion)
+    .filter((promotion) => promotion.status === "ACTIVE");
+
+  if (activePromotions.length === 0) {
+    return null;
+  }
+
+  const maxPromotion = activePromotions.reduce((max, promotion) => {
+    return promotion.value > max.value ? promotion : max;
+  });
+
+  const discountInfo: IDiscountInfo = {
+    value: maxPromotion.value,
+    endDate: maxPromotion.endDate,
+  };
+
+  return discountInfo;
+};
+
+const mapProductToClient = (product: IProduct): IProductClient => {
+  const mappedProduct = mapProductResponseToClient(product);
+
+  mappedProduct.image.sort();
+
+  mappedProduct.variation.sort((a, b) =>
+    a.color.name.localeCompare(b.color.name)
+  );
+
+  mappedProduct.variation.forEach((variation) => {
+    variation.size.sort((a, b) => a.name.localeCompare(b.name));
+  });
+
+  mappedProduct.variation.forEach((variation) => {
+    variation.image.sort();
+  });
+
+  return mappedProduct;
+};
+
+const initializeProductClient = (product: IProduct) => {
+  const productClient = mapProductToClient(product);
+
+  const initialSelectedColor =
+    productClient.variation && productClient.variation.length > 0
+      ? productClient.variation[0].color
+      : ({} as IColor);
+  const initialSelectedSize =
+    productClient.variation && productClient.variation.length > 0
+      ? productClient.variation[0].size[0]
+      : ({} as ISizeClient);
+  const initialProductStock =
+    productClient.variation && productClient.variation.length > 0
+      ? productClient.variation[0].size[0].stock
+      : 0;
+
+  return {
+    productClient,
+    initialSelectedColor,
+    initialSelectedSize,
+    initialProductStock,
+  };
 };

@@ -71,7 +71,7 @@ export const AddressCustomersPie: React.FC = () => {
         <Text strong>{t(`dashboard.addressCustomerPie.title`)}</Text>
       </div>
 
-      <Pie height={300} style={{ maxHeight: "300px" }} {...config} />
+      <Pie {...config} />
     </div>
   );
 };

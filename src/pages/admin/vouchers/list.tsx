@@ -6,7 +6,7 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { List, useTable } from "@refinedev/antd";
+import { List, getDefaultSortOrder, useTable } from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -47,48 +47,63 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
   const { edit } = useNavigation();
 
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IVoucher,
-    HttpError,
-    IVoucherFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q, status }) => {
-      const voucherFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<IVoucher, HttpError, IVoucherFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q, status }) => {
+        const voucherFilters: CrudFilters = [];
 
-      voucherFilters.push({
-        field: "status",
-        operator: "eq",
-        value: status ? status : undefined,
-      });
+        voucherFilters.push({
+          field: "status",
+          operator: "eq",
+          value: status ? status : undefined,
+        });
 
-      voucherFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        voucherFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return voucherFilters;
-    },
-  });
+        return voucherFilters;
+      },
+    });
 
   const columns: ColumnsType<IVoucher> = [
     {
       title: "#",
-      key: "index",
-      width: "1rem",
+      key: "createdAt",
+      dataIndex: "createdAt",
       align: "center",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("vouchers.fields.code"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("code", sorters),
+
       dataIndex: "code",
       key: "code",
     },
     {
       title: t("vouchers.fields.name"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("name", sorters),
       dataIndex: "name",
       key: "name",
       width: 300,
@@ -101,6 +116,8 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("vouchers.fields.type"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("type", sorters),
       dataIndex: "type",
       key: "type",
       width: "0.5rem",
@@ -127,22 +144,30 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("vouchers.fields.value"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("value", sorters),
       dataIndex: "value",
       key: "value",
     },
     {
       title: t("vouchers.fields.constraint"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("constraint", sorters),
       dataIndex: "constraint",
       key: "constraint",
     },
     {
       title: t("vouchers.fields.quantity"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("quantity", sorters),
       dataIndex: "quantity",
       width: "1rem",
       key: "quantity",
     },
     {
       title: t("vouchers.fields.startDate"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("startDate", sorters),
       dataIndex: "startDate",
       key: "startDate",
       render: (_, record) => {
@@ -151,6 +176,8 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("vouchers.fields.endDate"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("endDate", sorters),
       dataIndex: "endDate",
       key: "endDate",
       render: (_, record) => {
@@ -159,9 +186,10 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("vouchers.fields.status"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("status", sorters),
       key: "status",
       dataIndex: "status",
-      width: "0.5rem",
       align: "center",
       render: (_, { status }) => <VoucherStatus status={status} />,
     },

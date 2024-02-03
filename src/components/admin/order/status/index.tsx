@@ -1,17 +1,9 @@
 import { useTranslate } from "@refinedev/core";
 import { Tag } from "antd";
+import { OrderStatus as OStatus } from "../../../../interfaces";
 
 type OrderStatusProps = {
-  status:
-    | "PENDING"
-    | "WAIT_FOR_CONFIRMATION"
-    | "WAIT_FOR_DELIVERY"
-    | "DELIVERING"
-    | "COMPLETED"
-    | "CANCELED"
-    | "EXPIRED"
-    | "RETURNED"
-    | "EXCHANGED";
+  status: OStatus;
 };
 
 export const OrderStatus: React.FC<OrderStatusProps> = ({ status }) => {

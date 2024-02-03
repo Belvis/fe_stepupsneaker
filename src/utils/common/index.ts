@@ -4,3 +4,7 @@ export * from "./timestampFormater";
 export * from "./imageConverter";
 export * from "./qrCodeParser";
 export * from "./payloadConverter";
+export * from "./currencyFormater";
+export * from "./get-name-initials";
+export * from "./get-random-color";
+export * from "./currency-number";

@@ -1,11 +1,15 @@
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
-import { List, NumberField, useTable } from "@refinedev/antd";
+import {
+  List,
+  NumberField,
+  getDefaultSortOrder,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
   IResourceComponentsProps,
   getDefaultFilter,
-  useDelete,
   useTranslate,
 } from "@refinedev/core";
 import {
@@ -15,7 +19,6 @@ import {
   Form,
   Input,
   Row,
-  Select,
   Space,
   Table,
   Typography,
@@ -32,53 +35,74 @@ const { Text } = Typography;
 export const PaymentList: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
 
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    IPayment,
-    HttpError,
-    IPaymentFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q }) => {
-      const customerFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<IPayment, HttpError, IPaymentFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q }) => {
+        const customerFilters: CrudFilters = [];
 
-      customerFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        customerFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return customerFilters;
-    },
-  });
+        return customerFilters;
+      },
+    });
 
   const columns: ColumnsType<IPayment> = [
     {
       title: "#",
-      key: "index",
-      width: "1rem",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      key: "createdAt",
+      dataIndex: "createdAt",
+      align: "center",
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("payments.fields.customer"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("customer", sorters),
       dataIndex: ["order", "customer"],
       key: "customer",
       width: 300,
-      render: (_, { order }) => (
-        <Text style={{ wordBreak: "inherit" }}>
-          {order?.customer?.fullName || "Retail customer"}
-        </Text>
-      ),
+      render: (_, { order }) => {
+        console.log(sorters);
+
+        return (
+          <Text style={{ wordBreak: "inherit" }}>
+            {order?.customer?.fullName || "Retail customer"}
+          </Text>
+        );
+      },
     },
     {
       title: t("payments.fields.order"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("order.code", sorters),
       dataIndex: ["order", "code"],
       key: "order",
       render: (_, { order }) => <Text>{order?.code.toUpperCase()}</Text>,
     },
     {
       title: t("payments.fields.totalMoney"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("totalMoney", sorters),
       dataIndex: "totalMoney",
       key: "totalMoney",
       render: (_, record) => (
@@ -93,8 +117,10 @@ export const PaymentList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("payments.fields.paymentMethod"),
-      dataIndex: "paymentMethod",
-      key: "paymentMethod",
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("paymentMethod.name", sorters),
+      dataIndex: "paymentMethod.name",
+      key: "paymentMethod.name",
       render: (_, record) => (
         <Text style={{ wordBreak: "inherit" }}>
           {record.paymentMethod.name}
@@ -103,11 +129,15 @@ export const PaymentList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("payments.fields.transactionCode"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("transactionCode", sorters),
       dataIndex: "transactionCode",
       key: "transactionCode",
     },
     {
       title: t("payments.fields.createdAt"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
       dataIndex: "createdAt",
       key: "createdAt",
       render: (_, record) => {
