@@ -16,6 +16,7 @@ import { CustomAvatar } from "./custom-avatar";
 import { NotificationMessage } from "./notifications-message";
 import styled from "styled-components";
 import { SegmentedValue } from "antd/es/segmented";
+import { BellIcon } from "../../icons/icon-bell";
 
 const httpClient: AxiosInstance = axiosInstance;
 
@@ -209,7 +210,12 @@ export const Notifications: React.FC = () => {
         </Row>
       </div>
       <Space direction="vertical" split={<Divider style={{ margin: 0 }} />} style={{ width: "100%" }}>
-        {notifications && notifications.length <= 0 && <p className="text-center">Bạn không có thông báo nào</p>}
+        {notifications && notifications.length <= 0 && (
+          <div style={{ textAlign: "center" }}>
+            <BellIcon style={{ fontSize: "72px" }} />
+            <p className="text-center">Bạn không có thông báo nào</p>
+          </div>
+        )}
         {notifications &&
           notifications.length > 0 &&
           notifications.map((noti, index) => (
@@ -268,7 +274,10 @@ export const Notifications: React.FC = () => {
       content={initLoading ? loadingContent : content}
       trigger="click"
       open={open}
-      onOpenChange={(newOpen) => setOpen(newOpen)}
+      onOpenChange={(newOpen) => {
+        setOpen(newOpen);
+        setMoreOpen(false);
+      }}
       overlayStyle={{ width: 400, maxHeight: "500px", overflow: "auto" }}
     >
       <Badge count={uneadCount} size="small">
