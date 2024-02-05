@@ -104,7 +104,12 @@ export const UpdatePasswordPage: React.FC<UpdatePasswordProps> = ({
             "pages.updatePassword.fields.password",
             "New Password"
           )}
-          rules={[{ required: true }]}
+          rules={[
+            {
+              whitespace: true,
+              required: true,
+            },
+          ]}
           style={{ marginBottom: "12px" }}
         >
           <Input type="password" placeholder="●●●●●●●●" size="large" />

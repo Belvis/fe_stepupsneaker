@@ -45,6 +45,7 @@ export const CreateMaterial: React.FC<CreateMaterialProps> = ({
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

@@ -45,6 +45,7 @@ export const CreateStyle: React.FC<CreateStyleProps> = ({
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

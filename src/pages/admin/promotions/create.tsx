@@ -33,11 +33,24 @@ import {
 } from "antd";
 
 import Table, { ColumnsType } from "antd/es/table";
-import { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
+import {
+  RcFile,
+  UploadChangeParam,
+  UploadFile,
+  UploadProps,
+} from "antd/es/upload";
 import { useState } from "react";
 import { ProductStatus } from "../../../components";
-import { getProductStatusOptions, getPromotionStatusOptions, tablePaginationSettings } from "../../../constants";
-import { IProductDetail, IProductDetailFilterVariables, IPromotion } from "../../../interfaces";
+import {
+  getProductStatusOptions,
+  getPromotionStatusOptions,
+  tablePaginationSettings,
+} from "../../../constants";
+import {
+  IProductDetail,
+  IProductDetailFilterVariables,
+  IPromotion,
+} from "../../../interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { debounce } from "lodash";
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
@@ -63,7 +76,8 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
     preserveSelectedRowKeys: true,
   };
 
-  const { formProps, saveButtonProps, queryResult, onFinish } = useForm<IPromotion>({});
+  const { formProps, saveButtonProps, queryResult, onFinish } =
+    useForm<IPromotion>({});
 
   const handleOnFinish = (values: any) => {
     const data = {
@@ -107,7 +121,9 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  const handleChange: UploadProps["onChange"] = (info: UploadChangeParam<UploadFile>) => {
+  const handleChange: UploadProps["onChange"] = (
+    info: UploadChangeParam<UploadFile>
+  ) => {
     if (info.file.status === "uploading") {
       setLoadingImage(true);
       return;
@@ -160,19 +176,24 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
   });
 
   type ColumnPagination = { current: number; pageSize: number };
-  const generateColumns = (props: ColumnPagination): ColumnsType<IProductDetail> => {
+  const generateColumns = (
+    props: ColumnPagination
+  ): ColumnsType<IProductDetail> => {
     const columns: ColumnsType<IProductDetail> = [
       {
         title: "#",
         key: "index",
         width: "1px",
-        render: (text, record, index) => (props.current - 1) * props.pageSize + index + 1,
+        render: (text, record, index) =>
+          (props.current - 1) * props.pageSize + index + 1,
       },
       {
         title: t("productDetails.fields.image"),
         dataIndex: "image",
         key: "image",
-        render: (_, { image }) => <Avatar shape="square" size={74} src={image} />,
+        render: (_, { image }) => (
+          <Avatar shape="square" size={74} src={image} />
+        ),
       },
       {
         title: t("productDetails.fields.name"),
@@ -189,7 +210,9 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
         key: "size",
         dataIndex: "size",
         align: "center",
-        render: (_, record) => <Text style={{ width: "100%" }}>{record.size.name}</Text>,
+        render: (_, record) => (
+          <Text style={{ width: "100%" }}>{record.size.name}</Text>
+        ),
       },
       {
         title: t("productDetails.fields.color"),
@@ -197,7 +220,10 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
         dataIndex: "color",
         align: "center",
         render: (_, record) => (
-          <Tag style={{ width: "100%" }} color={`#${record.color.code}`}>{`#${record.color.code}`}</Tag>
+          <Tag
+            style={{ width: "100%" }}
+            color={`#${record.color.code}`}
+          >{`#${record.color.code}`}</Tag>
         ),
       },
       {
@@ -223,11 +249,19 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={8}>
-          <Edit isLoading={queryResult?.isFetching} saveButtonProps={saveButtonProps}>
+          <Edit
+            isLoading={queryResult?.isFetching}
+            saveButtonProps={saveButtonProps}
+          >
             <Form {...formProps} layout="vertical" onFinish={handleOnFinish}>
               <Row gutter={20}>
                 <Col span={24}>
-                  <Form.Item name="image" valuePropName="file" getValueFromEvent={getValueFromEvent} noStyle>
+                  <Form.Item
+                    name="image"
+                    valuePropName="file"
+                    getValueFromEvent={getValueFromEvent}
+                    noStyle
+                  >
                     <Upload.Dragger
                       name="file"
                       beforeUpload={beforeUpload}
@@ -281,7 +315,9 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                         >
                           {t("promotions.fields.images.description")}
                         </Text>
-                        <Text style={{ fontSize: "12px" }}>{t("promotions.fields.images.validation")}</Text>
+                        <Text style={{ fontSize: "12px" }}>
+                          {t("promotions.fields.images.validation")}
+                        </Text>
                       </Space>
                     </Upload.Dragger>
                   </Form.Item>
@@ -292,6 +328,7 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                     name="name"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}
@@ -303,6 +340,7 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                     name="code"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}
@@ -342,7 +380,11 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
         </Col>
         <Col span={16}>
           <Card style={{ height: "100%" }}>
-            <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+            <Space
+              direction="vertical"
+              size="middle"
+              style={{ display: "flex" }}
+            >
               <Form
                 {...searchFormProps}
                 onValuesChange={debounce(() => {
@@ -366,7 +408,11 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                       suffix={<SearchOutlined />}
                     />
                   </Form.Item>
-                  <Form.Item noStyle label={t("products.fields.status")} name="status">
+                  <Form.Item
+                    noStyle
+                    label={t("products.fields.status")}
+                    name="status"
+                  >
                     <Select
                       placeholder={t("products.filters.status.placeholder")}
                       style={{
@@ -387,11 +433,19 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                 title={() => {
                   return (
                     <Flex justify={"space-between"} align={"center"}>
-                      <Title level={5}>{t(`promotionProductDetail.table.title.ineligible`)}</Title>
+                      <Title level={5}>
+                        {t(`promotionProductDetail.table.title.ineligible`)}
+                      </Title>
                       {rowSelection.selectedRowKeys.length > 0 && (
                         <Space>
-                          <span style={{ marginLeft: 8 }}>Selected {rowSelection.selectedRowKeys.length} items</span>
-                          <Button type="primary" loading={tableProps.loading} onClick={() => setSelectedIds([])}>
+                          <span style={{ marginLeft: 8 }}>
+                            Selected {rowSelection.selectedRowKeys.length} items
+                          </span>
+                          <Button
+                            type="primary"
+                            loading={tableProps.loading}
+                            onClick={() => setSelectedIds([])}
+                          >
                             {t(`buttons.clear`)}
                           </Button>
                         </Space>

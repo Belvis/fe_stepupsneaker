@@ -50,6 +50,7 @@ export const EditBrand: React.FC<EditBrandProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

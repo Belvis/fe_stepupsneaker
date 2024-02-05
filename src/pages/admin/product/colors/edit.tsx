@@ -70,6 +70,7 @@ export const EditColor: React.FC<EditColorProps> = ({
           initialValue={data?.data.code}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}
@@ -86,6 +87,7 @@ export const EditColor: React.FC<EditColorProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

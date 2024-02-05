@@ -47,7 +47,10 @@ type EditProductProps = {
   onFinish: (values: any) => void;
 };
 
-function convertToPayload(productDetails: IProductDetail[], productId: string): IProductDetailConvertedPayload[] {
+function convertToPayload(
+  productDetails: IProductDetail[],
+  productId: string
+): IProductDetailConvertedPayload[] {
   return productDetails.map((detail) => ({
     product: productId,
     tradeMark: detail.tradeMark.id,
@@ -64,14 +67,21 @@ function convertToPayload(productDetails: IProductDetail[], productId: string): 
   }));
 }
 
-export const EditProductDetail: React.FC<EditProductProps> = ({ modalProps, formProps, id, onFinish }) => {
+export const EditProductDetail: React.FC<EditProductProps> = ({
+  modalProps,
+  formProps,
+  id,
+  onFinish,
+}) => {
   const t = useTranslate();
   const breakpoint = Grid.useBreakpoint();
   const { id: productId } = useParsed();
 
   const renderColor = (value: string, label: string) => ({
     value: value,
-    label: <Tag style={{ width: "96%" }} color={`#${label}`}>{`#${label}`}</Tag>,
+    label: (
+      <Tag style={{ width: "96%" }} color={`#${label}`}>{`#${label}`}</Tag>
+    ),
   });
 
   const { selectProps: brandSelectProps } = useSelect<IBrand>({
@@ -191,7 +201,8 @@ export const EditProductDetail: React.FC<EditProductProps> = ({ modalProps, form
     showWarningConfirmDialog({
       options: {
         accept: () => {
-          const convertedPayload: IProductDetailConvertedPayload[] = convertToPayload([values], productId as string);
+          const convertedPayload: IProductDetailConvertedPayload[] =
+            convertToPayload([values], productId as string);
           onFinish(convertedPayload[0]);
         },
         reject: () => {},
@@ -218,7 +229,9 @@ export const EditProductDetail: React.FC<EditProductProps> = ({ modalProps, form
     return isJpgOrPng && isLt2M;
   };
 
-  const handleChange: UploadProps["onChange"] = (info: UploadChangeParam<UploadFile>) => {
+  const handleChange: UploadProps["onChange"] = (
+    info: UploadChangeParam<UploadFile>
+  ) => {
     if (info.file.status === "uploading") {
       setLoadingImage(true);
       return;
@@ -232,7 +245,12 @@ export const EditProductDetail: React.FC<EditProductProps> = ({ modalProps, form
   };
 
   return (
-    <Modal confirmLoading={isLoading} {...modalProps} width={breakpoint.sm ? "1000px" : "100%"} zIndex={1001}>
+    <Modal
+      confirmLoading={isLoading}
+      {...modalProps}
+      width={breakpoint.sm ? "1000px" : "100%"}
+      zIndex={1001}
+    >
       {contextHolder}
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Row gutter={{ xs: 8, sm: 16, md: 24, lg: 32 }}>
@@ -300,7 +318,9 @@ export const EditProductDetail: React.FC<EditProductProps> = ({ modalProps, form
                     >
                       {t("products.fields.images.description")}
                     </Text>
-                    <Text style={{ fontSize: "12px" }}>{t("products.fields.images.validation")}</Text>
+                    <Text style={{ fontSize: "12px" }}>
+                      {t("products.fields.images.validation")}
+                    </Text>
                   </Space>
                 </Upload.Dragger>
               </Form.Item>
@@ -406,9 +426,14 @@ export const EditProductDetail: React.FC<EditProductProps> = ({ modalProps, form
               ]}
             >
               <InputNumber
-                formatter={(value) => `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                formatter={(value) =>
+                  `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                }
                 parser={(value) => {
-                  const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
+                  const parsedValue = parseInt(
+                    value!.replace(/₫\s?|(,*)/g, ""),
+                    10
+                  );
                   return isNaN(parsedValue) ? 0 : parsedValue;
                 }}
                 style={{ width: "100%" }}

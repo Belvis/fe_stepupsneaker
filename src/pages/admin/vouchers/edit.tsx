@@ -30,13 +30,29 @@ import {
 } from "antd";
 
 import { ColumnsType } from "antd/es/table";
-import { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
+import {
+  RcFile,
+  UploadChangeParam,
+  UploadFile,
+  UploadProps,
+} from "antd/es/upload";
 import dayjs from "dayjs";
 import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
 import { CustomerVoucherTable } from "../../../components";
-import { getUserStatusOptions, getVouccherStatusOptions } from "../../../constants";
-import { ICustomer, ICustomerFilterVariables, IVoucher } from "../../../interfaces";
-import { formatTimestamp, getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import {
+  getUserStatusOptions,
+  getVouccherStatusOptions,
+} from "../../../constants";
+import {
+  ICustomer,
+  ICustomerFilterVariables,
+  IVoucher,
+} from "../../../interfaces";
+import {
+  formatTimestamp,
+  getBase64Image,
+  showWarningConfirmDialog,
+} from "../../../utils";
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
 
@@ -52,13 +68,16 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   const [messageApi, contextHolder] = message.useMessage();
 
   const [eligibleCustomers, setEligibleCustomers] = useState<ICustomer[]>([]);
-  const [inEligibleCustomers, setInEligibleCustomers] = useState<ICustomer[]>([]);
+  const [inEligibleCustomers, setInEligibleCustomers] = useState<ICustomer[]>(
+    []
+  );
 
   const { mutate: mutateCreate } = useCreate();
 
   const { mutate: mutateDelete } = useDelete();
 
-  const { formProps, saveButtonProps, queryResult, onFinish } = useForm<IVoucher>({});
+  const { formProps, saveButtonProps, queryResult, onFinish } =
+    useForm<IVoucher>({});
 
   const handleOnFinish = (values: any) => {
     const data = {
@@ -94,7 +113,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       const voucherRange = [dayjs(startDate), dayjs(endDate)];
       formProps.form?.setFieldsValue({ voucherRange });
     }
-  }, [formProps.form?.getFieldValue("startDate"), formProps.form?.getFieldValue("endDate")]);
+  }, [
+    formProps.form?.getFieldValue("startDate"),
+    formProps.form?.getFieldValue("endDate"),
+  ]);
 
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -114,7 +136,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  function handleInEligibleCustomerVoucher(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
+  function handleInEligibleCustomerVoucher(
+    selectedIds: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ) {
     try {
       mutateCreate(
         {
@@ -137,7 +162,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     }
   }
 
-  function handleEligibleCustomerVoucher(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
+  function handleEligibleCustomerVoucher(
+    selectedIds: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ) {
     try {
       mutateDelete(
         {
@@ -160,7 +188,9 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     }
   }
 
-  const handleChange: UploadProps["onChange"] = (info: UploadChangeParam<UploadFile>) => {
+  const handleChange: UploadProps["onChange"] = (
+    info: UploadChangeParam<UploadFile>
+  ) => {
     if (info.file.status === "uploading") {
       setLoadingImage(true);
       return;
@@ -274,7 +304,9 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "phoneNumber",
       key: "phoneNumber",
       render: (_, record) => {
-        const defaultAddress = record.addressList.find((address) => address.isDefault);
+        const defaultAddress = record.addressList.find(
+          (address) => address.isDefault
+        );
         const phoneNumber = defaultAddress ? defaultAddress.phoneNumber : "N/A";
         return <>{phoneNumber}</>;
       },
@@ -312,11 +344,19 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={8}>
-          <Edit isLoading={queryResult?.isFetching} saveButtonProps={saveButtonProps}>
+          <Edit
+            isLoading={queryResult?.isFetching}
+            saveButtonProps={saveButtonProps}
+          >
             <Form {...formProps} layout="vertical" onFinish={handleOnFinish}>
               <Row gutter={20}>
                 <Col span={24}>
-                  <Form.Item name="image" valuePropName="file" getValueFromEvent={getValueFromEvent} noStyle>
+                  <Form.Item
+                    name="image"
+                    valuePropName="file"
+                    getValueFromEvent={getValueFromEvent}
+                    noStyle
+                  >
                     <Upload.Dragger
                       name="file"
                       beforeUpload={beforeUpload}
@@ -370,7 +410,9 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                         >
                           {t("vouchers.fields.images.description")}
                         </Text>
-                        <Text style={{ fontSize: "12px" }}>{t("vouchers.fields.images.validation")}</Text>
+                        <Text style={{ fontSize: "12px" }}>
+                          {t("vouchers.fields.images.validation")}
+                        </Text>
                       </Space>
                     </Upload.Dragger>
                   </Form.Item>
@@ -381,6 +423,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     name="name"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}
@@ -392,6 +435,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     name="code"
                     rules={[
                       {
+                        whitespace: true,
                         required: true,
                       },
                     ]}
@@ -448,7 +492,9 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                   </Form.Item>
                   <Form.Item label={t("vouchers.fields.type")} name="type">
                     <Radio.Group>
-                      <Radio value={"PERCENTAGE"}>{t("vouchers.type.PERCENTAGE")}</Radio>
+                      <Radio value={"PERCENTAGE"}>
+                        {t("vouchers.type.PERCENTAGE")}
+                      </Radio>
                       <Radio value={"CASH"}>{t("vouchers.type.CASH")}</Radio>
                     </Radio.Group>
                   </Form.Item>
@@ -470,7 +516,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
         </Col>
         <Col span={16}>
           <Card style={{ height: "100%" }}>
-            <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+            <Space
+              direction="vertical"
+              size="middle"
+              style={{ display: "flex" }}
+            >
               <Form
                 {...searchFormPropsEligibleCustomer}
                 onValuesChange={debounce(() => {
@@ -478,7 +528,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                 }, 500)}
                 initialValues={{
                   name: getDefaultFilter("q", filtersEligibleCustomer, "eq"),
-                  status: getDefaultFilter("status", filtersEligibleCustomer, "eq"),
+                  status: getDefaultFilter(
+                    "status",
+                    filtersEligibleCustomer,
+                    "eq"
+                  ),
                 }}
               >
                 <Space wrap>
@@ -494,7 +548,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       suffix={<SearchOutlined />}
                     />
                   </Form.Item>
-                  <Form.Item noStyle label={t("customers.fields.status")} name="status">
+                  <Form.Item
+                    noStyle
+                    label={t("customers.fields.status")}
+                    name="status"
+                  >
                     <Select
                       placeholder={t("customers.filters.status.placeholder")}
                       style={{
@@ -503,7 +561,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       options={getUserStatusOptions(t)}
                     />
                   </Form.Item>
-                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersEligibleCustomer}>
+                  <Button
+                    icon={<UndoOutlined />}
+                    onClick={handleClearFiltersEligibleCustomer}
+                  >
                     {t("actions.clear")}
                   </Button>
                 </Space>
@@ -522,7 +583,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                 }, 500)}
                 initialValues={{
                   name: getDefaultFilter("q", filtersInEligibleCustomer, "eq"),
-                  status: getDefaultFilter("status", filtersInEligibleCustomer, "eq"),
+                  status: getDefaultFilter(
+                    "status",
+                    filtersInEligibleCustomer,
+                    "eq"
+                  ),
                 }}
               >
                 <Space wrap>
@@ -538,7 +603,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       suffix={<SearchOutlined />}
                     />
                   </Form.Item>
-                  <Form.Item noStyle label={t("customers.fields.status")} name="status">
+                  <Form.Item
+                    noStyle
+                    label={t("customers.fields.status")}
+                    name="status"
+                  >
                     <Select
                       placeholder={t("customers.filters.status.placeholder")}
                       style={{
@@ -547,7 +616,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       options={getUserStatusOptions(t)}
                     />
                   </Form.Item>
-                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersInEligibleCustomer}>
+                  <Button
+                    icon={<UndoOutlined />}
+                    onClick={handleClearFiltersInEligibleCustomer}
+                  >
                     {t("actions.clear")}
                   </Button>
                 </Space>

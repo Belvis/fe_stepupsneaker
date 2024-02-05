@@ -45,6 +45,7 @@ export const CreateBrand: React.FC<CreateBrandProps> = ({
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}

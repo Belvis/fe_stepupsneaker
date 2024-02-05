@@ -9,7 +9,11 @@ type CreateTradeMarkProps = {
   onFinish: (values: any) => void;
 };
 
-export const CreateTradeMark: React.FC<CreateTradeMarkProps> = ({ modalProps, formProps, onFinish }) => {
+export const CreateTradeMark: React.FC<CreateTradeMarkProps> = ({
+  modalProps,
+  formProps,
+  onFinish,
+}) => {
   const t = useTranslate();
   const breakpoint = Grid.useBreakpoint();
 
@@ -30,13 +34,18 @@ export const CreateTradeMark: React.FC<CreateTradeMarkProps> = ({ modalProps, fo
   };
 
   return (
-    <Modal {...modalProps} width={breakpoint.sm ? "500px" : "100%"} zIndex={1001}>
+    <Modal
+      {...modalProps}
+      width={breakpoint.sm ? "500px" : "100%"}
+      zIndex={1001}
+    >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
           label={t("brands.fields.name")}
           name="name"
           rules={[
             {
+              whitespace: true,
               required: true,
             },
           ]}
