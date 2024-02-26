@@ -330,10 +330,9 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
   };
 
   const handleUpdateOrder = () => {
-    const simplifiedCartItems: { id: string; quantity: number }[] =
-      viewOrder.orderDetails.map((item) => {
-        return { id: item.productDetail.id, quantity: item.quantity };
-      });
+    const simplifiedCartItems: { id: string; quantity: number }[] = viewOrder.orderDetails.map((item) => {
+      return { id: item.id, quantity: item.quantity };
+    });
     const orderPayload = orderToPayload(order);
 
     const submitData = {
