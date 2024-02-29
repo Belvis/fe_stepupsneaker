@@ -11,6 +11,7 @@ export interface IFile {
 export interface IEvent {
   date: number | undefined;
   status: OrderStatus;
+  loading?: boolean;
 }
 
 export interface IOption {

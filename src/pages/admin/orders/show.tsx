@@ -20,6 +20,7 @@ import {
   MailOutlined,
   MobileOutlined,
   QuestionOutlined,
+  RollbackOutlined,
 } from "@ant-design/icons";
 import {
   Row,
@@ -67,32 +68,10 @@ import { ColumnsType } from "antd/es/table";
 import MyOrderModal from "../../../components/admin/order/MyOrderModal";
 import { showWarningConfirmDialog } from "../../../utils";
 import CancelReasonModal from "../../../components/admin/order/CancelReasonModal";
+import ReasonModal from "../../../components/admin/order/ReasonModal";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
-
-const InitialEventData: IEvent[] = [
-  {
-    date: undefined,
-    status: "PLACE_ORDER",
-  },
-  {
-    date: undefined,
-    status: "WAIT_FOR_CONFIRMATION",
-  },
-  {
-    date: undefined,
-    status: "WAIT_FOR_DELIVERY",
-  },
-  {
-    date: undefined,
-    status: "DELIVERING",
-  },
-  {
-    date: undefined,
-    status: "COMPLETED",
-  },
-];
 
 export const OrderShow: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
@@ -107,6 +86,8 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
 
   const [isModalVisible, setIsModalVisible] = useState(false);
 
+  const [status, setStatus] = useState<OrderStatus>({} as OrderStatus);
+
   const {
     show,
     close,
@@ -115,8 +96,14 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
 
   const {
     show: showCancel,
-    close: closeCancle,
+    close: closeCancel,
     modalProps: { visible: vi, ...restProps },
+  } = useModal();
+
+  const {
+    show: showReason,
+    close: closeReason,
+    modalProps: { visible: vi2, ...restPropsReason },
   } = useModal();
 
   const showModal = () => {
@@ -131,143 +118,93 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     setIsModalVisible(false);
   };
 
-  useEffect(() => {
-    refetchOrderHistory();
-  }, []);
+  const [events, setEvents] = useState<IEvent[]>([]);
 
-  const [events, setEvents] = useState<IEvent[]>(InitialEventData);
+  const getOrderStatusTimeline = (
+    orderHistories: IOrderHistory[]
+  ): IEvent[] => {
+    const statusList: OrderStatus[] = [
+      "PENDING",
+      "WAIT_FOR_CONFIRMATION",
+      "WAIT_FOR_DELIVERY",
+      "DELIVERING",
+      "COMPLETED",
+    ];
+    const eventList: IEvent[] = [];
 
-  const { refetch: refetchOrderHistory } = useList<IOrderHistory, HttpError>({
-    resource: "order-histories",
-    pagination: {
-      pageSize: 10,
-    },
-    filters: [
-      {
-        field: "order",
-        operator: "eq",
-        value: id,
-      },
-    ],
-    queryOptions: {
-      enabled: false,
-      onSuccess: (data) => {
-        const updatedEvents = InitialEventData.map((event) => {
-          switch (event.status) {
-            case "PLACE_ORDER":
-              return {
-                ...event,
-                date: data.data[0].createdAt,
-              };
-            case "COMPLETED":
-              const canceledReturnedOrExchangedOrder = data.data.find(
-                (orderHistory) =>
-                  ["CANCELED", "RETURNED", "EXCHANGED"].includes(
-                    orderHistory.actionStatus
-                  )
-              );
-              if (canceledReturnedOrExchangedOrder) {
-                return {
-                  ...event,
-                  status: canceledReturnedOrExchangedOrder.actionStatus,
-                  date: canceledReturnedOrExchangedOrder.createdAt,
-                };
-              }
-              {
-                const matchedOrderHistory = data.data.find(
-                  (orderHistory) => orderHistory.actionStatus === event.status
-                );
-                if (matchedOrderHistory) {
-                  return {
-                    ...event,
-                    date: matchedOrderHistory.createdAt,
-                  };
-                }
-              }
-              break;
-            default:
-              const matchedOrderHistory = data.data.find(
-                (orderHistory) => orderHistory.actionStatus === event.status
-              );
-              if (matchedOrderHistory) {
-                return {
-                  ...event,
-                  date: matchedOrderHistory.createdAt,
-                };
-              }
-              break;
-          }
-          return event;
+    const exceptionStatusList: OrderStatus[] = [
+      "CANCELED",
+      "EXCHANGED",
+      "EXPIRED",
+      "RETURNED",
+    ];
+
+    let remainingStatus = [...statusList];
+    let lastStatus: OrderStatus = "PENDING";
+
+    orderHistories.forEach((history, index) => {
+      const { actionStatus, createdAt } = history;
+
+      if (index !== orderHistories.length - 1) {
+        eventList.push({ status: actionStatus, date: createdAt });
+        lastStatus = actionStatus;
+      } else {
+        if (!exceptionStatusList.includes(actionStatus)) {
+          lastStatus = actionStatus;
+        }
+
+        const lastIndex = remainingStatus.indexOf(lastStatus);
+        remainingStatus = remainingStatus.slice(lastIndex + 1);
+        eventList.push({
+          status: actionStatus,
+          date: createdAt,
+          loading: true,
         });
+      }
+    });
 
-        setEvents(updatedEvents);
-      },
-    },
-  });
+    // Thêm các trạng thái chưa xử lý vào eventList với giá trị date là null
+    remainingStatus.forEach((status) => {
+      eventList.push({ status, date: undefined });
+    });
+
+    // Sắp xếp eventList theo thời gian tăng dần
+    eventList.sort((a, b) => (a.date || Infinity) - (b.date || Infinity));
+
+    return eventList;
+  };
+
+  useEffect(() => {
+    if (record) {
+      const orderHistories = record.orderHistories;
+      const updatedEvents = getOrderStatusTimeline(orderHistories);
+
+      console.log(updatedEvents);
+      console.log("orderHistories", orderHistories);
+
+      setEvents(updatedEvents);
+    }
+  }, [record]);
 
   const canAcceptOrder = record?.status === "WAIT_FOR_CONFIRMATION";
   const canRejectOrder =
     record?.status === "PENDING" ||
     record?.status === "WAIT_FOR_CONFIRMATION" ||
     record?.status === "WAIT_FOR_DELIVERY" ||
-    record?.status === "DELIVERING";
+    record?.status === "DELIVERING" ||
+    record?.status === "CANCELED" ||
+    record?.status === "EXCHANGED" ||
+    record?.status === "RETURNED";
 
   const currentBreakPoints = Object.entries(screens)
     .filter((screen) => !!screen[1])
     .map((screen) => screen[0]);
 
-  const handleMutate = (status: OrderStatus | null) => {
-    if (record && status) {
-      mutate(
-        {
-          resource: "orders/confirmation-order",
-          id: record.id,
-          values: {
-            status: status,
-          },
-          successNotification() {
-            return {
-              message: "Cập nhật đơn hàng thành công",
-              description: "Thành công",
-              type: "success",
-            };
-          },
-          errorNotification(error) {
-            return {
-              message: "Cập nhật đơn hàng thất bại: " + error?.message,
-              description: "Đã xảy ra lỗi",
-              type: "success",
-            };
-          },
-        },
-        {
-          onError: () => {},
-          onSuccess: () => {
-            refetchOrderHistory();
-            refetch();
-          },
-        }
-      );
-    }
-  };
-
-  const handleConfirmUpdate = (status: OrderStatus | null) => {
-    showWarningConfirmDialog({
-      options: {
-        accept: () => {
-          handleMutate(status);
-        },
-        reject: () => {},
-      },
-      t: t,
-    });
-  };
-
   const renderOrderSteps = () => {
     const notFinishedCurrentStep = (event: IEvent, index: number) =>
       event.status !== "CANCELED" &&
       event.status !== "COMPLETED" &&
-      events.findIndex((el) => el.status === record?.status) === index;
+      event.loading;
 
     const stepStatus = (event: IEvent, index: number) => {
       if (!event.date) return "wait";
@@ -287,11 +224,26 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         extra={[
           <Button
             disabled={!canRejectOrder}
+            key="back-to-previous"
+            icon={<RollbackOutlined />}
+            type="primary"
+            onClick={() => {
+              const status = getPreviousStatus(record?.status ?? "PENDING");
+              setStatus(status ?? "PENDING");
+              showReason();
+            }}
+          >
+            Trở về trạng thái trước đó
+          </Button>,
+          <Button
+            disabled={!canRejectOrder}
             key="force-confirm"
             icon={<CheckCircleOutlined />}
             type="primary"
             onClick={() => {
-              handleConfirmUpdate(getNextStatus(record?.status ?? "PENDING"));
+              const status = getNextStatus(record?.status ?? "PENDING");
+              setStatus(status ?? "PENDING");
+              showReason();
             }}
           >
             {t("buttons.forceConfirm")}
@@ -302,7 +254,8 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             icon={<CheckCircleOutlined />}
             type="primary"
             onClick={() => {
-              handleConfirmUpdate("WAIT_FOR_DELIVERY");
+              setStatus("WAIT_FOR_DELIVERY");
+              showReason();
             }}
           >
             {t("buttons.accept")}
@@ -321,33 +274,41 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         ]}
       >
         <Card>
-          {record && (
-            <Steps
-              direction={
-                currentBreakPoints.includes("lg") ? "horizontal" : "vertical"
-              }
-              current={events.findIndex((el) => el.status === record?.status)}
-            >
-              {events.map((event: IEvent, index: number) => (
-                <Steps.Step
-                  status={stepStatus(event, index)}
-                  key={index}
-                  title={t(`enum.orderStatuses.${event.status}`)}
-                  icon={
-                    notFinishedCurrentStep(event, index) ? (
-                      <LoadingOutlined />
-                    ) : (
-                      getIconByStatus(event.status)
-                    )
-                  }
-                  description={
-                    event.date && dayjs(new Date(event.date)).format("L LT")
-                  }
-                />
-              ))}
-            </Steps>
-          )}
-          {!record && <Skeleton paragraph={{ rows: 1 }} />}
+          <div
+            className="card-container"
+            style={{
+              overflowX: "auto",
+              whiteSpace: "nowrap",
+            }}
+          >
+            {record && (
+              <Steps
+                direction={
+                  currentBreakPoints.includes("lg") ? "horizontal" : "vertical"
+                }
+                current={events.findIndex((el) => el.status === record?.status)}
+              >
+                {events.map((event: IEvent, index: number) => (
+                  <Steps.Step
+                    status={stepStatus(event, index)}
+                    key={index}
+                    title={t(`enum.orderStatuses.${event.status}`)}
+                    icon={
+                      notFinishedCurrentStep(event, index) ? (
+                        <LoadingOutlined />
+                      ) : (
+                        getIconByStatus(event.status)
+                      )
+                    }
+                    description={
+                      event.date && dayjs(new Date(event.date)).format("L LT")
+                    }
+                  />
+                ))}
+              </Steps>
+            )}
+            {!record && <Skeleton paragraph={{ rows: 1 }} />}
+          </div>
         </Card>
       </PageHeader>
     );
@@ -866,9 +827,16 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         close={close}
         showCancel={showCancel}
       />
+      <ReasonModal
+        restModalProps={restPropsReason}
+        close={closeReason}
+        order={record ?? ({} as IOrder)}
+        callBack={refetch}
+        status={status}
+      />
       <CancelReasonModal
         restModalProps={restProps}
-        close={closeCancle}
+        close={closeCancel}
         order={record ?? ({} as IOrder)}
         callBack={refetch}
       />
@@ -893,27 +861,44 @@ const getIconByStatus = (status: OrderStatus) => {
   }
 };
 
-export const getNextStatus = (
-  currentStatus: OrderStatus
-): OrderStatus | null => {
-  switch (currentStatus) {
-    case "WAIT_FOR_CONFIRMATION":
-      return "WAIT_FOR_DELIVERY";
-    case "WAIT_FOR_DELIVERY":
-      return "DELIVERING";
-    case "DELIVERING":
-      return "COMPLETED";
-    case "COMPLETED":
-      return null;
-    case "CANCELED":
-      return null;
-    case "EXPIRED":
-      return null;
-    case "RETURNED":
-      return null;
-    case "EXCHANGED":
-      return null;
-    default:
-      return null;
+const getNextStatus = (currentStatus: OrderStatus): OrderStatus | null => {
+  const statusList: OrderStatus[] = [
+    "PENDING",
+    "WAIT_FOR_CONFIRMATION",
+    "WAIT_FOR_DELIVERY",
+    "DELIVERING",
+    "COMPLETED",
+  ];
+  const currentIndex = statusList.indexOf(currentStatus);
+
+  if (currentIndex !== -1) {
+    const nextIndex = currentIndex + 1;
+
+    if (nextIndex < statusList.length) {
+      return statusList[nextIndex];
+    }
   }
+
+  return null;
+};
+
+const getPreviousStatus = (currentStatus: OrderStatus): OrderStatus | null => {
+  const statusList: OrderStatus[] = [
+    "PENDING",
+    "WAIT_FOR_CONFIRMATION",
+    "WAIT_FOR_DELIVERY",
+    "DELIVERING",
+    "COMPLETED",
+  ];
+  const currentIndex = statusList.indexOf(currentStatus);
+
+  if (currentIndex !== -1) {
+    const previousIndex = currentIndex - 1;
+
+    if (previousIndex >= 0) {
+      return statusList[previousIndex];
+    }
+  }
+
+  return null;
 };

@@ -1,15 +1,6 @@
 import { InfoCircleOutlined } from "@ant-design/icons";
-import { useUpdate } from "@refinedev/core";
-import {
-  Input,
-  Modal,
-  Radio,
-  RadioChangeEvent,
-  Space,
-  Tooltip,
-  Typography,
-} from "antd";
-import React, { ReactNode, useEffect, useState } from "react";
+import { Modal, Space, Tooltip, Typography } from "antd";
+import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 
 interface ChangeDetailProps {
@@ -21,12 +12,14 @@ interface ChangeDetailProps {
   };
   callBack: any;
   close: () => void;
-  changes: {
-    [key: string]: {
-      oldValue: any;
-      newValue: any;
-    };
-  };
+  changes:
+    | {
+        [key: string]: {
+          oldValue: any;
+          newValue: any;
+        };
+      }
+    | undefined;
 }
 
 const { Title } = Typography;
@@ -41,8 +34,18 @@ const ChangeDetail: React.FC<ChangeDetailProps> = ({
 
   const handleOk = () => {};
 
-  console.log(changes);
+  const keys = Object.keys(changes ?? {});
 
+  console.log(keys);
+
+  const renderChange = (key: string) => {
+    switch (
+      key
+      // case
+    ) {
+    }
+    return <></>;
+  };
   return (
     <Modal
       title={
@@ -60,7 +63,7 @@ const ChangeDetail: React.FC<ChangeDetailProps> = ({
       centered
       onOk={handleOk}
     >
-      Hehe
+      {changes && keys && <></>}
     </Modal>
   );
 };
