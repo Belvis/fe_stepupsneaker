@@ -17,7 +17,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 dayjs.extend(relativeTime);
 import { IOrderAudit, RevisionType } from "../../../../interfaces";
 import { CreatedAt, Timeline, TimelineContent, TimelineItem } from "./styled";
-import React from "react";
+import React, { useState } from "react";
 import { useModal } from "@refinedev/antd";
 import ChangeDetail from "./ChangeDetail";
 
@@ -34,6 +34,13 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({ id }) => {
   });
 
   const audits = data?.data ?? [];
+
+  const [selectedChanges, setSelectedChanges] = useState<{
+    [key: string]: {
+      oldValue: any;
+      newValue: any;
+    };
+  }>();
 
   const { Text, Link } = Typography;
 
@@ -134,21 +141,27 @@ export const OrderTimeline: React.FC<OrderTimelineProps> = ({ id }) => {
 
                     <Text strong>Bởi: {creator}</Text>
                     {changes && (
-                      <Link target="_blank" onClick={show}>
+                      <Link
+                        target="_blank"
+                        onClick={() => {
+                          setSelectedChanges(changes);
+                          show();
+                        }}
+                      >
                         {">>"} Xem chi tiết
                       </Link>
                     )}
                   </TimelineContent>
-                  <ChangeDetail
-                    changes={changes}
-                    restModalProps={restProps}
-                    callBack={undefined}
-                    close={close}
-                  />
                 </TimelineItem>
               );
             })}
         </Timeline>
+        <ChangeDetail
+          changes={selectedChanges}
+          restModalProps={restProps}
+          callBack={undefined}
+          close={close}
+        />
       </ConfigProvider>
     </AntdList>
   );
