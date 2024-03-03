@@ -195,6 +195,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     record?.status === "CANCELED" ||
     record?.status === "EXCHANGED" ||
     record?.status === "RETURNED";
+  const canRevertOrder = record?.status === "WAIT_FOR_DELIVERY";
 
   const currentBreakPoints = Object.entries(screens)
     .filter((screen) => !!screen[1])
@@ -223,7 +224,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         subTitle={`#${record?.code.toUpperCase() ?? ""}`}
         extra={[
           <Button
-            disabled={!canRejectOrder}
+            disabled={!canRevertOrder}
             key="back-to-previous"
             icon={<RollbackOutlined />}
             type="primary"
