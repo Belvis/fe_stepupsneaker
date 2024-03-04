@@ -617,7 +617,8 @@
           "status": "Trạng thái",
           "note":"Ghi chú",
           "originMoney": "Thành tiền",
-          "totalMoney": "Tổng số tiền"
+          "totalMoney": "Tổng số tiền",
+          "shippingMoney": "Tiền vận chuyển"
         }
       },
       "recentOrders": {
