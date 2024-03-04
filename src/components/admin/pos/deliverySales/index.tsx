@@ -653,6 +653,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                         style: "currency",
                       }}
                       value={totalPrice}
+                      locale={"vi"}
                     />
                   </Title>
                 </Flex>
@@ -688,6 +689,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                         style: "currency",
                       }}
                       value={discount}
+                      locale={"vi"}
                     />
                   </Title>
                 </Flex>
@@ -711,6 +713,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                         style: "currency",
                       }}
                       value={shippingMoney}
+                      locale={"vi"}
                     />
                   </Title>
                 </Flex>
@@ -727,6 +730,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                         style: "currency",
                       }}
                       value={totalPrice - discount + shippingMoney}
+                      locale={"vi"}
                     />
                   </Title>
                 </Flex>
@@ -901,6 +905,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               (acc, payment) => acc + payment.totalMoney,
                               0
                             )}
+                            locale={"vi"}
                           />
                         ) : (
                           "Loading..."
@@ -925,6 +930,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                             style: "currency",
                           }}
                           value={0}
+                          locale={"vi"}
                         />
                       </Text>
                     </Flex>
@@ -941,6 +947,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                             style: "currency",
                           }}
                           value={change}
+                          locale={"vi"}
                         />
                       </Text>
                     </Flex>

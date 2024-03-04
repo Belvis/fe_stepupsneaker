@@ -627,6 +627,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   currency: "VND",
                   style: "currency",
                 }}
+                locale={"vi"}
                 value={totalPrice}
               />
             </Title>
@@ -666,6 +667,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   currency: "VND",
                   style: "currency",
                 }}
+                locale={"vi"}
                 value={discount}
               />
             </Title>
@@ -683,6 +685,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   currency: "VND",
                   style: "currency",
                 }}
+                locale={"vi"}
                 value={totalPrice - discount}
               />
             </Title>
@@ -714,6 +717,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                     (acc, payment) => acc + payment.totalMoney,
                     0
                   )}
+                  locale={"vi"}
                 />
               ) : (
                 "Đang tải..."
@@ -780,6 +784,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   style: "currency",
                 }}
                 value={change}
+                locale={"vi"}
               />
             </Title>
           </Flex>

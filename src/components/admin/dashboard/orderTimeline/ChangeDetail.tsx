@@ -224,6 +224,7 @@ const ChangeDetail: React.FC<ChangeDetailProps> = ({
         <NumberField
           options={{ currency: "VND", style: "currency" }}
           value={value}
+          locale={"vi"}
         />
       );
     } else {

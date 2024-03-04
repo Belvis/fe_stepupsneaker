@@ -109,8 +109,11 @@ export const StyleList: React.FC<IResourceComponentsProps> = () => {
       sorter: {},
       defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
       render: (text, record, index) => {
-        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
-        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        // const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        // Sẽ sai khi enable multi sort
+
+        const sorter = sorters[0];
+        const isDescOrder = sorter && sorter.order === "desc";
         const pagination = tableProps.pagination as any;
         const totalItems = pagination.total;
 

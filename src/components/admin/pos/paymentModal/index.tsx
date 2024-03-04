@@ -241,6 +241,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   style: "currency",
                 }}
                 value={totalPrice}
+                locale={"vi"}
               />
             </Title>
           </Flex>
@@ -295,6 +296,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                       style: "currency",
                     }}
                     value={payment.totalMoney}
+                    locale={"vi"}
                   />
                 </Text>
               </Flex>
@@ -315,6 +317,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
                   style: "currency",
                 }}
                 value={customerPaid}
+                locale={"vi"}
               />
             </Title>
           </Flex>
