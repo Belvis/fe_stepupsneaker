@@ -441,6 +441,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           }}
           style={{ fontWeight: 800 }}
           value={price}
+          locale={"vi"}
         />
       ),
     },
@@ -460,6 +461,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={price * quantity}
+          locale={"vi"}
         />
       ),
     },
@@ -505,6 +507,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
               }}
               style={{ fontWeight: 800 }}
               value={record?.totalMoney as ReactChild}
+              locale={"vi"}
             />
           </ProductFooter>
         )}
@@ -578,6 +581,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={record?.originMoney ?? 0}
+          locale={"vi"}
         />
       ),
     },
@@ -591,6 +595,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={record?.reduceMoney ?? 0}
+          locale={"vi"}
         />
       ),
     },
@@ -604,6 +609,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={record?.shippingMoney as ReactChild}
+          locale={"vi"}
         />
       ),
     },
@@ -617,6 +623,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={record?.totalMoney as ReactChild}
+          locale={"vi"}
         />
       ),
     },
@@ -635,6 +642,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                     style: "currency",
                   }}
                   value={payment.totalMoney}
+                  locale={"vi"}
                 />
                 {` - `}
                 <DateField

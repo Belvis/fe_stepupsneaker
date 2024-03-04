@@ -304,6 +304,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                     style: "currency",
                   }}
                   value={totalPrice}
+                  locale={"vi"}
                 />
               </Text>
             </Col>

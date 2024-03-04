@@ -6,7 +6,12 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { List, getDefaultSortOrder, useTable } from "@refinedev/antd";
+import {
+  List,
+  NumberField,
+  getDefaultSortOrder,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -80,8 +85,11 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
       sorter: {},
       defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
       render: (text, record, index) => {
-        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
-        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        // const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        // Sẽ sai khi enable multi sort
+
+        const sorter = sorters[0];
+        const isDescOrder = sorter && sorter.order === "desc";
         const pagination = tableProps.pagination as any;
         const totalItems = pagination.total;
 
@@ -106,7 +114,7 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
       defaultSortOrder: getDefaultSortOrder("name", sorters),
       dataIndex: "name",
       key: "name",
-      width: 300,
+      width: 200,
       render: (_, { image, name }) => (
         <Space>
           <Avatar shape="square" size={74} src={image} />
@@ -148,6 +156,20 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
       defaultSortOrder: getDefaultSortOrder("value", sorters),
       dataIndex: "value",
       key: "value",
+      render: (_, record) =>
+        record.type === "CASH" ? (
+          <NumberField
+            options={{
+              currency: "VND",
+              style: "currency",
+              notation: "standard",
+            }}
+            value={record.value}
+            locale={"vi"}
+          />
+        ) : (
+          record.value + "%"
+        ),
     },
     {
       title: t("vouchers.fields.constraint"),
@@ -155,6 +177,17 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
       defaultSortOrder: getDefaultSortOrder("constraint", sorters),
       dataIndex: "constraint",
       key: "constraint",
+      render: (text) => (
+        <NumberField
+          options={{
+            currency: "VND",
+            style: "currency",
+            notation: "standard",
+          }}
+          locale={"vi"}
+          value={text}
+        />
+      ),
     },
     {
       title: t("vouchers.fields.quantity"),
@@ -191,6 +224,7 @@ export const VoucherList: React.FC<IResourceComponentsProps> = () => {
       key: "status",
       dataIndex: "status",
       align: "center",
+      width: "1rem",
       render: (_, { status }) => <VoucherStatus status={status} />,
     },
     {

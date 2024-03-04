@@ -4,7 +4,13 @@ import {
   SearchOutlined,
   UndoOutlined,
 } from "@ant-design/icons";
-import { EditButton, List, ShowButton, useTable } from "@refinedev/antd";
+import {
+  EditButton,
+  List,
+  ShowButton,
+  getDefaultSortOrder,
+  useTable,
+} from "@refinedev/antd";
 import {
   CrudFilters,
   HttpError,
@@ -64,32 +70,29 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
     setOpenAddressModal(false);
   };
 
-  const { tableProps, searchFormProps, filters, current, pageSize } = useTable<
-    ICustomer,
-    HttpError,
-    ICustomerFilterVariables
-  >({
-    pagination: {
-      pageSize: 5,
-    },
-    onSearch: ({ q, status }) => {
-      const customerFilters: CrudFilters = [];
+  const { tableProps, searchFormProps, filters, current, pageSize, sorters } =
+    useTable<ICustomer, HttpError, ICustomerFilterVariables>({
+      pagination: {
+        pageSize: 5,
+      },
+      onSearch: ({ q, status }) => {
+        const customerFilters: CrudFilters = [];
 
-      customerFilters.push({
-        field: "status",
-        operator: "eq",
-        value: status ? status : undefined,
-      });
+        customerFilters.push({
+          field: "status",
+          operator: "eq",
+          value: status ? status : undefined,
+        });
 
-      customerFilters.push({
-        field: "q",
-        operator: "eq",
-        value: q ? q : undefined,
-      });
+        customerFilters.push({
+          field: "q",
+          operator: "eq",
+          value: q ? q : undefined,
+        });
 
-      return customerFilters;
-    },
-  });
+        return customerFilters;
+      },
+    });
 
   function handleDelete(id: string): void {
     showDangerConfirmDialog({
@@ -109,12 +112,32 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
   const columns: ColumnsType<ICustomer> = [
     {
       title: "#",
-      key: "index",
+      key: "createdAt",
+      dataIndex: "createdAt",
+      align: "center",
       width: "1rem",
-      render: (text, record, index) => (current - 1) * pageSize + index + 1,
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
+      render: (text, record, index) => {
+        // const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        // Sẽ sai khi enable multi sort
+
+        const sorter = sorters[0];
+        const isDescOrder = sorter && sorter.order === "desc";
+        const pagination = tableProps.pagination as any;
+        const totalItems = pagination.total;
+
+        const calculatedIndex = isDescOrder
+          ? totalItems - (current - 1) * pageSize - index
+          : (current - 1) * pageSize + index + 1;
+
+        return calculatedIndex;
+      },
     },
     {
       title: t("customers.fields.fullName"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("fullName", sorters),
       dataIndex: "fullName",
       key: "fullName",
       render: (_, { image, fullName }) => (
@@ -143,6 +166,8 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("customers.fields.dateOfBirth"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("dateOfBirth", sorters),
       dataIndex: "dateOfBirth",
       key: "dateOfBirth",
       render: (_, record) => {
@@ -168,6 +193,8 @@ export const CustomerList: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: t("customers.fields.status"),
+      sorter: {},
+      defaultSortOrder: getDefaultSortOrder("status", sorters),
       key: "status",
       dataIndex: "status",
       width: "0.5rem",

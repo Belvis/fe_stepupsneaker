@@ -205,6 +205,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                       ? selectedProductSize.price
                       : productClient.price.min
                   }
+                  locale={"vi"}
                 />
               </Title>
             </Col>

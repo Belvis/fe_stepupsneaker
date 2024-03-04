@@ -155,6 +155,7 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={totalMoney}
+          locale={"vi"}
         />
       ),
     },

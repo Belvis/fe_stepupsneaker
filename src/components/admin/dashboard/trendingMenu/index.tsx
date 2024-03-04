@@ -79,7 +79,10 @@ const calculateLowestPrice = (productDetails: IProductDetail[]): number => {
   }, productDetails[0].price);
 };
 
-const MenuItem: React.FC<{ item: IProduct; index: number }> = ({ item, index }) => (
+const MenuItem: React.FC<{ item: IProduct; index: number }> = ({
+  item,
+  index,
+}) => (
   <Container key={item.id}>
     <Space size="large">
       <AvatarWrapper className="menu-item__avatar">
@@ -107,6 +110,7 @@ const MenuItem: React.FC<{ item: IProduct; index: number }> = ({ item, index }) 
             style: "currency",
             notation: "standard",
           }}
+          locale={"vi"}
           value={calculateLowestPrice(item.productDetails)}
         />
       </TextWrapper>
