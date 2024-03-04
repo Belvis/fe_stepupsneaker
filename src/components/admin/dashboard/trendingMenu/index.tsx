@@ -1,7 +1,7 @@
 import { NumberField, useSimpleList } from "@refinedev/antd";
 import { Typography, Avatar, Space, List as AntdList } from "antd";
 import { Container, AvatarWrapper, AvatarCircle, TextWrapper } from "./styled";
-import { IProductDetail } from "../../../../interfaces";
+import { IProduct, IProductDetail } from "../../../../interfaces";
 import { useEffect } from "react";
 
 const { Text } = Typography;
@@ -14,18 +14,26 @@ export const TrendingMenu: React.FC<TrendingMenuProps> = ({ range }) => {
     listProps,
     setFilters,
     queryResult: { refetch },
-  } = useSimpleList<IProductDetail>({
-    resource: "product-details/trending",
+  } = useSimpleList<IProduct>({
+    resource: "products",
     pagination: { pageSize: 5 },
+    sorters: {
+      initial: [
+        {
+          field: "saleCount",
+          order: "desc",
+        },
+      ],
+    },
     filters: {
       initial: [
         {
-          field: "fromDate",
+          field: "start",
           operator: "eq",
           value: range.start,
         },
         {
-          field: "toDate",
+          field: "end",
           operator: "eq",
           value: range.end,
         },
@@ -38,12 +46,12 @@ export const TrendingMenu: React.FC<TrendingMenuProps> = ({ range }) => {
     if (range) {
       setFilters([
         {
-          field: "fromDate",
+          field: "start",
           operator: "eq",
           value: range.start,
         },
         {
-          field: "toDate",
+          field: "end",
           operator: "eq",
           value: range.end,
         },
@@ -60,7 +68,21 @@ export const TrendingMenu: React.FC<TrendingMenuProps> = ({ range }) => {
   );
 };
 
-const MenuItem: React.FC<{ item: IProductDetail; index: number }> = ({ item, index }) => (
+const calculateLowestPrice = (productDetails: IProductDetail[]): number => {
+  if (productDetails.length === 0) {
+    return 0;
+  }
+
+  return productDetails.reduce((minPrice, productDetail) => {
+    const currentPrice = productDetail.price;
+    return currentPrice < minPrice ? currentPrice : minPrice;
+  }, productDetails[0].price);
+};
+
+const MenuItem: React.FC<{ item: IProduct; index: number }> = ({
+  item,
+  index,
+}) => (
   <Container key={item.id}>
     <Space size="large">
       <AvatarWrapper className="menu-item__avatar">
@@ -80,7 +102,7 @@ const MenuItem: React.FC<{ item: IProductDetail; index: number }> = ({ item, ind
         </AvatarCircle>
       </AvatarWrapper>
       <TextWrapper>
-        <Text strong>{item.product.name}</Text>
+        <Text strong>{item.name}</Text>
         <NumberField
           strong
           options={{
@@ -88,7 +110,8 @@ const MenuItem: React.FC<{ item: IProductDetail; index: number }> = ({ item, ind
             style: "currency",
             notation: "standard",
           }}
-          value={item.price}
+          locale={"vi"}
+          value={calculateLowestPrice(item.productDetails)}
         />
       </TextWrapper>
     </Space>

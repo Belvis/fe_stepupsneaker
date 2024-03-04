@@ -440,7 +440,8 @@
           "options": {
             "Male": "Nam",
             "Female": "Nữ",
-            "Other": "Khác"
+            "Other": "Khác",
+            "null": "Unknown"
           }
         },
         "role": "Chức vụ",
@@ -481,7 +482,9 @@
           "label": "Tên",
           "placeholder": "Tìm kiếm theo tên"
         }
-      }
+      },
+      "ROLE_ADMIN": "Quản trị",
+      "ROLE_STAFF": "Nhân viên"
     },
     "payment-methods": {
       "payment-methods": "Phương thức thanh toán",
@@ -617,7 +620,11 @@
           "status": "Trạng thái",
           "note":"Ghi chú",
           "originMoney": "Thành tiền",
-          "totalMoney": "Tổng số tiền"
+          "totalMoney": "Tổng số tiền",
+          "shippingMoney": "Tiền vận chuyển",
+          "email": "E-mail",
+          "fullName":"Tên người nhận hàng",
+          "reduceMoney": "Tiền được giảm"
         }
       },
       "recentOrders": {

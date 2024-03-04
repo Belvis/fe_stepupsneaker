@@ -85,6 +85,7 @@ export const ProductDetailItem: React.FC<ProductDetailItemProps> = ({
                 currency: "VND",
                 style: "currency",
               }}
+              locale={"vi"}
               value={price}
             />
           </Text>
@@ -96,6 +97,7 @@ export const ProductDetailItem: React.FC<ProductDetailItemProps> = ({
                 currency: "VND",
                 style: "currency",
               }}
+              locale={"vi"}
               value={price * quantity}
             />
           </Text>

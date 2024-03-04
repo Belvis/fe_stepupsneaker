@@ -1,6 +1,17 @@
-import { PlusOutlined, SearchOutlined, SelectOutlined, UndoOutlined } from "@ant-design/icons";
+import {
+  PlusOutlined,
+  SearchOutlined,
+  SelectOutlined,
+  UndoOutlined,
+} from "@ant-design/icons";
 import { NumberField, useModal, useSelect, useTable } from "@refinedev/antd";
-import { CrudFilters, HttpError, getDefaultFilter, useCreateMany, useTranslate } from "@refinedev/core";
+import {
+  CrudFilters,
+  HttpError,
+  getDefaultFilter,
+  useCreateMany,
+  useTranslate,
+} from "@refinedev/core";
 import {
   Avatar,
   Button,
@@ -23,7 +34,10 @@ import {
 import { ColumnsType } from "antd/es/table";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { getProductStatusOptions, tablePaginationSettings } from "../../../../constants";
+import {
+  getProductStatusOptions,
+  tablePaginationSettings,
+} from "../../../../constants";
 import {
   IBrand,
   IColor,
@@ -47,7 +61,12 @@ type AdvancedAddModalProps = {
   orderId: string;
 };
 
-export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, close, callBack, orderId }) => {
+export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({
+  modalProps,
+  close,
+  callBack,
+  orderId,
+}) => {
   const t = useTranslate();
   const breakpoint = Grid.useBreakpoint();
 
@@ -72,7 +91,20 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
         },
       ],
     },
-    onSearch: ({ q, status, brand, color, material, priceMax, priceMin, quantity, size, sole, style, tradeMark }) => {
+    onSearch: ({
+      q,
+      status,
+      brand,
+      color,
+      material,
+      priceMax,
+      priceMin,
+      quantity,
+      size,
+      sole,
+      style,
+      tradeMark,
+    }) => {
       const productDetailFilters: CrudFilters = [];
 
       productDetailFilters.push({
@@ -236,15 +268,23 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
   };
 
   const [showAddAndGoButton, setShowAddAndGoButton] = useState(false);
-  const { show: showItem, close: closeItem, modalProps: itemModalProps } = useModal();
+  const {
+    show: showItem,
+    close: closeItem,
+    modalProps: itemModalProps,
+  } = useModal();
 
-  const [selectedProductDetails, setSelectedProductDetails] = useState<IProductDetail[]>([]);
+  const [selectedProductDetails, setSelectedProductDetails] = useState<
+    IProductDetail[]
+  >([]);
 
   useEffect(() => {
     setSelectedProductDetails([]);
   }, [modalProps.open]);
 
-  const addProductDetails = (productDetails: IProductDetail | IProductDetail[]) => {
+  const addProductDetails = (
+    productDetails: IProductDetail | IProductDetail[]
+  ) => {
     setSelectedProductDetails((prevSelectedProductDetails) => {
       const updatedDetails = Array.isArray(productDetails)
         ? productDetails.map((detail) => ({ ...detail, quantity: 1 }))
@@ -275,7 +315,10 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
   const [selectedRows, setSelectedRows] = useState<IProductDetail[]>([]);
   const [selectedRowKeys, setSelectedRowKeys] = useState<React.Key[]>([]);
 
-  const onSelectChange = (newSelectedRowKeys: React.Key[], selectedRows: IProductDetail[]) => {
+  const onSelectChange = (
+    newSelectedRowKeys: React.Key[],
+    selectedRows: IProductDetail[]
+  ) => {
     setSelectedRowKeys(newSelectedRowKeys);
     setSelectedRows(selectedRows);
   };
@@ -370,6 +413,7 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
             currency: "VND",
             style: "currency",
           }}
+          locale={"vi"}
           value={record.price}
         />
       ),
@@ -379,7 +423,9 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
       key: "size",
       dataIndex: "size",
       align: "center",
-      render: (_, record) => <Text style={{ width: "100%" }}>{record.size.name}</Text>,
+      render: (_, record) => (
+        <Text style={{ width: "100%" }}>{record.size.name}</Text>
+      ),
     },
     {
       title: t("productDetails.fields.color"),
@@ -387,7 +433,10 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
       dataIndex: "color",
       align: "center",
       render: (_, record) => (
-        <Tag style={{ width: "100%" }} color={`#${record.color.code}`}>{`#${record.color.code}`}</Tag>
+        <Tag
+          style={{ width: "100%" }}
+          color={`#${record.color.code}`}
+        >{`#${record.color.code}`}</Tag>
       ),
     },
   ];
@@ -429,7 +478,9 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
                             style={{
                               width: "400px",
                             }}
-                            placeholder={t("productDetails.filters.search.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.search.placeholder"
+                            )}
                             suffix={<SearchOutlined />}
                           />
                         </Form.Item>
@@ -437,76 +488,127 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
                     </Col>
                     <Col span={24}>
                       <Space wrap style={{ width: "100%" }}>
-                        <Form.Item noStyle label={t("productDetails.fields.color")} name="color">
+                        <Form.Item
+                          noStyle
+                          label={t("productDetails.fields.color")}
+                          name="color"
+                        >
                           <Select
                             {...colorSelectProps}
                             mode="multiple"
                             allowClear
                             options={colorSelectProps.options?.map((item) =>
-                              renderColor(item.value as string, item.label as string)
+                              renderColor(
+                                item.value as string,
+                                item.label as string
+                              )
                             )}
-                            placeholder={t("productDetails.filters.color.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.color.placeholder"
+                            )}
                             style={{ width: "200px" }}
                           />
                         </Form.Item>
-                        <Form.Item noStyle label={t("productDetails.fields.size")} name="size">
+                        <Form.Item
+                          noStyle
+                          label={t("productDetails.fields.size")}
+                          name="size"
+                        >
                           <Select
                             {...sizeSelectProps}
                             mode="multiple"
                             allowClear
-                            placeholder={t("productDetails.filters.size.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.size.placeholder"
+                            )}
                             style={{ width: "200px" }}
                           />
                         </Form.Item>
-                        <Form.Item noStyle label={t("productDetails.fields.status")} name="status">
+                        <Form.Item
+                          noStyle
+                          label={t("productDetails.fields.status")}
+                          name="status"
+                        >
                           <Select
-                            placeholder={t("productDetails.filters.status.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.status.placeholder"
+                            )}
                             style={{ width: "200px" }}
                             options={getProductStatusOptions(t)}
                           />
                         </Form.Item>
-                        <Form.Item noStyle label={t("productDetails.fields.brand")} name="brand">
+                        <Form.Item
+                          noStyle
+                          label={t("productDetails.fields.brand")}
+                          name="brand"
+                        >
                           <Select
                             {...brandSelectProps}
                             mode="multiple"
                             allowClear
-                            placeholder={t("productDetails.filters.brand.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.brand.placeholder"
+                            )}
                             style={{ width: "200px" }}
                           />
                         </Form.Item>
-                        <Form.Item noStyle label={t("productDetails.fields.material")} name="material">
+                        <Form.Item
+                          noStyle
+                          label={t("productDetails.fields.material")}
+                          name="material"
+                        >
                           <Select
                             {...materialSelectProps}
                             mode="multiple"
                             allowClear
-                            placeholder={t("productDetails.filters.material.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.material.placeholder"
+                            )}
                             style={{ width: "200px" }}
                           />
                         </Form.Item>
-                        <Form.Item noStyle label={t("productDetails.fields.sole")} name="sole">
+                        <Form.Item
+                          noStyle
+                          label={t("productDetails.fields.sole")}
+                          name="sole"
+                        >
                           <Select
                             {...soleSelectProps}
                             mode="multiple"
                             allowClear
-                            placeholder={t("productDetails.filters.sole.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.sole.placeholder"
+                            )}
                             style={{ width: "200px" }}
                           />
                         </Form.Item>
-                        <Form.Item noStyle label={t("productDetails.fields.style")} name="style">
+                        <Form.Item
+                          noStyle
+                          label={t("productDetails.fields.style")}
+                          name="style"
+                        >
                           <Select
                             {...styleSelectProps}
                             mode="multiple"
                             allowClear
-                            placeholder={t("productDetails.filters.style.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.style.placeholder"
+                            )}
                             style={{ width: "200px" }}
                           />
                         </Form.Item>
-                        <Form.Item noStyle label={t("productDetails.fields.tradeMark")} name="tradeMark">
+                        <Form.Item
+                          noStyle
+                          label={t("productDetails.fields.tradeMark")}
+                          name="tradeMark"
+                        >
                           <Select
                             {...tradeMarkSelectProps}
                             mode="multiple"
                             allowClear
-                            placeholder={t("productDetails.filters.tradeMark.placeholder")}
+                            placeholder={t(
+                              "productDetails.filters.tradeMark.placeholder"
+                            )}
                             style={{ width: "200px" }}
                           />
                         </Form.Item>
@@ -514,27 +616,46 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
                     </Col>
                     <Col span={24}>
                       <Space wrap style={{ width: "100%" }}>
-                        <Form.Item label={t("productDetails.filters.priceMin.label")} name="priceMin">
+                        <Form.Item
+                          label={t("productDetails.filters.priceMin.label")}
+                          name="priceMin"
+                        >
                           <InputNumber
-                            formatter={(value) => `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            formatter={(value) =>
+                              `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            }
                             parser={(value) => {
-                              const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
+                              const parsedValue = parseInt(
+                                value!.replace(/₫\s?|(,*)/g, ""),
+                                10
+                              );
                               return isNaN(parsedValue) ? 0 : parsedValue;
                             }}
                             style={{ width: "100%" }}
                           />
                         </Form.Item>
-                        <Form.Item label={t("productDetails.filters.priceMax.label")} name="priceMax">
+                        <Form.Item
+                          label={t("productDetails.filters.priceMax.label")}
+                          name="priceMax"
+                        >
                           <InputNumber
-                            formatter={(value) => `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")}
+                            formatter={(value) =>
+                              `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
+                            }
                             parser={(value) => {
-                              const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
+                              const parsedValue = parseInt(
+                                value!.replace(/₫\s?|(,*)/g, ""),
+                                10
+                              );
                               return isNaN(parsedValue) ? 0 : parsedValue;
                             }}
                             style={{ width: "100%" }}
                           />
                         </Form.Item>
-                        <Form.Item label={t("productDetails.filters.quantity.label")} name="quantity">
+                        <Form.Item
+                          label={t("productDetails.filters.quantity.label")}
+                          name="quantity"
+                        >
                           <InputNumber width={100} style={{ width: "100%" }} />
                         </Form.Item>
                       </Space>
@@ -542,7 +663,10 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
                   </Row>
                 </Col>
                 <Col span={3}>
-                  <Button icon={<UndoOutlined />} onClick={() => handleClearFilters()}>
+                  <Button
+                    icon={<UndoOutlined />}
+                    onClick={() => handleClearFilters()}
+                  >
                     {t("actions.clear")}
                   </Button>
                 </Col>
@@ -577,7 +701,12 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({ modalProps, 
                 >
                   {t("buttons.checkSelected")}
                 </Button>
-                <Button disabled={!hasSelected} type="primary" icon={<PlusOutlined />} onClick={handleAddProductDetail}>
+                <Button
+                  disabled={!hasSelected}
+                  type="primary"
+                  icon={<PlusOutlined />}
+                  onClick={handleAddProductDetail}
+                >
                   {t("actions.add")}
                 </Button>
               </Space>
@@ -613,7 +742,10 @@ const renderColor = (value: string, label: string) => ({
   label: <Tag style={{ width: "100%" }} color={`#${label}`}>{`#${label}`}</Tag>,
 });
 
-const orderDetailToPayload = (productDetails: IProductDetail[], orderId: string): IOrderDetailConvertedPayload[] => {
+const orderDetailToPayload = (
+  productDetails: IProductDetail[],
+  orderId: string
+): IOrderDetailConvertedPayload[] => {
   return productDetails.map((detail) => ({
     order: orderId,
     productDetail: detail.id,

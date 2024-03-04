@@ -195,6 +195,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
     record?.status === "CANCELED" ||
     record?.status === "EXCHANGED" ||
     record?.status === "RETURNED";
+  const canRevertOrder = record?.status === "WAIT_FOR_DELIVERY";
 
   const currentBreakPoints = Object.entries(screens)
     .filter((screen) => !!screen[1])
@@ -223,7 +224,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
         subTitle={`#${record?.code.toUpperCase() ?? ""}`}
         extra={[
           <Button
-            disabled={!canRejectOrder}
+            disabled={!canRevertOrder}
             key="back-to-previous"
             icon={<RollbackOutlined />}
             type="primary"
@@ -440,6 +441,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           }}
           style={{ fontWeight: 800 }}
           value={price}
+          locale={"vi"}
         />
       ),
     },
@@ -459,6 +461,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={price * quantity}
+          locale={"vi"}
         />
       ),
     },
@@ -504,6 +507,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
               }}
               style={{ fontWeight: 800 }}
               value={record?.totalMoney as ReactChild}
+              locale={"vi"}
             />
           </ProductFooter>
         )}
@@ -577,6 +581,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={record?.originMoney ?? 0}
+          locale={"vi"}
         />
       ),
     },
@@ -590,6 +595,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={record?.reduceMoney ?? 0}
+          locale={"vi"}
         />
       ),
     },
@@ -603,6 +609,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={record?.shippingMoney as ReactChild}
+          locale={"vi"}
         />
       ),
     },
@@ -616,6 +623,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
             style: "currency",
           }}
           value={record?.totalMoney as ReactChild}
+          locale={"vi"}
         />
       ),
     },
@@ -634,6 +642,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
                     style: "currency",
                   }}
                   value={payment.totalMoney}
+                  locale={"vi"}
                 />
                 {` - `}
                 <DateField

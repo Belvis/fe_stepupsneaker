@@ -173,6 +173,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
                 style: "currency",
               }}
               value={price}
+              locale={"vi"}
             />
           </Text>
         </Col>
@@ -184,6 +185,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
                 style: "currency",
               }}
               value={totalPrice}
+              locale={"vi"}
             />
           </Text>
         </Col>

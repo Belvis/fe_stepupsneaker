@@ -93,8 +93,11 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
       sorter: {},
       defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
       render: (text, record, index) => {
-        const createdAtSorter = sorters.find((s) => s.field === "createdAt");
-        const isDescOrder = createdAtSorter && createdAtSorter.order === "desc";
+        // const createdAtSorter = sorters.find((s) => s.field === "createdAt");
+        // Sẽ sai khi enable multi sort
+
+        const sorter = sorters[0];
+        const isDescOrder = sorter && sorter.order === "desc";
         const pagination = tableProps.pagination as any;
         const totalItems = pagination.total;
 
@@ -111,7 +114,7 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
       defaultSortOrder: getDefaultSortOrder("fullName", sorters),
       dataIndex: "fullName",
       key: "fullName",
-      width: 300,
+      width: 200,
       render: (_, { image, fullName }) => (
         <Space>
           <Avatar size={74} src={image} />
@@ -125,19 +128,25 @@ export const EmployeeList: React.FC<IResourceComponentsProps> = () => {
       defaultSortOrder: getDefaultSortOrder("gender", sorters),
       dataIndex: "gender",
       key: "gender",
+      render: (text) => (
+        <div>{t(`employees.fields.gender.options.${text}`)}</div>
+      ),
     },
     {
       title: t("employees.fields.role"),
       sorter: {},
       defaultSortOrder: getDefaultSortOrder("role", sorters),
       dataIndex: ["role", "name"],
+      width: "10%",
       key: "role",
+      render: (text) => <div>{t(`roles.${text}`)}</div>,
     },
     {
       title: t("employees.fields.phone"),
       sorter: {},
       defaultSortOrder: getDefaultSortOrder("phoneNumber", sorters),
       dataIndex: "phoneNumber",
+      width: "13%",
       key: "phoneNumber",
     },
     {
