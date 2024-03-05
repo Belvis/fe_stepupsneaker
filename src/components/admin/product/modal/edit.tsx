@@ -21,8 +21,9 @@ import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useState } from "react";
 import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
-import { IProduct } from "../../../../interfaces";
+import { IProduct } from "../../../../pages/interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../../utils";
+import { validateCommon } from "../../../../helpers/validate";
 const { TextArea } = Input;
 const { Text } = Typography;
 
@@ -185,8 +186,7 @@ export const EditProduct: React.FC<EditProductProps> = ({
               name="code"
               rules={[
                 {
-                  whitespace: true,
-                  required: true,
+                  validator: (_, value) => validateCommon(_, value, t, "code"),
                 },
               ]}
             >
@@ -198,8 +198,7 @@ export const EditProduct: React.FC<EditProductProps> = ({
               name="name"
               rules={[
                 {
-                  whitespace: true,
-                  required: true,
+                  validator: (_, value) => validateCommon(_, value, t, "name"),
                 },
               ]}
             >
@@ -211,8 +210,8 @@ export const EditProduct: React.FC<EditProductProps> = ({
               name="description"
               rules={[
                 {
-                  whitespace: true,
-                  required: true,
+                  validator: (_, value) =>
+                    validateCommon(_, value, t, "description"),
                 },
               ]}
             >
@@ -224,7 +223,8 @@ export const EditProduct: React.FC<EditProductProps> = ({
               name="status"
               rules={[
                 {
-                  required: true,
+                  validator: (_, value) =>
+                    validateCommon(_, value, t, "status"),
                 },
               ]}
             >

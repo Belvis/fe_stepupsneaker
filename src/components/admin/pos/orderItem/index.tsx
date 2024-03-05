@@ -12,7 +12,7 @@ import {
   message,
   theme,
 } from "antd";
-import { IOrderDetail } from "../../../../interfaces";
+import { IOrderDetail } from "../../../../pages/interfaces";
 import { NumberField } from "@refinedev/antd";
 import "./style.css";
 import { debounce, isNumber } from "lodash";

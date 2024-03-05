@@ -14,6 +14,7 @@ import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
 import { IColor } from "../../../../interfaces";
 import { colorPickerStyles } from "./style";
 import { showWarningConfirmDialog } from "../../../../utils";
+import { validateCommon } from "../../../../helpers/validate";
 
 type EditColorProps = {
   modalProps: ModalProps;
@@ -70,8 +71,7 @@ export const EditColor: React.FC<EditColorProps> = ({
           initialValue={data?.data.code}
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "code"),
             },
           ]}
         >
@@ -87,8 +87,7 @@ export const EditColor: React.FC<EditColorProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "name"),
             },
           ]}
         >
@@ -100,7 +99,7 @@ export const EditColor: React.FC<EditColorProps> = ({
           initialValue={data?.data.status}
           rules={[
             {
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "status"),
             },
           ]}
         >

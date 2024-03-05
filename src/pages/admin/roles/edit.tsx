@@ -2,6 +2,7 @@ import { HttpError, useOne, useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps } from "antd";
 import { IRole } from "../../../interfaces";
 import { showWarningConfirmDialog } from "../../../utils";
+import { validateCommon } from "../../../helpers/validate";
 
 type EditRoleProps = {
   modalProps: ModalProps;
@@ -49,8 +50,7 @@ export const EditRole: React.FC<EditRoleProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "name"),
             },
           ]}
         >

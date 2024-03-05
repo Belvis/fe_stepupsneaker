@@ -49,7 +49,7 @@ import {
   ISole,
   IStyle,
   ITradeMark,
-} from "../../../../interfaces";
+} from "../../../../pages/interfaces";
 import { SelectedItemsModal } from "./itemsModal";
 
 const { Text, Title } = Typography;

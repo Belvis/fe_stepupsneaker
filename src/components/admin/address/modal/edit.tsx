@@ -1,6 +1,6 @@
 import { Grid, Modal, ModalProps } from "antd";
 import { EditAddressForm } from "../form/edit";
-import { IAddress } from "../../../../interfaces";
+import { IAddress } from "../../../../pages/interfaces";
 
 type EditAddressProps = {
   modalProps: ModalProps;

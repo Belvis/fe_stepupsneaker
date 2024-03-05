@@ -2,8 +2,14 @@ import { useCustom, useTranslate } from "@refinedev/core";
 import { Modal, ModalProps, Form, FormProps, Input, Select, Grid } from "antd";
 import { useEffect, useState } from "react";
 import InputMask from "react-input-mask";
-import { ICustomer, IDistrict, IProvince, IWard } from "../../../../interfaces";
+import {
+  ICustomer,
+  IDistrict,
+  IProvince,
+  IWard,
+} from "../../../../pages/interfaces";
 import TextArea from "antd/es/input/TextArea";
+import { validateCommon } from "../../../../helpers/validate";
 
 type CreateAddressProps = {
   modalProps: ModalProps;
@@ -164,16 +170,7 @@ export const CreateAddress: React.FC<CreateAddressProps> = ({
             },
           ]}
         >
-          <InputMask
-            mask="(+84) 999 999 999"
-            value={phoneInputValue}
-            onChange={(e) => setPhoneInputValue(e.target.value)}
-          >
-            {/* 
-             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-             // @ts-ignore */}
-            {(props: InputProps) => <Input {...props} />}
-          </InputMask>
+          <Input />
         </Form.Item>
         <Form.Item
           label={t("customers.fields.province.label")}
@@ -224,7 +221,8 @@ export const CreateAddress: React.FC<CreateAddressProps> = ({
           name="wardCode"
           rules={[
             {
-              required: true,
+              validator: (_, value) =>
+                validateCommon(_, value, t, "districtId"),
             },
           ]}
         >
@@ -246,8 +244,8 @@ export const CreateAddress: React.FC<CreateAddressProps> = ({
           name="more"
           rules={[
             {
-              required: true,
-              whitespace: true,
+              validator: (_, value) =>
+                validateCommon(_, value, t, "districtId"),
             },
           ]}
         >

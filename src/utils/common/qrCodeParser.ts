@@ -1,4 +1,4 @@
-import { QRCodeData } from "../../interfaces";
+import { QRCodeData } from "../../pages/interfaces";
 
 export function parseQRCodeResult(qrCodeResult: string): QRCodeData {
   const data = qrCodeResult.split("|");

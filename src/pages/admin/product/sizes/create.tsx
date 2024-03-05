@@ -2,6 +2,7 @@ import { useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps } from "antd";
 import { ISize } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
+import { validateCommon } from "../../../../helpers/validate";
 
 type CreateSizeProps = {
   modalProps: ModalProps;
@@ -45,8 +46,7 @@ export const CreateSize: React.FC<CreateSizeProps> = ({
           name="name"
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "name"),
             },
           ]}
         >

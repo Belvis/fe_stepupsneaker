@@ -1,6 +1,6 @@
 import { List as AntdList, Modal } from "antd";
 import React, { ReactNode } from "react";
-import { IOrder, IVoucherList } from "../../../../interfaces";
+import { IOrder, IVoucherList } from "../../../../pages/interfaces";
 import Voucher from "./Voucher";
 
 interface VoucherModalProps {

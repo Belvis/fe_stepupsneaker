@@ -55,6 +55,7 @@ import {
 } from "../../../utils";
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
+import { validateCommon } from "../../../helpers/validate";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -423,8 +424,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     name="name"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "name"),
                       },
                     ]}
                   >
@@ -435,8 +436,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     name="code"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "code"),
                       },
                     ]}
                   >
@@ -458,7 +459,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     name="constraint"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "constraint"),
                       },
                     ]}
                   >
@@ -469,7 +471,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     name="quantity"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "quantity"),
                       },
                     ]}
                   >
@@ -480,7 +483,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     name="voucherRange"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "voucherRange"),
                       },
                     ]}
                   >

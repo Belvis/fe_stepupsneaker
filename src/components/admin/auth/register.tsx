@@ -31,6 +31,7 @@ import {
   bodyStyles,
 } from "./styles";
 import { ThemedTitleV2 } from "@refinedev/antd";
+import { validateEmail } from "../../../helpers/validate";
 
 const { Text, Title } = Typography;
 const { useToken } = theme;
@@ -153,15 +154,7 @@ export const RegisterPage: React.FC<RegisterProps> = ({
           label={translate("pages.register.email", "Email")}
           rules={[
             {
-              whitespace: true,
-              required: true,
-            },
-            {
-              type: "email",
-              message: translate(
-                "pages.register.errors.validEmail",
-                "Invalid email address"
-              ),
+              validator: validateEmail,
             },
           ]}
         >

@@ -20,7 +20,7 @@ import {
 } from "antd";
 import { debounce } from "lodash";
 import { useEffect, useState } from "react";
-import { IAddress, ICustomer, IOrder } from "../../../../interfaces";
+import { IAddress, ICustomer, IOrder } from "../../../../pages/interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { CreateAddress } from "./create";
 import { EditAddress } from "./edit";

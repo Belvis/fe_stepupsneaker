@@ -24,7 +24,7 @@ import {
   ISize,
   ISizeClient,
   IVariation,
-} from "../../../../interfaces";
+} from "../../../../pages/interfaces";
 import { useEffect, useState } from "react";
 import { Quantity } from "./styled";
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";

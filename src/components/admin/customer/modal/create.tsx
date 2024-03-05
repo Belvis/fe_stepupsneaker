@@ -23,7 +23,7 @@ import {
   IDistrict,
   IProvince,
   IWard,
-} from "../../../../interfaces";
+} from "../../../../pages/interfaces";
 import {
   getBase64Image,
   parseQRCodeResult,
@@ -45,6 +45,12 @@ import {
 } from "../../../../constants";
 import InputMask from "react-input-mask";
 import { QrcodeOutlined } from "@ant-design/icons";
+import {
+  validateCommon,
+  validateEmail,
+  validateFullName,
+  validatePhoneNumber,
+} from "../../../../helpers/validate";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -394,8 +400,7 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="fullName"
                   rules={[
                     {
-                      whitespace: true,
-                      required: true,
+                      validator: validateFullName,
                     },
                   ]}
                 >
@@ -406,9 +411,7 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="email"
                   rules={[
                     {
-                      required: true,
-                      whitespace: true,
-                      type: "email",
+                      validator: validateEmail,
                     },
                   ]}
                 >
@@ -421,8 +424,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="dateOfBirth"
                   rules={[
                     {
-                      required: true,
-                      type: "date",
+                      validator: (_, value) =>
+                        validateCommon(_, value, t, "dateOfBirth"),
                     },
                   ]}
                 >
@@ -433,7 +436,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="gender"
                   rules={[
                     {
-                      required: true,
+                      validator: (_, value) =>
+                        validateCommon(_, value, t, "gender"),
                     },
                   ]}
                 >
@@ -454,28 +458,19 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="phoneNumber"
                   rules={[
                     {
-                      whitespace: true,
-                      required: true,
+                      validator: validatePhoneNumber,
                     },
                   ]}
                 >
-                  <InputMask
-                    mask="(+84) 999 999 999"
-                    value={phoneInputValue}
-                    onChange={(e) => setPhoneInputValue(e.target.value)}
-                  >
-                    {/* 
-                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                    // @ts-ignore */}
-                    {(props: InputProps) => <Input {...props} />}
-                  </InputMask>
+                  <Input />
                 </Form.Item>
                 <Form.Item
                   label={t("customers.fields.province.label")}
                   name="provinceId"
                   rules={[
                     {
-                      required: true,
+                      validator: (_, value) =>
+                        validateCommon(_, value, t, "provinceId"),
                     },
                   ]}
                 >
@@ -499,7 +494,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="districtId"
                   rules={[
                     {
-                      required: true,
+                      validator: (_, value) =>
+                        validateCommon(_, value, t, "districtId"),
                     },
                   ]}
                 >
@@ -521,7 +517,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="wardCode"
                   rules={[
                     {
-                      required: true,
+                      validator: (_, value) =>
+                        validateCommon(_, value, t, "wardCode"),
                     },
                   ]}
                 >
@@ -545,8 +542,8 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                   name="more"
                   rules={[
                     {
-                      required: true,
-                      whitespace: true,
+                      validator: (_, value) =>
+                        validateCommon(_, value, t, "more"),
                     },
                   ]}
                 >

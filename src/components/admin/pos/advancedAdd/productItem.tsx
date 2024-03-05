@@ -13,7 +13,7 @@ import {
   message,
   theme,
 } from "antd";
-import { IProductDetail } from "../../../../interfaces";
+import { IProductDetail } from "../../../../pages/interfaces";
 import { isNumber } from "lodash";
 const { useToken } = theme;
 const { Text } = Typography;

@@ -4,7 +4,7 @@ import { Avatar, Space, Table, Tag, Typography } from "antd";
 import { OrderId, Price, Title, TitleWrapper } from "./styled";
 
 import { ColumnsType } from "antd/es/table";
-import { IOrder } from "../../../../interfaces";
+import { IOrder } from "../../../../pages/interfaces";
 import { OrderActions } from "../../order";
 
 const { Text, Paragraph } = Typography;

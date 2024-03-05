@@ -36,6 +36,12 @@ import { useEffect, useState } from "react";
 import { ICustomer, IDistrict, IProvince, IWard } from "../../../interfaces";
 import { getUserGenderOptions, getUserStatusOptions } from "../../../constants";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import {
+  validateCommon,
+  validateEmail,
+  validateFullName,
+  validatePhoneNumber,
+} from "../../../helpers/validate";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -384,8 +390,7 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                     name="fullName"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: validateFullName,
                       },
                     ]}
                   >
@@ -396,9 +401,7 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                     name="email"
                     rules={[
                       {
-                        required: true,
-                        whitespace: true,
-                        type: "email",
+                        validator: validateEmail,
                       },
                     ]}
                   >
@@ -411,8 +414,8 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                     name="dob"
                     rules={[
                       {
-                        required: true,
-                        type: "date",
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "dateOfBirth"),
                       },
                     ]}
                   >
@@ -425,7 +428,8 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                         name="gender"
                         rules={[
                           {
-                            required: true,
+                            validator: (_, value) =>
+                              validateCommon(_, value, t, "gender"),
                           },
                         ]}
                       >
@@ -441,7 +445,8 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                         name="status"
                         rules={[
                           {
-                            required: true,
+                            validator: (_, value) =>
+                              validateCommon(_, value, t, "status"),
                           },
                         ]}
                       >
@@ -464,27 +469,19 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                     name="phoneNumber"
                     rules={[
                       {
-                        required: true,
+                        validator: validatePhoneNumber,
                       },
                     ]}
                   >
-                    <InputMask
-                      mask="(+84) 999 999 999"
-                      value={phoneInputValue}
-                      onChange={(e) => setPhoneInputValue(e.target.value)}
-                    >
-                      {/* 
-                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                    // @ts-ignore */}
-                      {(props: InputProps) => <Input {...props} />}
-                    </InputMask>
+                    <Input />
                   </Form.Item>
                   <Form.Item
                     label={t("customers.fields.province.label")}
                     name="provinceId"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "provinceId"),
                       },
                     ]}
                   >
@@ -508,7 +505,8 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                     name="districtId"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "districtId"),
                       },
                     ]}
                   >
@@ -530,7 +528,8 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                     name="wardCode"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "wardCode"),
                       },
                     ]}
                   >
@@ -554,8 +553,8 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                     name="more"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "provinceId"),
                       },
                     ]}
                   >

@@ -33,6 +33,7 @@ import {
   bodyStyles,
 } from "./styles";
 import { ThemedTitleV2 } from "@refinedev/antd";
+import { validateEmail } from "../../../helpers/validate";
 
 type ResetPassworProps = ForgotPasswordPageProps<
   LayoutProps,
@@ -116,15 +117,7 @@ export const ForgotPasswordPage: React.FC<ResetPassworProps> = ({
           label={translate("pages.forgotPassword.fields.email", "Email")}
           rules={[
             {
-              whitespace: true,
-              required: true,
-            },
-            {
-              type: "email",
-              message: translate(
-                "pages.forgotPassword.errors.validEmail",
-                "Invalid email address"
-              ),
+              validator: validateEmail,
             },
           ]}
         >

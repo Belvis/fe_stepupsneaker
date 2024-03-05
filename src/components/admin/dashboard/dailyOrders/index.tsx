@@ -8,7 +8,7 @@ import { DecreaseIcon, IncreaseIcon } from "../../../icons";
 
 import dayjs from "dayjs";
 import { DashboardContext } from "../../../../contexts/admin/dashboard";
-import { ISalesChart } from "../../../../interfaces";
+import { ISalesChart } from "../../../../pages/interfaces";
 import { HeaderNumbers } from "../newCustomers/styled";
 import { DailyOrderWrapper, TitleArea } from "./styled";
 

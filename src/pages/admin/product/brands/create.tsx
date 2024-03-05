@@ -2,6 +2,7 @@ import { useTranslate } from "@refinedev/core";
 import { Modal, ModalProps, Form, FormProps, Input, Grid } from "antd";
 import { IBrand } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
+import { validateCommon } from "../../../../helpers/validate";
 
 type CreateBrandProps = {
   modalProps: ModalProps;
@@ -45,8 +46,7 @@ export const CreateBrand: React.FC<CreateBrandProps> = ({
           name="name"
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "name"),
             },
           ]}
         >
