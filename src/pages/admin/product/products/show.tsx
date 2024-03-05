@@ -52,7 +52,7 @@ import {
   ISole,
   IStyle,
   ITradeMark,
-} from "../../../../interfaces";
+} from "../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 const { Text } = Typography;
 

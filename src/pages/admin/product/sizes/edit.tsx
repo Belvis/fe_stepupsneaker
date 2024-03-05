@@ -3,6 +3,7 @@ import { Form, FormProps, Grid, Input, Modal, ModalProps, Select } from "antd";
 import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
 import { ISize } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
+import { validateCommon } from "../../../../helpers/validate";
 
 type EditSizeProps = {
   modalProps: ModalProps;
@@ -50,8 +51,7 @@ export const EditSize: React.FC<EditSizeProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "name"),
             },
           ]}
         >
@@ -63,7 +63,7 @@ export const EditSize: React.FC<EditSizeProps> = ({
           initialValue={data?.data.status}
           rules={[
             {
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "status"),
             },
           ]}
         >

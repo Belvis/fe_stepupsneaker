@@ -19,8 +19,9 @@ import { useState } from "react";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import type { UploadChangeParam } from "antd/es/upload";
 import { getValueFromEvent } from "@refinedev/antd";
-import { IProduct } from "../../../../interfaces";
+import { IProduct } from "../../../../pages/interfaces";
 import { getBase64Image } from "../../../../utils";
+import { validateCommon } from "../../../../helpers/validate";
 const { TextArea } = Input;
 const { Text } = Typography;
 
@@ -177,8 +178,8 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                 name="name"
                 rules={[
                   {
-                    whitespace: true,
-                    required: true,
+                    validator: (_, value) =>
+                      validateCommon(_, value, t, "name"),
                   },
                 ]}
               >
@@ -189,8 +190,8 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                 name="description"
                 rules={[
                   {
-                    whitespace: true,
-                    required: true,
+                    validator: (_, value) =>
+                      validateCommon(_, value, t, "description"),
                   },
                 ]}
               >

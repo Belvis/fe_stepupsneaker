@@ -12,6 +12,7 @@ import type { Color } from "antd/es/color-picker";
 import { IColor } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { colorPickerStyles } from "./style";
+import { validateCommon } from "../../../../helpers/validate";
 
 type CreateColorProps = {
   modalProps: ModalProps;
@@ -65,8 +66,7 @@ export const CreateColor: React.FC<CreateColorProps> = ({
           name="code"
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "code"),
             },
           ]}
         >
@@ -81,8 +81,7 @@ export const CreateColor: React.FC<CreateColorProps> = ({
           name="name"
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "name"),
             },
           ]}
         >

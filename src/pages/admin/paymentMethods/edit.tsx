@@ -2,6 +2,7 @@ import { HttpError, useOne, useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps } from "antd";
 import { IPaymentMethod } from "../../../interfaces";
 import { showWarningConfirmDialog } from "../../../utils";
+import { validateCommon } from "../../../helpers/validate";
 
 type EditPaymentMethodProps = {
   modalProps: ModalProps;
@@ -49,8 +50,7 @@ export const EditPaymentMethod: React.FC<EditPaymentMethodProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "name"),
             },
           ]}
         >

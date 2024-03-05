@@ -3,6 +3,7 @@ import { Form, FormProps, Grid, Input, Modal, ModalProps, Select } from "antd";
 import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
 import { ISole } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
+import { validateCommon } from "../../../../helpers/validate";
 
 type EditSoleProps = {
   modalProps: ModalProps;
@@ -50,8 +51,7 @@ export const EditSole: React.FC<EditSoleProps> = ({
           initialValue={data?.data.name}
           rules={[
             {
-              whitespace: true,
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "name"),
             },
           ]}
         >
@@ -63,7 +63,7 @@ export const EditSole: React.FC<EditSoleProps> = ({
           initialValue={data?.data.status}
           rules={[
             {
-              required: true,
+              validator: (_, value) => validateCommon(_, value, t, "status"),
             },
           ]}
         >

@@ -417,7 +417,7 @@ export interface IProductDetail {
   price: number;
   quantity: number;
   status: ProductStatus;
-  promotionProductDetails: IPromotionProductDetailResponse[];
+  promotionProductDetails?: IPromotionProductDetailResponse[];
 }
 export interface IProductClient {
   id: string;

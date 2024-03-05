@@ -54,7 +54,7 @@ import {
   IProvince,
   ITransportAddress,
   IWard,
-} from "../../../../interfaces";
+} from "../../../../pages/interfaces";
 import { formatTimestamp } from "../../../../utils";
 import { OrderItem } from "../orderItem";
 import {
@@ -68,6 +68,11 @@ import { PaymentModal } from "../paymentModal";
 import { NumberField } from "@refinedev/antd";
 import { DiscountModal } from "../discountModal";
 import ShoppingCartHeader from "../cartHeader";
+import {
+  validateCommon,
+  validateFullName,
+  validatePhoneNumber,
+} from "../../../../helpers/validate";
 const { useToken } = theme;
 const { Text, Title } = Typography;
 
@@ -959,8 +964,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           name="fullName"
                           rules={[
                             {
-                              whitespace: true,
-                              required: true,
+                              validator: validateFullName,
                             },
                           ]}
                           style={{ width: "100%" }}
@@ -982,29 +986,11 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           name="phoneNumber"
                           rules={[
                             {
-                              whitespace: true,
-                              required: true,
+                              validator: validatePhoneNumber,
                             },
                           ]}
                         >
-                          <InputMask
-                            bordered={false}
-                            style={{
-                              width: "100%",
-                              borderBottom: `1px solid ${token.colorPrimary}`,
-                              borderRadius: 0,
-                            }}
-                            // placeholder="Phone number"
-                            placeholder="Số điện thoại"
-                            mask="(+84) 999 999 999"
-                            // value={phoneInputValue}
-                            // onChange={(e) => setPhoneInputValue(e.target.value)}
-                          >
-                            {/* 
-                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                    // @ts-ignore */}
-                            {(props: InputProps) => <Input {...props} />}
-                          </InputMask>
+                          <Input />
                         </Form.Item>
                       </Col>
                       <Col span={24}>
@@ -1012,7 +998,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           name="provinceId"
                           rules={[
                             {
-                              required: true,
+                              validator: (_, value) =>
+                                validateCommon(_, value, t, "provinceId"),
                             },
                           ]}
                         >
@@ -1042,7 +1029,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           name="districtId"
                           rules={[
                             {
-                              required: true,
+                              validator: (_, value) =>
+                                validateCommon(_, value, t, "districtId"),
                             },
                           ]}
                         >
@@ -1075,7 +1063,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           name="wardCode"
                           rules={[
                             {
-                              required: true,
+                              validator: (_, value) =>
+                                validateCommon(_, value, t, "wardCode"),
                             },
                           ]}
                         >
@@ -1106,8 +1095,8 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                           name="more"
                           rules={[
                             {
-                              whitespace: true,
-                              required: true,
+                              validator: (_, value) =>
+                                validateCommon(_, value, t, "more"),
                             },
                           ]}
                         >

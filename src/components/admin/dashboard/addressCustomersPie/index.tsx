@@ -1,7 +1,7 @@
 import { Pie, PieConfig } from "@ant-design/charts";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { useMemo } from "react";
-import { ICustomer } from "../../../../interfaces";
+import { ICustomer } from "../../../../pages/interfaces";
 import { Typography } from "antd";
 const { Text } = Typography;
 

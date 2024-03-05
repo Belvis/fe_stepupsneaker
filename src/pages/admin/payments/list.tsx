@@ -124,10 +124,11 @@ export const PaymentList: React.FC<IResourceComponentsProps> = () => {
       sorter: {},
       defaultSortOrder: getDefaultSortOrder("paymentMethod.name", sorters),
       dataIndex: "paymentMethod.name",
+      align: "center",
       key: "paymentMethod.name",
       render: (_, record) => (
         <Text style={{ wordBreak: "inherit" }}>
-          {record.paymentMethod.name}
+          {t(`paymentMethods.options.${record.paymentMethod.name}`)}
         </Text>
       ),
     },

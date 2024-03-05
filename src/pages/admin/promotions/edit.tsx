@@ -51,6 +51,7 @@ import {
   IPromotion,
 } from "../../../interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import { validateCommon } from "../../../helpers/validate";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -470,8 +471,8 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                     name="code"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "code"),
                       },
                     ]}
                   >
@@ -482,7 +483,8 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                     name="value"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "value"),
                       },
                     ]}
                   >
@@ -493,7 +495,8 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                     name="promotionRange"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "promotionRange"),
                       },
                     ]}
                   >
@@ -508,7 +511,8 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                     name="status"
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "status"),
                       },
                     ]}
                   >

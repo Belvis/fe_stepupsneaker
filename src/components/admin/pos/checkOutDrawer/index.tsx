@@ -46,7 +46,7 @@ import {
   IPaymentConvertedPayload,
   IPaymentMethod,
   IVoucherList,
-} from "../../../../interfaces";
+} from "../../../../pages/interfaces";
 import { formatTimestamp } from "../../../../utils";
 import {
   CloseButtonWrapper,

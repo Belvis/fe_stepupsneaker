@@ -54,6 +54,7 @@ import {
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { debounce } from "lodash";
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
+import { validateCommon } from "../../../helpers/validate";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -328,8 +329,8 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                     name="name"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "name"),
                       },
                     ]}
                   >

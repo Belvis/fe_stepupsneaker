@@ -10,7 +10,7 @@ import {
   Space,
   Typography,
 } from "antd";
-import { IProductDetail } from "../../../../interfaces";
+import { IProductDetail } from "../../../../pages/interfaces";
 import ShoppingCartHeader from "../cartHeader";
 import { ProductDetailItem } from "./productItem";
 import { useEffect, useState } from "react";

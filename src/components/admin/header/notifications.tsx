@@ -1,7 +1,26 @@
 import React, { useContext, useEffect, useState } from "react";
 
-import { BellOutlined, CheckOutlined, MoreOutlined, SelectOutlined, SettingOutlined } from "@ant-design/icons";
-import { Badge, Button, Col, Divider, Flex, Popover, Row, Segmented, Skeleton, Space, Spin, Typography } from "antd";
+import {
+  BellOutlined,
+  CheckOutlined,
+  MoreOutlined,
+  SelectOutlined,
+  SettingOutlined,
+} from "@ant-design/icons";
+import {
+  Badge,
+  Button,
+  Col,
+  Divider,
+  Flex,
+  Popover,
+  Row,
+  Segmented,
+  Skeleton,
+  Space,
+  Spin,
+  Typography,
+} from "antd";
 import dayjs from "dayjs";
 
 const { Text, Title } = Typography;
@@ -10,7 +29,7 @@ import { AxiosInstance } from "axios";
 import { stringify } from "query-string";
 import { Link } from "react-router-dom";
 import { ColorModeContext } from "../../../contexts/color-mode";
-import { INotification } from "../../../interfaces";
+import { INotification } from "../../../pages/interfaces";
 import { axiosInstance } from "../../../utils";
 import { CustomAvatar } from "./custom-avatar";
 import { NotificationMessage } from "./notifications-message";
@@ -72,7 +91,9 @@ export const Notifications: React.FC = () => {
 
   const onLoadMore = () => {
     setLoading(true);
-    setNotifications((prev) => prev.concat([...new Array(3)].map(() => ({} as INotification))));
+    setNotifications((prev) =>
+      prev.concat([...new Array(3)].map(() => ({} as INotification)))
+    );
     query.pageSize += 5;
     fetchData().then(() => {
       setLoading(false);
@@ -85,6 +106,7 @@ export const Notifications: React.FC = () => {
     await readAll();
     await fetchData();
     setLoading(false);
+    setMoreOpen(false);
   };
 
   const onSegmentedChange = (value: SegmentedValue) => {
@@ -101,7 +123,9 @@ export const Notifications: React.FC = () => {
           lineHeight: "32px",
         }}
       >
-        <Button onClick={onLoadMore}>xem thêm</Button>
+        <Button type="text" onClick={onLoadMore}>
+          Xem thêm
+        </Button>
       </div>
     ) : null;
 
@@ -133,21 +157,12 @@ export const Notifications: React.FC = () => {
 
   useEffect(() => {
     if (notifications) {
-      const unreadNotifications = notifications.filter((notification) => !notification.read && notification.id != null);
+      const unreadNotifications = notifications.filter(
+        (notification) => !notification.read && notification.id != null
+      );
       setUnreadCount(unreadNotifications.length);
     }
   }, [notifications]);
-
-  const MoreContent = styled(Row)`
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    widows: 100%;
-    padding: 5px;
-    border-radius: 5px;
-    &:hover {
-      background-color: #fff2e8;
-    }
-  `;
 
   const moreContent = (
     <div className="more-content" style={{ width: "100%" }}>
@@ -155,10 +170,8 @@ export const Notifications: React.FC = () => {
         <Col span={3}>
           <CheckOutlined />
         </Col>
-        <Col span={21}>
-          <Text strong onClick={handleReadAll}>
-            Đánh dấu là đã đọc
-          </Text>
+        <Col span={21} onClick={handleReadAll}>
+          <Text strong>Đánh dấu là đã đọc</Text>
         </Col>
       </MoreContent>
       <MoreContent gutter={[16, 24]}>
@@ -192,8 +205,15 @@ export const Notifications: React.FC = () => {
             content={moreContent}
             trigger="click"
             open={moreOpen}
-            onOpenChange={(newOpen) => setMoreOpen(newOpen)}
+            onOpenChange={(newOpen) => {
+              console.log("more", newOpen);
+
+              setMoreOpen(newOpen);
+            }}
             overlayStyle={{ width: 250 }}
+            getPopupContainer={(triggerNode) =>
+              triggerNode.parentNode as HTMLElement
+            }
           >
             <Button
               shape="circle"
@@ -206,10 +226,17 @@ export const Notifications: React.FC = () => {
           </Popover>
         </Row>
         <Row style={{ marginTop: "0.25rem" }}>
-          <Segmented onChange={onSegmentedChange} options={["Tất cả", "Chưa đọc"]} />
+          <Segmented
+            onChange={onSegmentedChange}
+            options={["Tất cả", "Chưa đọc"]}
+          />
         </Row>
       </div>
-      <Space direction="vertical" split={<Divider style={{ margin: 0 }} />} style={{ width: "100%" }}>
+      <Space
+        direction="vertical"
+        split={<Divider style={{ margin: 0 }} />}
+        style={{ width: "100%" }}
+      >
         {notifications && notifications.length <= 0 && (
           <div style={{ textAlign: "center" }}>
             <BellIcon style={{ fontSize: "72px" }} />
@@ -227,7 +254,13 @@ export const Notifications: React.FC = () => {
               }}
               key={index}
             >
-              <Skeleton avatar title={false} loading={!noti.id} active key={index}>
+              <Skeleton
+                avatar
+                title={false}
+                loading={!noti.id}
+                active
+                key={index}
+              >
                 <Flex justify="space-between" align="center" key={index}>
                   <Space key={index}>
                     <CustomAvatar
@@ -241,8 +274,13 @@ export const Notifications: React.FC = () => {
                       name={noti.content}
                     />
                     <Space direction="vertical" size={0}>
-                      <NotificationMessage content={noti.content} type={noti.notificationType} />
-                      <Text type="secondary">{dayjs(new Date(noti.createdAt)).fromNow()}</Text>
+                      <NotificationMessage
+                        content={noti.content}
+                        type={noti.notificationType}
+                      />
+                      <Text type="secondary">
+                        {dayjs(new Date(noti.createdAt)).fromNow()}
+                      </Text>
                     </Space>
                   </Space>
                   <div>{!noti.read && <Badge status="processing" />}</div>
@@ -275,8 +313,10 @@ export const Notifications: React.FC = () => {
       trigger="click"
       open={open}
       onOpenChange={(newOpen) => {
-        setOpen(newOpen);
+        console.log(newOpen);
+
         setMoreOpen(false);
+        setOpen(newOpen);
       }}
       overlayStyle={{ width: 400, maxHeight: "500px", overflow: "auto" }}
     >
@@ -293,3 +333,14 @@ export const Notifications: React.FC = () => {
     </Popover>
   );
 };
+
+const MoreContent = styled(Row)`
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  widows: 100%;
+  padding: 5px;
+  border-radius: 5px;
+  &:hover {
+    background-color: #fff2e8;
+  }
+`;

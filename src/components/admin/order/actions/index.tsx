@@ -1,7 +1,7 @@
 import { CheckCircleOutlined, CloseCircleOutlined } from "@ant-design/icons";
 import { useTranslate, useUpdate } from "@refinedev/core";
 import { Button, Space, Tooltip } from "antd";
-import { IOrder } from "../../../../interfaces";
+import { IOrder } from "../../../../pages/interfaces";
 import { orderToPayload } from "../../../../utils/common/payloadConverter";
 import { CSSProperties } from "react";
 

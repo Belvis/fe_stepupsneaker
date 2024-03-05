@@ -20,7 +20,7 @@ import {
   IOrder,
   IVoucher,
   IVoucherFilterVariables,
-} from "../../../../interfaces";
+} from "../../../../pages/interfaces";
 import Voucher from "./Voucher";
 
 type DiscountModalProps = {

@@ -15,7 +15,6 @@ import {
   Upload,
   message,
 } from "antd";
-import InputMask from "react-input-mask";
 
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
@@ -23,6 +22,12 @@ import { useEffect, useState } from "react";
 import { IEmployee, IRole } from "../../../interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { getUserStatusOptions } from "../../../constants";
+import {
+  validateCommon,
+  validateEmail,
+  validateFullName,
+  validatePhoneNumber,
+} from "../../../helpers/validate";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -188,8 +193,7 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
                     name="fullName"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: validateFullName,
                       },
                     ]}
                   >
@@ -200,9 +204,7 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
                     name="email"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
-                        type: "email",
+                        validator: validateEmail,
                       },
                     ]}
                   >
@@ -215,21 +217,11 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
                     name="phoneNumber"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: validatePhoneNumber,
                       },
                     ]}
                   >
-                    <InputMask
-                      mask="(+84) 999 999 999"
-                      value={phoneInputValue}
-                      onChange={(e) => setPhoneInputValue(e.target.value)}
-                    >
-                      {/* 
-                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                    // @ts-ignore */}
-                      {(props: InputProps) => <Input {...props} />}
-                    </InputMask>
+                    <Input />
                   </Form.Item>
                   <Flex gap="middle">
                     <Form.Item
@@ -249,7 +241,8 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
                       name="gender"
                       rules={[
                         {
-                          required: true,
+                          validator: (_, value) =>
+                            validateCommon(_, value, t, "gender"),
                         },
                       ]}
                       style={{ width: "100%" }}
@@ -272,8 +265,8 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
                     name="address"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "address"),
                       },
                     ]}
                   >

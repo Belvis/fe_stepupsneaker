@@ -1,7 +1,7 @@
 import { Card, Row, Col, Image, message } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { IOrder, IVoucher } from "../../../../interfaces";
+import { IOrder, IVoucher } from "../../../../pages/interfaces";
 
 interface VoucherProps {
   item: IVoucher;

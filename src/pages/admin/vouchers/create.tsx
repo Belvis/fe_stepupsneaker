@@ -46,6 +46,7 @@ import {
 } from "../../../interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { ColorModeContext } from "../../../contexts/color-mode";
+import { validateCommon } from "../../../helpers/validate";
 
 const { Text, Title } = Typography;
 const { RangePicker } = DatePicker;
@@ -226,8 +227,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               name="name"
               rules={[
                 {
-                  whitespace: true,
-                  required: true,
+                  validator: (_, value) => validateCommon(_, value, t, "name"),
                 },
               ]}
             >
@@ -238,8 +238,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               name="code"
               rules={[
                 {
-                  whitespace: true,
-                  required: true,
+                  validator: (_, value) => validateCommon(_, value, t, "code"),
                 },
               ]}
             >
@@ -250,7 +249,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               name="value"
               rules={[
                 {
-                  required: true,
+                  validator: (_, value) => validateCommon(_, value, t, "value"),
                 },
               ]}
             >
@@ -261,7 +260,8 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               name="constraint"
               rules={[
                 {
-                  required: true,
+                  validator: (_, value) =>
+                    validateCommon(_, value, t, "constraint"),
                 },
               ]}
             >
@@ -274,7 +274,8 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               name="quantity"
               rules={[
                 {
-                  required: true,
+                  validator: (_, value) =>
+                    validateCommon(_, value, t, "quantity"),
                 },
               ]}
             >
@@ -285,7 +286,8 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               name="voucherRange"
               rules={[
                 {
-                  required: true,
+                  validator: (_, value) =>
+                    validateCommon(_, value, t, "voucherRange"),
                 },
               ]}
             >
@@ -299,6 +301,11 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               label={t("vouchers.fields.type")}
               name="type"
               initialValue={"CASH"}
+              rules={[
+                {
+                  validator: (_, value) => validateCommon(_, value, t, "type"),
+                },
+              ]}
             >
               <Radio.Group>
                 <Radio value={"PERCENTAGE"}>

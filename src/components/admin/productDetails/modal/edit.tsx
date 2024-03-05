@@ -35,7 +35,8 @@ import {
   IStyle,
   ITradeMark,
   IProductDetail,
-} from "../../../../interfaces";
+} from "../../../../pages/interfaces";
+import { validateCommon } from "../../../../helpers/validate";
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -421,7 +422,7 @@ export const EditProductDetail: React.FC<EditProductProps> = ({
               name="price"
               rules={[
                 {
-                  required: true,
+                  validator: (_, value) => validateCommon(_, value, t, "price"),
                 },
               ]}
             >
@@ -445,7 +446,8 @@ export const EditProductDetail: React.FC<EditProductProps> = ({
               name="quantity"
               rules={[
                 {
-                  required: true,
+                  validator: (_, value) =>
+                    validateCommon(_, value, t, "quantity"),
                 },
               ]}
             >
@@ -458,7 +460,8 @@ export const EditProductDetail: React.FC<EditProductProps> = ({
               name="status"
               rules={[
                 {
-                  required: true,
+                  validator: (_, value) =>
+                    validateCommon(_, value, t, "status"),
                 },
               ]}
             >

@@ -26,6 +26,12 @@ import { getUserGenderOptions } from "../../../constants";
 import { IEmployee, IRole } from "../../../interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
 import { parseQRCodeResult } from "../../../utils/common/qrCodeParser";
+import {
+  validateCommon,
+  validateEmail,
+  validateFullName,
+  validatePhoneNumber,
+} from "../../../helpers/validate";
 
 const { Text } = Typography;
 const { TextArea } = Input;
@@ -236,8 +242,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     name="fullName"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: validateFullName,
                       },
                     ]}
                   >
@@ -248,9 +253,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     name="email"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
-                        type: "email",
+                        validator: validateEmail,
                       },
                     ]}
                   >
@@ -263,21 +266,11 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     name="phoneNumber"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: validatePhoneNumber,
                       },
                     ]}
                   >
-                    <InputMask
-                      mask="(+84) 999 999 999"
-                      value={phoneInputValue}
-                      onChange={(e) => setPhoneInputValue(e.target.value)}
-                    >
-                      {/* 
-                                    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-                                    // @ts-ignore */}
-                      {(props: InputProps) => <Input {...props} />}
-                    </InputMask>
+                    <Input />
                   </Form.Item>
                   <Flex gap="middle">
                     <Form.Item
@@ -297,7 +290,8 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                       name="gender"
                       rules={[
                         {
-                          required: true,
+                          validator: (_, value) =>
+                            validateCommon(_, value, t, "gender"),
                         },
                       ]}
                       style={{ width: "100%" }}
@@ -320,8 +314,8 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     name="address"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "address"),
                       },
                     ]}
                   >

@@ -7,7 +7,7 @@ import {
   IPaymentConvertedPayload,
   IProductDetail,
   IProductDetailConvertedPayload,
-} from "../../interfaces";
+} from "../../pages/interfaces";
 
 export const productDetailToPayload = (
   productDetails: IProductDetail[]

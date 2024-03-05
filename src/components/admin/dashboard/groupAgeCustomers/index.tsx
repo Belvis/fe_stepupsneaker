@@ -2,7 +2,7 @@ import { Line, LineConfig } from "@ant-design/charts";
 import { useApiUrl, useCustom, useTranslate } from "@refinedev/core";
 import { Typography } from "antd";
 import { useMemo } from "react";
-import { ICustomer } from "../../../../interfaces";
+import { ICustomer } from "../../../../pages/interfaces";
 const { Text } = Typography;
 
 export const GroupAge: React.FC = () => {

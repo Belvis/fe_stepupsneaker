@@ -1,6 +1,6 @@
 import { useTranslate } from "@refinedev/core";
 import { Card, Col, Image, Row, Typography, theme } from "antd";
-import { IProduct } from "../../../../interfaces";
+import { IProduct } from "../../../../pages/interfaces";
 const { useToken } = theme;
 const { Text, Title } = Typography;
 

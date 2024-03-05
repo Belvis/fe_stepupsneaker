@@ -4,8 +4,17 @@ import { Form, Input, Select, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import InputMask from "react-input-mask";
-import { IAddress, IDistrict, IProvince, IWard } from "../../../../interfaces";
+import {
+  IAddress,
+  IDistrict,
+  IProvince,
+  IWard,
+} from "../../../../pages/interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
+import {
+  validateCommon,
+  validatePhoneNumber,
+} from "../../../../helpers/validate";
 
 type EditAddressFormProps = {
   callBack: any;
@@ -201,28 +210,19 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
             name="phoneNumber"
             rules={[
               {
-                required: true,
-                whitespace: true,
+                validator: validatePhoneNumber,
               },
             ]}
           >
-            <InputMask
-              mask="(+84) 999 999 999"
-              value={phoneInputValue}
-              onChange={(e) => setPhoneInputValue(e.target.value)}
-            >
-              {/* 
-             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-             // @ts-ignore */}
-              {(props: InputProps) => <Input {...props} />}
-            </InputMask>
+            <Input />
           </Form.Item>
           <Form.Item
             label={t("customers.fields.province.label")}
             name="provinceId"
             rules={[
               {
-                required: true,
+                validator: (_, value) =>
+                  validateCommon(_, value, t, "provinceId"),
               },
             ]}
           >
@@ -244,7 +244,8 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
             name="districtId"
             rules={[
               {
-                required: true,
+                validator: (_, value) =>
+                  validateCommon(_, value, t, "districtId"),
               },
             ]}
           >
