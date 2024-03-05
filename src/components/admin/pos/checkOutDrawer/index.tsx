@@ -287,7 +287,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
 
     mutateUpdate(
       {
-        resource: "orders",
+        resource: "orders/check-out",
         values: {
           ...order,
           customer: order.customer ? order.customer.id : null,
