@@ -47,7 +47,7 @@ export const OrderActions: React.FC<OrderActionProps> = ({
             const submitData = orderToPayload(record);
             mutate(
               {
-                resource: "orders",
+                resource: "orders/confirmation-order",
                 id: submitData.id,
                 values: {
                   ...submitData,
@@ -89,7 +89,7 @@ export const OrderActions: React.FC<OrderActionProps> = ({
             const submitData = orderToPayload(record);
             mutate(
               {
-                resource: "orders",
+                resource: "orders/confirmation-order",
                 id: submitData.id,
                 values: {
                   ...submitData,

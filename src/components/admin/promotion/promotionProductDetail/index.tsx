@@ -2,7 +2,7 @@ import { CrudFilters, HttpError, useTranslate } from "@refinedev/core";
 import { Button, Flex, Space, Table, Typography } from "antd";
 import { ColumnsType, TableProps } from "antd/es/table";
 import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
-import { IProductDetail } from "../../../../pages/interfaces";
+import { IProductDetail } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { log } from "console";
 import { tablePaginationSettings } from "../../../../constants";
@@ -13,15 +13,15 @@ type PromotionProductDetailTableProps = {
   columns: ColumnsType<IProductDetail>;
   title: string;
   tableProps: TableProps<IProductDetail>;
-  handlePromotionProductDetail(
-    selectedKeys: Key[],
-    setSelectedIds: Dispatch<SetStateAction<Key[]>>
-  ): void;
+  handlePromotionProductDetail(selectedKeys: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>): void;
 };
 
-export const PromotionProductDetailTable: React.FC<
-  PromotionProductDetailTableProps
-> = ({ columns, title, tableProps, handlePromotionProductDetail }) => {
+export const PromotionProductDetailTable: React.FC<PromotionProductDetailTableProps> = ({
+  columns,
+  title,
+  tableProps,
+  handlePromotionProductDetail,
+}) => {
   const t = useTranslate();
 
   const [selectedIds, setSelectedIds] = useState<React.Key[]>([]);
@@ -43,19 +43,11 @@ export const PromotionProductDetailTable: React.FC<
       title={() => {
         return (
           <Flex justify={"space-between"} align={"center"}>
-            <Title level={5}>
-              {t(`promotionProductDetail.table.title.${title}`)}
-            </Title>
+            <Title level={5}>{t(`promotionProductDetail.table.title.${title}`)}</Title>
             {rowSelection.selectedRowKeys.length > 0 && (
               <Space>
-                <span style={{ marginLeft: 8 }}>
-                  Selected {rowSelection.selectedRowKeys.length} items
-                </span>
-                <Button
-                  type="primary"
-                  loading={tableProps.loading}
-                  onClick={() => setSelectedIds([])}
-                >
+                <span style={{ marginLeft: 8 }}>Selected {rowSelection.selectedRowKeys.length} items</span>
+                <Button type="primary" loading={tableProps.loading} onClick={() => setSelectedIds([])}>
                   {t(`buttons.clear`)}
                 </Button>
                 <Button
@@ -63,11 +55,7 @@ export const PromotionProductDetailTable: React.FC<
                   onClick={() =>
                     showWarningConfirmDialog({
                       options: {
-                        accept: () =>
-                          handlePromotionProductDetail(
-                            selectedIds,
-                            setSelectedIds
-                          ),
+                        accept: () => handlePromotionProductDetail(selectedIds, setSelectedIds),
                         reject: () => {},
                       },
                       t: t,
