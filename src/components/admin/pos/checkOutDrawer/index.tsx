@@ -285,6 +285,9 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
       return;
     }
 
+    const paymentsConvertedPayload: IPaymentConvertedPayload[] =
+            convertToPayload(payments);
+
     mutateUpdate(
       {
         resource: "orders/check-out",
@@ -295,6 +298,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           voucher: order.voucher ? order.voucher.id : null,
           address: order.address ? order.address.id : null,
           totalMoney: totalPrice - discount,
+          payments: paymentsConvertedPayload,
           status: "COMPLETED",
         },
         id: order.id,
@@ -306,20 +310,6 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
         onSuccess: (data, variables, context) => {
           callBack();
           onClose();
-          const convertedPayload: IPaymentConvertedPayload[] =
-            convertToPayload(payments);
-          paymentMutateCreateMany(
-            {
-              resource: "payments",
-              values: convertedPayload,
-            },
-            {
-              onError: (error, variables, context) => {},
-              onSuccess: (data, variables, context) => {
-                list("orders");
-              },
-            }
-          );
         },
       }
     );

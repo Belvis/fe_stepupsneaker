@@ -221,7 +221,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
   function editOrderCustomer(value: string | null): void {
     mutateUpdate(
       {
-        resource: "orders",
+        resource: "orders/check-out",
         values: {
           ...order,
           customer: value,
