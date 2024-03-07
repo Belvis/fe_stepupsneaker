@@ -282,6 +282,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
           totalMoney: totalPrice,
           description: "",
           createdAt: 0,
+          updatedAt: 0,
         },
       ]);
     }
@@ -1119,7 +1120,6 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               name="weight"
                               rules={[
                                 {
-                                  whitespace: true,
                                   required: true,
                                 },
                               ]}
@@ -1141,7 +1141,6 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               name="weightUnit"
                               rules={[
                                 {
-                                  whitespace: true,
                                   required: true,
                                 },
                               ]}
@@ -1165,7 +1164,6 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               name="length"
                               rules={[
                                 {
-                                  whitespace: true,
                                   required: true,
                                 },
                               ]}
@@ -1187,7 +1185,6 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               name="witdth"
                               rules={[
                                 {
-                                  whitespace: true,
                                   required: true,
                                 },
                               ]}
@@ -1209,7 +1206,6 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               name="height"
                               rules={[
                                 {
-                                  whitespace: true,
                                   required: true,
                                 },
                               ]}

@@ -231,6 +231,8 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
           key: order.id,
         };
       });
+      console.log("items", items);
+
       setItems(items);
       if (!activeKey || activeKey == "1") {
         setActiveKey(items[0].key);
