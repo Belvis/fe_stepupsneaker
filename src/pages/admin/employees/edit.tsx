@@ -234,7 +234,17 @@ export const EmployeeEdit: React.FC<IResourceComponentsProps> = () => {
                       ]}
                       style={{ width: "100%" }}
                     >
-                      <Select {...roleSelectProps} />
+                      <Select
+                        {...roleSelectProps}
+                        options={
+                          roleSelectProps.options
+                            ? roleSelectProps.options.map((option) => ({
+                                ...option,
+                                label: t(`roles.${option.label}`),
+                              }))
+                            : []
+                        }
+                      />
                     </Form.Item>
                     <Form.Item
                       label={t("employees.fields.gender.label")}

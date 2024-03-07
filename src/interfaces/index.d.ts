@@ -458,6 +458,7 @@ export interface IPayment {
   totalMoney: number;
   description: string;
   createdAt: number;
+  updatedAt: number;
 }
 
 export interface IPaymentMethod {

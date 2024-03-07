@@ -142,11 +142,11 @@ export const PaymentList: React.FC<IResourceComponentsProps> = () => {
     {
       title: t("payments.fields.createdAt"),
       sorter: {},
-      defaultSortOrder: getDefaultSortOrder("createdAt", sorters),
-      dataIndex: "createdAt",
-      key: "createdAt",
+      defaultSortOrder: getDefaultSortOrder("updatedAt", sorters),
+      dataIndex: "updatedAt",
+      key: "updatedAt",
       render: (_, record) => {
-        const date = dayjs(new Date(record.createdAt));
+        const date = dayjs(new Date(record.updatedAt));
         const formattedDate = date.format("YYYY-MM-DD HH:mm");
         return <>{formattedDate}</>;
       },

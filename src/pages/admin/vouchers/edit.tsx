@@ -62,16 +62,9 @@ const { RangePicker } = DatePicker;
 
 export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   const t = useTranslate();
-  const API_URL = useApiUrl();
   const { id } = useParsed();
-  const [successFlag, setSuccessFlag] = useState(true);
   const [loadingImage, setLoadingImage] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
-
-  const [eligibleCustomers, setEligibleCustomers] = useState<ICustomer[]>([]);
-  const [inEligibleCustomers, setInEligibleCustomers] = useState<ICustomer[]>(
-    []
-  );
 
   const { mutate: mutateCreate } = useCreate();
 
@@ -499,6 +492,14 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                           validateCommon(_, value, t, "voucherRange"),
                       },
                     ]}
+                    initialValue={() => {
+                      const startDate =
+                        formProps.form?.getFieldValue("startDate");
+                      const endDate = formProps.form?.getFieldValue("endDate");
+
+                      const voucherRange = [dayjs(startDate), dayjs(endDate)];
+                      return voucherRange;
+                    }}
                   >
                     <RangePicker
                       showTime={{ format: "HH:mm:ss" }}

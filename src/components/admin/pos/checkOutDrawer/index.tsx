@@ -162,6 +162,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   totalMoney: totalMoney,
                   description: "Cash",
                   createdAt: 0,
+                  updatedAt: 0,
                 },
               ]);
           }}
@@ -252,6 +253,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           totalMoney: totalPrice,
           description: "string",
           createdAt: 0,
+          updatedAt: 0,
         },
       ]);
     }
@@ -269,6 +271,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
         totalMoney: totalPrice,
         description: "string",
         createdAt: 0,
+        updatedAt: 0,
       },
     ]);
   }
