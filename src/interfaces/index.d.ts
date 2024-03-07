@@ -330,6 +330,7 @@ export interface IVoucherHistory {
   moneyAfterReduction: number;
   moneyReduction: number;
   createdAt: number;
+  updatedAt: number;
 }
 
 export interface ICustomer {

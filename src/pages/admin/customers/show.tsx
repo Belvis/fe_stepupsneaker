@@ -243,12 +243,12 @@ export const CustomerShow: React.FC<IResourceComponentsProps> = () => {
     },
     {
       title: "Ngày áp dụng",
-      key: "createdAt",
-      dataIndex: "createdAt",
+      key: "updatedAt",
+      dataIndex: "updatedAt",
       render: (_, record) => {
         return (
           <DateField
-            value={dayjs(new Date(record.createdAt || 0))}
+            value={dayjs(new Date(record.updatedAt || 0))}
             format="LLL"
           />
         );

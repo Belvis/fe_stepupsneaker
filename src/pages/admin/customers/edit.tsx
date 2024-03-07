@@ -75,7 +75,6 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
   const [districtName, setDistrictName] = useState("");
   const [wardName, setWardName] = useState("");
 
-  const [phoneInputValue, setPhoneInputValue] = useState("");
   const [addressId, setAddressId] = useState<string>("");
   const [provinces, setProvinces] = useState<IProvince[]>([]);
   const [districts, setDistricts] = useState<IDistrict[]>([]);
