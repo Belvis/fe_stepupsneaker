@@ -703,6 +703,7 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
       align: "center",
       render: (_, record) => (
         <InputNumber
+          min={1}
           width={100}
           value={record.quantity}
           onChange={(value) => handleQuantityChange(value as number, record)}
@@ -718,10 +719,11 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
       align: "center",
       render: (_, record) => (
         <InputNumber
+          min={1}
           formatter={(value) =>
             `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
           }
-          parser={(value) => {
+          parser={(value: string | undefined) => {
             const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
             return isNaN(parsedValue) ? 0 : parsedValue;
           }}

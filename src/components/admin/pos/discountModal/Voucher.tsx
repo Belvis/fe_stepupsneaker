@@ -1,13 +1,16 @@
 import { Card, Row, Col, Image, message } from "antd";
 import dayjs from "dayjs";
 import { useState } from "react";
-import { IOrder, IVoucher } from "../../../../pages/interfaces";
+import { IOrder, IVoucher } from "../../../../interfaces";
+import { useTranslate, useUpdate } from "@refinedev/core";
 
 interface VoucherProps {
   item: IVoucher;
-  type?: "apply" | "copy";
+  type?: "apply" | "copy" | "use";
   setViewOrder?: React.Dispatch<React.SetStateAction<IOrder>>;
   close?: () => void;
+  order?: IOrder;
+  callBack?: any;
 }
 
 const Voucher: React.FC<VoucherProps> = ({
@@ -15,10 +18,22 @@ const Voucher: React.FC<VoucherProps> = ({
   type,
   setViewOrder,
   close,
+  order,
+  callBack,
 }) => {
-  const { image, endDate, value, type: voucherType, constraint, code } = item;
+  const {
+    image,
+    endDate,
+    value,
+    type: voucherType,
+    constraint,
+    code,
+    id,
+  } = item;
 
   const [messageApi, contextHolder] = message.useMessage();
+  const { mutate: mutateUpdate, isLoading: isLoadingOrderUpdate } = useUpdate();
+  const t = useTranslate();
 
   const [text, setText] = useState<string>("Dùng ngay");
 
@@ -88,6 +103,51 @@ const Voucher: React.FC<VoucherProps> = ({
     }
   };
 
+  const handleUseVoucher = () => {
+    if (order && type === "use" && close) {
+      mutateUpdate(
+        {
+          resource: "orders/check-out",
+          values: {
+            ...order,
+            employee: order.employee ? order.employee.id : "",
+            customer: order.customer ? order.customer.id : "",
+            voucher: id,
+            address: order.address ? order.address.id : "",
+          },
+          id: order.id,
+          successNotification: () => {
+            return false;
+          },
+          errorNotification: () => {
+            return false;
+          },
+        },
+        {
+          onError: (error, variables, context) => {
+            messageApi.open({
+              type: "error",
+              content: t("orders.notification.voucher.edit.error"),
+            });
+          },
+          onSuccess: (data, variables, context) => {
+            callBack();
+            messageApi.open({
+              type: "success",
+              content: t("orders.notification.voucher.edit.success"),
+            });
+            return close();
+          },
+        }
+      );
+    } else {
+      messageApi.open({
+        type: "error",
+        content: t("orders.notification.voucher.edit.notFound"),
+      });
+    }
+  };
+
   return (
     <Card
       style={{
@@ -146,9 +206,21 @@ const Voucher: React.FC<VoucherProps> = ({
             >
               <div className="sharpen-btn" style={{ width: "100%" }}>
                 <button
-                  onClick={
-                    type === "copy" ? handleCopyCode : handleApplyVoucher
-                  }
+                  onClick={() => {
+                    switch (type) {
+                      case "copy":
+                        handleCopyCode();
+                        break;
+                      case "apply":
+                        handleApplyVoucher();
+                        break;
+                      case "use":
+                        handleUseVoucher();
+                        break;
+                      default:
+                        break;
+                    }
+                  }}
                   style={{ width: "100%" }}
                 >
                   {text}

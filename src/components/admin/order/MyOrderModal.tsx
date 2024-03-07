@@ -47,7 +47,7 @@ import {
   IProvince,
   IVoucherList,
   IWard,
-} from "../../../pages/interfaces";
+} from "../../../interfaces";
 import { orderToPayload, showWarningConfirmDialog } from "../../../utils";
 import VoucherModal from "../pos/discountModal/VoucherModal";
 import { AddressModal } from "../address/modal/list";
@@ -336,9 +336,10 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
   };
 
   const handleUpdateOrder = () => {
-    const simplifiedCartItems: { id: string; quantity: number }[] = viewOrder.orderDetails.map((item) => {
-      return { id: item.id, quantity: item.quantity };
-    });
+    const simplifiedCartItems: { id: string; quantity: number }[] =
+      viewOrder.orderDetails.map((item) => {
+        return { id: item.id, quantity: item.quantity };
+      });
     const orderPayload = orderToPayload(order);
 
     const submitData = {
@@ -653,6 +654,7 @@ const MyOrderModal: React.FC<MyOrderModalProps> = ({
       render(value, record) {
         return (
           <InputNumber
+            min={1}
             value={Number(value)}
             onChange={debounce(
               (value) => handleQuantityChange(value as number, record),

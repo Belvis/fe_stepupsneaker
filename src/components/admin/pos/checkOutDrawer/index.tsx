@@ -46,7 +46,7 @@ import {
   IPaymentConvertedPayload,
   IPaymentMethod,
   IVoucherList,
-} from "../../../../pages/interfaces";
+} from "../../../../interfaces";
 import { formatTimestamp } from "../../../../utils";
 import {
   CloseButtonWrapper,
@@ -258,11 +258,13 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
   }, [data]);
 
   function handleRadioChange(e: RadioChangeEvent): void {
+    const paymentMethod = e.target.value;
+
     setPayments([
       {
         id: "",
         order: order,
-        paymentMethod: e.target.value,
+        paymentMethod: paymentMethod,
         transactionCode: "string",
         totalMoney: totalPrice,
         description: "string",
@@ -285,6 +287,9 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
       return;
     }
 
+    const paymentConvertedPayload: IPaymentConvertedPayload[] =
+      convertToPayload(payments);
+
     mutateUpdate(
       {
         resource: "orders/check-out",
@@ -295,6 +300,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           voucher: order.voucher ? order.voucher.id : null,
           address: order.address ? order.address.id : null,
           totalMoney: totalPrice - discount,
+          payments: paymentConvertedPayload,
           status: "COMPLETED",
         },
         id: order.id,
@@ -306,20 +312,6 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
         onSuccess: (data, variables, context) => {
           callBack();
           onClose();
-          const convertedPayload: IPaymentConvertedPayload[] =
-            convertToPayload(payments);
-          paymentMutateCreateMany(
-            {
-              resource: "payments",
-              values: convertedPayload,
-            },
-            {
-              onError: (error, variables, context) => {},
-              onSuccess: (data, variables, context) => {
-                list("orders");
-              },
-            }
-          );
         },
       }
     );

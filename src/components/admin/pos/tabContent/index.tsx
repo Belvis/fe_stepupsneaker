@@ -12,12 +12,7 @@ import {
   theme,
 } from "antd";
 import { useEffect, useState } from "react";
-import {
-  ICustomer,
-  IOption,
-  IOrder,
-  IProduct,
-} from "../../../../pages/interfaces";
+import { ICustomer, IOption, IOrder, IProduct } from "../../../../interfaces";
 import { DeliverySales } from "../deliverySales";
 import { DirectSales } from "../directSales";
 import { ProductDetail } from "../productDetail";

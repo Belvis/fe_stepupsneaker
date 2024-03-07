@@ -452,7 +452,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <InputNumber width={100} style={{ width: "100%" }} />
+                    <InputNumber
+                      min={1}
+                      width={100}
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                   <Form.Item
                     label={t("vouchers.fields.constraint")}
@@ -464,7 +468,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <InputNumber width={100} style={{ width: "100%" }} />
+                    <InputNumber
+                      min={1}
+                      width={100}
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                   <Form.Item
                     label={t("vouchers.fields.quantity")}
@@ -476,7 +484,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <InputNumber width={100} style={{ width: "100%" }} />
+                    <InputNumber
+                      min={1}
+                      width={100}
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                   <Form.Item
                     label={t("vouchers.fields.voucherRange")}
@@ -492,6 +504,9 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       showTime={{ format: "HH:mm:ss" }}
                       format="YYYY-MM-DD HH:mm"
                       style={{ width: "100%" }}
+                      disabledDate={(current) =>
+                        dayjs(current).isBefore(dayjs().startOf("day"))
+                      }
                     />
                   </Form.Item>
                   <Form.Item label={t("vouchers.fields.type")} name="type">

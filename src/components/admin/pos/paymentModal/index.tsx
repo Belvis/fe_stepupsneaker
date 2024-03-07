@@ -186,6 +186,7 @@ export const PaymentModal: React.FC<PaymentModalProps> = ({
               <Text strong>{t("payments.fields.money")}</Text>
             </Space>
             <InputNumber
+              min={1}
               ref={inputRef}
               formatter={(value) =>
                 `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")

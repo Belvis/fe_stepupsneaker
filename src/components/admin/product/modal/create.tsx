@@ -19,7 +19,7 @@ import { useState } from "react";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import type { UploadChangeParam } from "antd/es/upload";
 import { getValueFromEvent } from "@refinedev/antd";
-import { IProduct } from "../../../../pages/interfaces";
+import { IProduct } from "../../../../interfaces";
 import { getBase64Image } from "../../../../utils";
 import { validateCommon } from "../../../../helpers/validate";
 const { TextArea } = Input;

@@ -6,7 +6,7 @@ import { ColumnConfig } from "@ant-design/plots/lib/components/column";
 
 import { IncreaseIcon, DecreaseIcon } from "../../../icons";
 
-import { ISalesChart } from "../../../../pages/interfaces";
+import { ISalesChart } from "../../../../interfaces";
 import { Header, HeaderNumbers, NewCustomersWrapper } from "./styled";
 import { DashboardContext } from "../../../../contexts/admin/dashboard";
 import dayjs from "dayjs";

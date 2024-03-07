@@ -2,7 +2,7 @@ import { useTranslate } from "@refinedev/core";
 import { Button, Flex, Space, Table, Typography } from "antd";
 import { ColumnsType, TableProps } from "antd/es/table";
 import { Dispatch, Key, SetStateAction, useState } from "react";
-import { ICustomer } from "../../../../pages/interfaces";
+import { ICustomer } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { tablePaginationSettings } from "../../../../constants";
 

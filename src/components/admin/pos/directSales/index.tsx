@@ -38,12 +38,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import {
-  ICustomer,
-  IOption,
-  IOrder,
-  IProduct,
-} from "../../../../pages/interfaces";
+import { ICustomer, IOption, IOrder, IProduct } from "../../../../interfaces";
 import { CheckOutDrawer } from "../checkOutDrawer";
 import { OrderItem } from "../orderItem";
 import { ProductItem } from "../productItem";
@@ -221,7 +216,7 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
   function editOrderCustomer(value: string | null): void {
     mutateUpdate(
       {
-        resource: "orders",
+        resource: "orders/check-out",
         values: {
           ...order,
           customer: value,

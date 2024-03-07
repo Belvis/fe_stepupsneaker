@@ -8,7 +8,7 @@ import dayjs, { Dayjs } from "dayjs";
 
 import { IncreaseIcon, DecreaseIcon } from "../../../icons";
 
-import { ISalesChart } from "../../../../pages/interfaces";
+import { ISalesChart } from "../../../../interfaces";
 import {
   DailyRevenueWrapper,
   TitleAreNumber,

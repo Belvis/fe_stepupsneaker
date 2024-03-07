@@ -52,7 +52,7 @@ import {
   ISole,
   IStyle,
   ITradeMark,
-} from "../../../interfaces";
+} from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 const { Text } = Typography;
 
@@ -368,9 +368,9 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "image",
       key: "image",
       render: (_, { image, promotionProductDetails }) => {
-        const promotionProductDetailsActive = promotionProductDetails.filter(
-          (productDetail) => productDetail.promotion.status == "ACTIVE"
-        );
+        const promotionProductDetailsActive = (
+          promotionProductDetails ?? []
+        ).filter((productDetail) => productDetail.promotion.status == "ACTIVE");
         if (promotionProductDetailsActive.length > 0) {
           const value = promotionProductDetailsActive[0].promotion.value;
           return (
@@ -400,6 +400,7 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       align: "center",
       render: (_, record) => (
         <InputNumber
+          min={1}
           width={100}
           value={record.quantity}
           onChange={(value) => handleQuantityChange(value as number, record)}
@@ -414,10 +415,11 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
       align: "center",
       render: (_, record) => (
         <InputNumber
+          min={1}
           formatter={(value) =>
             `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
           }
-          parser={(value) => {
+          parser={(value: string | undefined) => {
             const parsedValue = parseInt(value!.replace(/₫\s?|(,*)/g, ""), 10);
             return isNaN(parsedValue) ? 0 : parsedValue;
           }}
@@ -675,10 +677,11 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
                       name="priceMin"
                     >
                       <InputNumber
+                        min={1}
                         formatter={(value) =>
                           `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                         }
-                        parser={(value) => {
+                        parser={(value: string | undefined) => {
                           const parsedValue = parseInt(
                             value!.replace(/₫\s?|(,*)/g, ""),
                             10
@@ -693,10 +696,11 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
                       name="priceMax"
                     >
                       <InputNumber
+                        min={1}
                         formatter={(value) =>
                           `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                         }
-                        parser={(value) => {
+                        parser={(value: string | undefined) => {
                           const parsedValue = parseInt(
                             value!.replace(/₫\s?|(,*)/g, ""),
                             10
@@ -710,7 +714,11 @@ export const ProductShow: React.FC<IResourceComponentsProps> = () => {
                       label={t("productDetails.filters.quantity.label")}
                       name="quantity"
                     >
-                      <InputNumber width={100} style={{ width: "100%" }} />
+                      <InputNumber
+                        min={1}
+                        width={100}
+                        style={{ width: "100%" }}
+                      />
                     </Form.Item>
                   </Space>
                 </Col>

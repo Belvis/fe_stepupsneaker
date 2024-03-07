@@ -49,7 +49,7 @@ import {
   ISole,
   IStyle,
   ITradeMark,
-} from "../../../../pages/interfaces";
+} from "../../../../interfaces";
 import { SelectedItemsModal } from "./itemsModal";
 
 const { Text, Title } = Typography;
@@ -621,10 +621,11 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({
                           name="priceMin"
                         >
                           <InputNumber
+                            min={1}
                             formatter={(value) =>
                               `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                             }
-                            parser={(value) => {
+                            parser={(value: string | undefined) => {
                               const parsedValue = parseInt(
                                 value!.replace(/₫\s?|(,*)/g, ""),
                                 10
@@ -639,10 +640,11 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({
                           name="priceMax"
                         >
                           <InputNumber
+                            min={1}
                             formatter={(value) =>
                               `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                             }
-                            parser={(value) => {
+                            parser={(value: string | undefined) => {
                               const parsedValue = parseInt(
                                 value!.replace(/₫\s?|(,*)/g, ""),
                                 10
@@ -656,7 +658,11 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({
                           label={t("productDetails.filters.quantity.label")}
                           name="quantity"
                         >
-                          <InputNumber width={100} style={{ width: "100%" }} />
+                          <InputNumber
+                            min={1}
+                            width={100}
+                            style={{ width: "100%" }}
+                          />
                         </Form.Item>
                       </Space>
                     </Col>

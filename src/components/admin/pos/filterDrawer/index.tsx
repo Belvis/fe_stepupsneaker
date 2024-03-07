@@ -15,7 +15,7 @@ import {
   Tag,
   Typography,
 } from "antd";
-import { IColor, ISize } from "../../../../pages/interfaces";
+import { IColor, ISize } from "../../../../interfaces";
 import { useState } from "react";
 import {
   ColorIcon,

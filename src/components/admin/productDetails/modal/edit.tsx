@@ -35,7 +35,7 @@ import {
   IStyle,
   ITradeMark,
   IProductDetail,
-} from "../../../../pages/interfaces";
+} from "../../../../interfaces";
 import { validateCommon } from "../../../../helpers/validate";
 
 const { TextArea } = Input;
@@ -427,10 +427,11 @@ export const EditProductDetail: React.FC<EditProductProps> = ({
               ]}
             >
               <InputNumber
+                min={1}
                 formatter={(value) =>
                   `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                 }
-                parser={(value) => {
+                parser={(value: string | undefined) => {
                   const parsedValue = parseInt(
                     value!.replace(/₫\s?|(,*)/g, ""),
                     10
@@ -451,7 +452,7 @@ export const EditProductDetail: React.FC<EditProductProps> = ({
                 },
               ]}
             >
-              <InputNumber width={100} style={{ width: "100%" }} />
+              <InputNumber min={1} width={100} style={{ width: "100%" }} />
             </Form.Item>
 
             <Form.Item

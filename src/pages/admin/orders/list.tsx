@@ -442,10 +442,11 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
                   name="priceMin"
                 >
                   <InputNumber
+                    min={1}
                     formatter={(value) =>
                       `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                     }
-                    parser={(value) => {
+                    parser={(value: string | undefined) => {
                       const parsedValue = parseInt(
                         value!.replace(/₫\s?|(,*)/g, ""),
                         10
@@ -461,10 +462,11 @@ export const OrderList: React.FC<IResourceComponentsProps> = () => {
                   name="priceMax"
                 >
                   <InputNumber
+                    min={1}
                     formatter={(value) =>
                       `₫ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ",")
                     }
-                    parser={(value) => {
+                    parser={(value: string | undefined) => {
                       const parsedValue = parseInt(
                         value!.replace(/₫\s?|(,*)/g, ""),
                         10
