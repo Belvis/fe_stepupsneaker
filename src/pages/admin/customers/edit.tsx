@@ -419,7 +419,18 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <DatePicker style={{ width: "100%" }} />
+                    <DatePicker
+                      style={{ width: "100%" }}
+                      disabledDate={(current) => {
+                        const tenYearsAgo = dayjs().subtract(10, "year");
+                        const hundredYearsAgo = dayjs().subtract(100, "year");
+
+                        return (
+                          current &&
+                          (current > tenYearsAgo || current < hundredYearsAgo)
+                        );
+                      }}
+                    />
                   </Form.Item>
                   <Row gutter={10}>
                     <Col span={12}>

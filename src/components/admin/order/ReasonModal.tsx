@@ -11,7 +11,7 @@ import {
 } from "antd";
 import React, { ReactNode, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { IOrder, OrderStatus } from "../../../pages/interfaces";
+import { IOrder, OrderStatus } from "../../../interfaces";
 import { showWarningConfirmDialog } from "../../../utils";
 
 interface ReasonModalProps {

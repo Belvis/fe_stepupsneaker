@@ -1,18 +1,6 @@
-import { DollarOutlined, PercentageOutlined } from "@ant-design/icons";
-import { DateField, useSimpleList } from "@refinedev/antd";
+import { useSimpleList } from "@refinedev/antd";
 import { HttpError, useTranslate, useUpdate } from "@refinedev/core";
-import {
-  List as AntdList,
-  Avatar,
-  Checkbox,
-  Col,
-  Grid,
-  Modal,
-  Row,
-  message,
-  theme,
-} from "antd";
-import dayjs from "dayjs";
+import { List as AntdList, Col, Grid, Modal, Row, message, theme } from "antd";
 import { useContext, useEffect, useState } from "react";
 import { ColorModeContext } from "../../../../contexts/color-mode";
 import {
@@ -20,7 +8,7 @@ import {
   IOrder,
   IVoucher,
   IVoucherFilterVariables,
-} from "../../../../pages/interfaces";
+} from "../../../../interfaces";
 import Voucher from "./Voucher";
 
 type DiscountModalProps = {
@@ -48,64 +36,10 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
   const { mode } = useContext(ColorModeContext);
   const [messageApi, contextHolder] = message.useMessage();
   const breakpoint = Grid.useBreakpoint();
-  const [selectedVoucherId, setSelectedVoucherId] = useState<string | null>();
 
   useEffect(() => {
     if (open) refetch();
   }, [open]);
-
-  const handleFinish = () => {
-    if (order && selectedVoucherId) {
-      mutateUpdate(
-        {
-          resource: "orders",
-          values: {
-            ...order,
-            employee: order.employee ? order.employee.id : "",
-            customer: order.customer ? order.customer.id : "",
-            voucher: selectedVoucherId,
-            address: order.address ? order.address.id : "",
-          },
-          id: order.id,
-          successNotification: () => {
-            return false;
-          },
-          errorNotification: () => {
-            return false;
-          },
-        },
-        {
-          onError: (error, variables, context) => {
-            messageApi.open({
-              type: "error",
-              content: t("orders.notification.voucher.edit.error"),
-            });
-          },
-          onSuccess: (data, variables, context) => {
-            callBack();
-            messageApi.open({
-              type: "success",
-              content: t("orders.notification.voucher.edit.success"),
-            });
-            handleOk();
-          },
-        }
-      );
-    } else {
-      messageApi.open({
-        type: "error",
-        content: t("orders.notification.voucher.edit.notFound"),
-      });
-    }
-  };
-
-  const onCancel = () => {
-    handleCancel();
-  };
-
-  const handleRowClick = (id: string) => {
-    setSelectedVoucherId((prevId) => (prevId === id ? null : id));
-  };
 
   const {
     listProps: voucherListProps,
@@ -138,10 +72,10 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
       title={t("vouchers.vouchers")}
       width={breakpoint.sm ? "1000px" : "100%"}
       zIndex={1001}
-      onOk={handleFinish}
-      onCancel={onCancel}
+      onCancel={handleCancel}
       open={open}
       confirmLoading={isLoadingOrderUpdate}
+      footer={<></>}
     >
       {contextHolder}
       <Row gutter={[16, 24]}>
@@ -151,10 +85,17 @@ export const DiscountModal: React.FC<DiscountModalProps> = ({
             itemLayout="horizontal"
             bordered
             style={{ padding: "1rem" }}
+            pagination={false}
             renderItem={(item) => {
               return (
                 <AntdList.Item key={item.id}>
-                  <Voucher item={item} />
+                  <Voucher
+                    item={item}
+                    order={order}
+                    type="use"
+                    callBack={callBack}
+                    close={handleCancel}
+                  />
                 </AntdList.Item>
               );
             }}

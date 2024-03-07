@@ -29,7 +29,7 @@ import { AxiosInstance } from "axios";
 import { stringify } from "query-string";
 import { Link } from "react-router-dom";
 import { ColorModeContext } from "../../../contexts/color-mode";
-import { INotification } from "../../../pages/interfaces";
+import { INotification } from "../../../interfaces";
 import { axiosInstance } from "../../../utils";
 import { CustomAvatar } from "./custom-avatar";
 import { NotificationMessage } from "./notifications-message";

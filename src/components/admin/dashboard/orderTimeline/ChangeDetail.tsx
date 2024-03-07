@@ -2,11 +2,7 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import { Descriptions, Modal, Space, Tooltip, Typography } from "antd";
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  IAddress,
-  IOrderDetail,
-  OrderStatus,
-} from "../../../../pages/interfaces";
+import { IAddress, IOrderDetail, OrderStatus } from "../../../../interfaces";
 import { NumberField } from "@refinedev/antd";
 
 interface ChangeDetailProps {

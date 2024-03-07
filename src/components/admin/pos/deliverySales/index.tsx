@@ -54,7 +54,7 @@ import {
   IProvince,
   ITransportAddress,
   IWard,
-} from "../../../../pages/interfaces";
+} from "../../../../interfaces";
 import { formatTimestamp } from "../../../../utils";
 import { OrderItem } from "../orderItem";
 import {
@@ -1126,6 +1126,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               initialValue={900}
                             >
                               <InputNumber
+                                min={1}
                                 bordered={false}
                                 style={{
                                   width: "100%",
@@ -1171,6 +1172,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               initialValue={1}
                             >
                               <InputNumber
+                                min={1}
                                 bordered={false}
                                 style={{
                                   width: "100%",
@@ -1192,6 +1194,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               initialValue={1}
                             >
                               <InputNumber
+                                min={1}
                                 bordered={false}
                                 style={{
                                   width: "100%",
@@ -1213,6 +1216,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                               initialValue={1}
                             >
                               <InputNumber
+                                min={1}
                                 bordered={false}
                                 style={{
                                   width: "100%",

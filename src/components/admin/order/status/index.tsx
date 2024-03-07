@@ -1,6 +1,6 @@
 import { useTranslate } from "@refinedev/core";
 import { Tag } from "antd";
-import { OrderStatus as OStatus } from "../../../../pages/interfaces";
+import { OrderStatus as OStatus } from "../../../../interfaces";
 
 type OrderStatusProps = {
   status: OStatus;

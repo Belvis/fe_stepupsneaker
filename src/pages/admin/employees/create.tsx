@@ -8,7 +8,6 @@ import {
   Flex,
   Form,
   Input,
-  InputProps,
   Row,
   Select,
   Space,
@@ -16,22 +15,21 @@ import {
   Upload,
   message,
 } from "antd";
-import InputMask from "react-input-mask";
 
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useState } from "react";
 import { QRScannerModal } from "../../../components";
 import { getUserGenderOptions } from "../../../constants";
-import { IEmployee, IRole } from "../../../interfaces";
-import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
-import { parseQRCodeResult } from "../../../utils/common/qrCodeParser";
 import {
   validateCommon,
   validateEmail,
   validateFullName,
   validatePhoneNumber,
 } from "../../../helpers/validate";
+import { IEmployee, IRole } from "../../../interfaces";
+import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import { parseQRCodeResult } from "../../../utils/common/qrCodeParser";
 
 const { Text } = Typography;
 const { TextArea } = Input;

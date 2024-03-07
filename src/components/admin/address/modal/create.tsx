@@ -2,12 +2,7 @@ import { useCustom, useTranslate } from "@refinedev/core";
 import { Modal, ModalProps, Form, FormProps, Input, Select, Grid } from "antd";
 import { useEffect, useState } from "react";
 import InputMask from "react-input-mask";
-import {
-  ICustomer,
-  IDistrict,
-  IProvince,
-  IWard,
-} from "../../../../pages/interfaces";
+import { ICustomer, IDistrict, IProvince, IWard } from "../../../../interfaces";
 import TextArea from "antd/es/input/TextArea";
 import { validateCommon } from "../../../../helpers/validate";
 

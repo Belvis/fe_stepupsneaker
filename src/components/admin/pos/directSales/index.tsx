@@ -38,12 +38,7 @@ import React, {
   useEffect,
   useState,
 } from "react";
-import {
-  ICustomer,
-  IOption,
-  IOrder,
-  IProduct,
-} from "../../../../pages/interfaces";
+import { ICustomer, IOption, IOrder, IProduct } from "../../../../interfaces";
 import { CheckOutDrawer } from "../checkOutDrawer";
 import { OrderItem } from "../orderItem";
 import { ProductItem } from "../productItem";

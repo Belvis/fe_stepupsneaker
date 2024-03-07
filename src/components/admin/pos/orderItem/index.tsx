@@ -12,7 +12,7 @@ import {
   message,
   theme,
 } from "antd";
-import { IOrderDetail } from "../../../../pages/interfaces";
+import { IOrderDetail } from "../../../../interfaces";
 import { NumberField } from "@refinedev/antd";
 import "./style.css";
 import { debounce, isNumber } from "lodash";
@@ -151,6 +151,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
         </Col>
         <Col span={3}>
           <InputNumber
+            min={1}
             className="order-tab-quantity"
             bordered={false}
             style={{

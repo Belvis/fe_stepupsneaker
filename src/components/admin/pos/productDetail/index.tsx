@@ -24,7 +24,7 @@ import {
   ISize,
   ISizeClient,
   IVariation,
-} from "../../../../pages/interfaces";
+} from "../../../../interfaces";
 import { useEffect, useState } from "react";
 import { Quantity } from "./styled";
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
@@ -350,7 +350,11 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                   <button onClick={decreaseQty} disabled={productStock <= 0}>
                     <AiFillMinusCircle />
                   </button>
-                  <InputNumber value={qty} disabled={productStock <= 0} />
+                  <InputNumber
+                    min={1}
+                    value={qty}
+                    disabled={productStock <= 0}
+                  />
                   <button onClick={increaseQty} disabled={productStock <= 0}>
                     <AiFillPlusCircle />
                   </button>
@@ -415,7 +419,7 @@ const mapProductResponseToClient = (
     }
 
     const currentDiscountInfo = getDiscountInfo(
-      productDetail.promotionProductDetails
+      productDetail.promotionProductDetails ?? []
     );
 
     if (currentDiscountInfo) {
@@ -449,7 +453,7 @@ const mapProductResponseToClient = (
 };
 
 const mapSizeToSizeClient = (detail: IProductDetail): ISizeClient => {
-  const discountInfo = getDiscountInfo(detail.promotionProductDetails);
+  const discountInfo = getDiscountInfo(detail.promotionProductDetails ?? []);
 
   return {
     id: detail.size?.id || "",

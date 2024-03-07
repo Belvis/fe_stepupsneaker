@@ -13,7 +13,7 @@ import {
   message,
   theme,
 } from "antd";
-import { IProductDetail } from "../../../../pages/interfaces";
+import { IProductDetail } from "../../../../interfaces";
 import { isNumber } from "lodash";
 const { useToken } = theme;
 const { Text } = Typography;
@@ -67,6 +67,7 @@ export const ProductDetailItem: React.FC<ProductDetailItemProps> = ({
         </Col>
         <Col span={3}>
           <InputNumber
+            min={1}
             className="order-tab-quantity"
             bordered={false}
             style={{

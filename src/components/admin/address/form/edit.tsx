@@ -4,12 +4,7 @@ import { Form, Input, Select, Spin } from "antd";
 import TextArea from "antd/es/input/TextArea";
 import { useEffect, useState } from "react";
 import InputMask from "react-input-mask";
-import {
-  IAddress,
-  IDistrict,
-  IProvince,
-  IWard,
-} from "../../../../pages/interfaces";
+import { IAddress, IDistrict, IProvince, IWard } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import {
   validateCommon,

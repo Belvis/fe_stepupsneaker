@@ -15,7 +15,7 @@ import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 
 dayjs.extend(relativeTime);
-import { IOrderAudit, RevisionType } from "../../../../pages/interfaces";
+import { IOrderAudit, RevisionType } from "../../../../interfaces";
 import { CreatedAt, Timeline, TimelineContent, TimelineItem } from "./styled";
 import React, { useState } from "react";
 import { useModal } from "@refinedev/antd";

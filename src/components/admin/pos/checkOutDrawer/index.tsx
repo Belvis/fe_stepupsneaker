@@ -46,7 +46,7 @@ import {
   IPaymentConvertedPayload,
   IPaymentMethod,
   IVoucherList,
-} from "../../../../pages/interfaces";
+} from "../../../../interfaces";
 import { formatTimestamp } from "../../../../utils";
 import {
   CloseButtonWrapper,
@@ -258,11 +258,13 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
   }, [data]);
 
   function handleRadioChange(e: RadioChangeEvent): void {
+    const paymentMethod = e.target.value;
+
     setPayments([
       {
         id: "",
         order: order,
-        paymentMethod: e.target.value,
+        paymentMethod: paymentMethod,
         transactionCode: "string",
         totalMoney: totalPrice,
         description: "string",
@@ -285,8 +287,8 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
       return;
     }
 
-    const paymentsConvertedPayload: IPaymentConvertedPayload[] =
-            convertToPayload(payments);
+    const paymentConvertedPayload: IPaymentConvertedPayload[] =
+      convertToPayload(payments);
 
     mutateUpdate(
       {
@@ -298,7 +300,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           voucher: order.voucher ? order.voucher.id : null,
           address: order.address ? order.address.id : null,
           totalMoney: totalPrice - discount,
-          payments: paymentsConvertedPayload,
+          payments: paymentConvertedPayload,
           status: "COMPLETED",
         },
         id: order.id,

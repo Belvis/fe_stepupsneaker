@@ -35,12 +35,7 @@ import {
   getUserGenderOptions,
   getUserStatusOptions,
 } from "../../../../constants";
-import {
-  ICustomer,
-  IDistrict,
-  IProvince,
-  IWard,
-} from "../../../../pages/interfaces";
+import { ICustomer, IDistrict, IProvince, IWard } from "../../../../interfaces";
 import { getBase64Image, showWarningConfirmDialog } from "../../../../utils";
 import {
   validateCommon,
@@ -454,7 +449,18 @@ export const EditCustomerModal: React.FC<EditCustomerModalProps> = ({
                     },
                   ]}
                 >
-                  <DatePicker style={{ width: "100%" }} />
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    disabledDate={(current) => {
+                      const tenYearsAgo = dayjs().subtract(10, "year");
+                      const hundredYearsAgo = dayjs().subtract(100, "year");
+
+                      return (
+                        current &&
+                        (current > tenYearsAgo || current < hundredYearsAgo)
+                      );
+                    }}
+                  />
                 </Form.Item>
                 <Row gutter={10}>
                   <Col span={12}>

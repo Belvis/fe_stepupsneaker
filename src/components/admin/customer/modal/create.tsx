@@ -23,7 +23,7 @@ import {
   IDistrict,
   IProvince,
   IWard,
-} from "../../../../pages/interfaces";
+} from "../../../../interfaces";
 import {
   getBase64Image,
   parseQRCodeResult,
@@ -428,8 +428,20 @@ export const CreateCustomerModal: React.FC<CreateCustomerModalProps> = ({
                         validateCommon(_, value, t, "dateOfBirth"),
                     },
                   ]}
+                  initialValue={dayjs().subtract(10, "year")}
                 >
-                  <DatePicker style={{ width: "100%" }} />
+                  <DatePicker
+                    style={{ width: "100%" }}
+                    disabledDate={(current) => {
+                      const tenYearsAgo = dayjs().subtract(10, "year");
+                      const hundredYearsAgo = dayjs().subtract(100, "year");
+
+                      return (
+                        current &&
+                        (current > tenYearsAgo || current < hundredYearsAgo)
+                      );
+                    }}
+                  />
                 </Form.Item>
                 <Form.Item
                   label={t("customers.fields.gender.label")}
