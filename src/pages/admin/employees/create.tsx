@@ -18,7 +18,7 @@ import {
 
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { QRScannerModal } from "../../../components";
 import { getUserGenderOptions } from "../../../constants";
 import {
@@ -281,7 +281,17 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                       ]}
                       style={{ width: "100%" }}
                     >
-                      <Select {...roleSelectProps} />
+                      <Select
+                        {...roleSelectProps}
+                        options={
+                          roleSelectProps.options
+                            ? roleSelectProps.options.map((option) => ({
+                                ...option,
+                                label: t(`roles.${option.label}`),
+                              }))
+                            : []
+                        }
+                      />
                     </Form.Item>
                     <Form.Item
                       label={t("employees.fields.gender.label")}
@@ -303,7 +313,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                 </Col>
               </Row>
               <Divider orientation="left" style={{ color: "#000000" }}>
-                Address
+                Địa chỉ
               </Divider>
               <Row gutter={10}>
                 <Col xs={24} lg={24}>

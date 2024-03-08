@@ -68,6 +68,11 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
   }, []);
 
   const [activeKey, setActiveKey] = useState<string>("1");
+
+  useEffect(() => {
+    console.log(activeKey);
+  }, [activeKey]);
+
   const [items, setItems] = useState<Tab[]>(initialItems);
 
   const { mutate: mutateCreate, isLoading: isLoadingOrderCreate } = useCreate();
@@ -231,14 +236,23 @@ export const PointOfSales: React.FC<IResourceComponentsProps> = () => {
           key: order.id,
         };
       });
+      console.log("items", items);
+
       setItems(items);
-      if (!activeKey || activeKey == "1") {
+      if (activeKey === "1") {
         setActiveKey(items[0].key);
+      } else {
+        setActiveKey(items[items.length - 1].key);
       }
+    } else {
+      setItems(initialItems);
+      setActiveKey("1");
     }
   }, [data]);
 
   const onChange = (newActiveKey: string) => {
+    console.log("newActiveKey", newActiveKey);
+
     setActiveKey(newActiveKey);
   };
 

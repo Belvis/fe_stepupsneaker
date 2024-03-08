@@ -1,14 +1,3 @@
-import { ReactChild, ReactNode, useEffect, useState } from "react";
-import {
-  useShow,
-  IResourceComponentsProps,
-  useTranslate,
-  useUpdate,
-  useList,
-  HttpError,
-  useParsed,
-} from "@refinedev/core";
-import { DateField, List, NumberField, useModal } from "@refinedev/antd";
 import {
   CarOutlined,
   CheckCircleOutlined,
@@ -22,24 +11,33 @@ import {
   QuestionOutlined,
   RollbackOutlined,
 } from "@ant-design/icons";
+import { DateField, List, NumberField, useModal } from "@refinedev/antd";
 import {
-  Row,
-  Col,
-  Button,
-  Steps,
-  Grid,
-  Space,
+  IResourceComponentsProps,
+  useParsed,
+  useShow,
+  useTranslate,
+  useUpdate,
+} from "@refinedev/core";
+import {
   Avatar,
-  Typography,
-  Card,
-  Table,
-  Skeleton,
-  DescriptionsProps,
-  Descriptions,
   Badge,
+  Button,
+  Card,
+  Col,
+  Descriptions,
+  DescriptionsProps,
   Empty,
+  Grid,
+  Row,
+  Skeleton,
+  Space,
+  Steps,
+  Table,
+  Typography,
 } from "antd";
 import dayjs from "dayjs";
+import { ReactChild, ReactNode, useEffect, useState } from "react";
 
 // import { Map, MapMarker } from "../../components";
 import { OrderHistoryTimeLine } from "../../../components";
@@ -49,10 +47,13 @@ import {
   IOrder,
   IOrderDetail,
   IOrderHistory,
-  IProduct,
   OrderStatus,
 } from "../../../interfaces";
 
+import { ColumnsType } from "antd/es/table";
+import CancelReasonModal from "../../../components/admin/order/CancelReasonModal";
+import MyOrderModal from "../../../components/admin/order/MyOrderModal";
+import ReasonModal from "../../../components/admin/order/ReasonModal";
 import {
   Employee,
   EmployeeBoxContainer,
@@ -64,11 +65,6 @@ import {
   ProductFooter,
   ProductText,
 } from "./styled";
-import { ColumnsType } from "antd/es/table";
-import MyOrderModal from "../../../components/admin/order/MyOrderModal";
-import { showWarningConfirmDialog } from "../../../utils";
-import CancelReasonModal from "../../../components/admin/order/CancelReasonModal";
-import ReasonModal from "../../../components/admin/order/ReasonModal";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
@@ -569,7 +565,7 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
       key: "6",
       label: t("orders.fields.note"),
       span: 2,
-      children: record?.note,
+      children: record?.note ?? "Đơn hàng không có ghi chú",
     },
     {
       key: "7",
@@ -636,23 +632,43 @@ export const OrderShow: React.FC<IResourceComponentsProps> = () => {
           {record?.payments &&
             record.payments.map((payment) => (
               <div key={payment.id}>
-                <NumberField
-                  options={{
-                    currency: "VND",
-                    style: "currency",
-                  }}
-                  value={payment.totalMoney}
-                  locale={"vi"}
-                />
-                {` - `}
-                <DateField
-                  value={dayjs(new Date(payment.createdAt))}
-                  format="LLL"
-                />
-                {` - `}
-                {t("payments.fields.transactionCode")}
-                {`: ${payment.transactionCode}`}
-                <br />
+                {payment.transactionCode === "PENDING" ? (
+                  <>
+                    <NumberField
+                      options={{
+                        currency: "VND",
+                        style: "currency",
+                      }}
+                      value={payment.totalMoney}
+                      locale={"vi"}
+                    />
+                    {" - "}
+                    <span>Chưa thanh toán</span>
+                  </>
+                ) : (
+                  <>
+                    <NumberField
+                      options={{
+                        currency: "VND",
+                        style: "currency",
+                      }}
+                      value={payment.totalMoney}
+                      locale={"vi"}
+                    />
+                    {" - "}
+                    <DateField
+                      value={dayjs(new Date(payment.updatedAt))}
+                      format="LLL"
+                    />
+                    {payment.transactionCode !== "CASH" && (
+                      <>
+                        {" - "}
+                        {t("payments.fields.transactionCode")}
+                        {`: ${payment.transactionCode}`}
+                      </>
+                    )}
+                  </>
+                )}
               </div>
             ))}
         </>

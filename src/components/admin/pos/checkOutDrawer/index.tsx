@@ -162,6 +162,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                   totalMoney: totalMoney,
                   description: "Cash",
                   createdAt: 0,
+                  updatedAt: 0,
                 },
               ]);
           }}
@@ -252,6 +253,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           totalMoney: totalPrice,
           description: "string",
           createdAt: 0,
+          updatedAt: 0,
         },
       ]);
     }
@@ -269,6 +271,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
         totalMoney: totalPrice,
         description: "string",
         createdAt: 0,
+        updatedAt: 0,
       },
     ]);
   }
@@ -304,6 +307,20 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
           status: "COMPLETED",
         },
         id: order.id,
+        successNotification(data, values, resource) {
+          return {
+            message: "Thanh toán đơn hàng thành công!",
+            description: "Thành công",
+            type: "success",
+          };
+        },
+        errorNotification: (error: any) => {
+          return {
+            message: error.message,
+            description: "Đã xảy ra lỗi",
+            type: "error",
+          };
+        },
       },
       {
         onError: (error, variables, context) => {
@@ -562,7 +579,7 @@ export const CheckOutDrawer: React.FC<CheckOutDrawerProps> = ({
                       <UserIcon color={token.colorBgMask} />
                       <CustomerName color={token.colorPrimary}>
                         {order.employee?.fullName} -{" "}
-                        {order.employee.phoneNumber}
+                        {order.employee?.phoneNumber}
                       </CustomerName>
                     </TextContainer>
                     <CloseButtonWrapper>
