@@ -377,7 +377,12 @@ export const DirectSales: React.FC<DirectSalesProps> = ({
                           color={token.colorPrimary}
                           onClick={showEditCustomerModal}
                         >
-                          {order.customer?.fullName}
+                          {order.customer?.fullName} -{" "}
+                          {
+                            order.customer?.addressList.find(
+                              (add) => add.isDefault === true
+                            )?.phoneNumber
+                          }
                         </CustomerName>
                       </TextContainer>
                       <CloseButtonWrapper>
