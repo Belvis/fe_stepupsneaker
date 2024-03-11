@@ -15,7 +15,7 @@ export const DashboardContextProvider: React.FC<PropsWithChildren> = ({
 }) => {
   const [dateRange, setDateRange] = useState<[number, number]>([
     dayjs().subtract(7, "days").startOf("day").valueOf(),
-    dayjs().startOf("day").valueOf(),
+    dayjs().endOf("day").valueOf(),
   ]);
 
   return (
