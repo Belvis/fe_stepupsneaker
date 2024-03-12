@@ -370,7 +370,13 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
               <Row gutter={10}>
                 <Col xs={24} lg={12}>
                   <Form.Item
-                    label={t("customers.fields.fullName")}
+                    label={
+                      <div>
+                        <span>{t("customers.fields.fullName")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="fullName"
                     rules={[
                       {
@@ -378,10 +384,16 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={255} showCount />
                   </Form.Item>
                   <Form.Item
-                    label={t("customers.fields.email")}
+                    label={
+                      <div>
+                        <span>{t("customers.fields.email")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="email"
                     rules={[
                       {
@@ -389,12 +401,13 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={50} showCount />
                   </Form.Item>
                 </Col>
                 <Col xs={24} lg={12}>
                   <Form.Item
                     label={t("customers.fields.dateOfBirth")}
+                    required
                     name="dateOfBirth"
                     rules={[
                       {
@@ -420,6 +433,7 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("customers.fields.gender.label")}
                     name="gender"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -440,7 +454,13 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
               <Row gutter={10}>
                 <Col xs={24} lg={12}>
                   <Form.Item
-                    label={t("customers.fields.phoneNumber")}
+                    label={
+                      <div>
+                        <span>{t("customers.fields.phoneNumber")}</span>
+                        <span className="sub-label">(Tối đa 10 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="phoneNumber"
                     rules={[
                       {
@@ -448,10 +468,11 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={10} showCount />
                   </Form.Item>
                   <Form.Item
                     label={t("customers.fields.province.label")}
+                    required
                     name="provinceId"
                     rules={[
                       {
@@ -478,6 +499,8 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("customers.fields.district.label")}
                     name="districtId"
+                    required
+                    tooltip={"Bạn cần chọn tỉnh/thành phố trước"}
                     rules={[
                       {
                         validator: (_, value) =>
@@ -500,6 +523,8 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                   </Form.Item>
                   <Form.Item
                     label={t("customers.fields.ward.label")}
+                    required
+                    tooltip={"Bạn cần chọn quận/huyện trước"}
                     name="wardCode"
                     rules={[
                       {
@@ -524,7 +549,13 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={t("customers.fields.more")}
+                    label={
+                      <div>
+                        <span>{t("customers.fields.more")}</span>
+                        <span className="sub-label">(Tối đa 500 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="more"
                     rules={[
                       {
@@ -533,7 +564,12 @@ export const CustomerCreate: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <TextArea rows={5} placeholder="..." />
+                    <TextArea
+                      rows={3}
+                      placeholder="..."
+                      maxLength={500}
+                      showCount
+                    />
                   </Form.Item>
                 </Col>
               </Row>

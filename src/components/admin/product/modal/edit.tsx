@@ -181,7 +181,13 @@ export const EditProduct: React.FC<EditProductProps> = ({
           </Col>
           <Col span={16}>
             <Form.Item
-              label={t("products.fields.code")}
+              label={
+                <div>
+                  <span>{t("products.fields.code")}</span>
+                  <span className="sub-label">(Tối đa 10 ký tự)</span>
+                </div>
+              }
+              required
               initialValue={data?.data.code}
               name="code"
               rules={[
@@ -190,10 +196,16 @@ export const EditProduct: React.FC<EditProductProps> = ({
                 },
               ]}
             >
-              <Input />
+              <Input maxLength={10} showCount />
             </Form.Item>
             <Form.Item
-              label={t("products.fields.name")}
+              label={
+                <div>
+                  <span>{t("products.fields.name")}</span>
+                  <span className="sub-label">(Tối đa 255 ký tự)</span>
+                </div>
+              }
+              required
               initialValue={data?.data.name}
               name="name"
               rules={[
@@ -202,10 +214,16 @@ export const EditProduct: React.FC<EditProductProps> = ({
                 },
               ]}
             >
-              <Input />
+              <Input maxLength={255} showCount />
             </Form.Item>
             <Form.Item
-              label={t("products.fields.description")}
+              label={
+                <div>
+                  <span>{t("products.fields.description")}</span>
+                  <span className="sub-label">(Tối đa 500 ký tự)</span>
+                </div>
+              }
+              required
               initialValue={data?.data.description}
               name="description"
               rules={[
@@ -215,11 +233,12 @@ export const EditProduct: React.FC<EditProductProps> = ({
                 },
               ]}
             >
-              <TextArea rows={5} placeholder="..." />
+              <TextArea rows={3} placeholder="..." maxLength={500} showCount />
             </Form.Item>
             <Form.Item
               label={t("products.fields.status")}
               initialValue={data?.data.status}
+              required
               name="status"
               rules={[
                 {

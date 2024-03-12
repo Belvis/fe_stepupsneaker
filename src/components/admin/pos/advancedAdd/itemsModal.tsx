@@ -94,7 +94,12 @@ export const SelectedItemsModal: React.FC<SelectedItemsModalProps> = ({
           <Space direction="vertical" style={{ width: "100%" }}>
             <ShoppingCartHeader />
             {copiedItems.length > 0 ? (
-              <>
+              <div
+                style={{
+                  maxHeight: "300px",
+                  overflow: "auto",
+                }}
+              >
                 {copiedItems.map((item, index) => (
                   <ProductDetailItem
                     key={item.id}
@@ -104,7 +109,7 @@ export const SelectedItemsModal: React.FC<SelectedItemsModalProps> = ({
                     count={index}
                   />
                 ))}
-              </>
+              </div>
             ) : (
               <Empty />
             )}

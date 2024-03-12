@@ -223,7 +223,13 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
         <Row gutter={10}>
           <Col xs={24} lg={12}>
             <Form.Item
-              label={t("vouchers.fields.name")}
+              label={
+                <div>
+                  <span>{t("vouchers.fields.name")}</span>
+                  <span className="sub-label">(Tối đa 255 ký tự)</span>
+                </div>
+              }
+              required
               name="name"
               rules={[
                 {
@@ -231,10 +237,16 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
                 },
               ]}
             >
-              <Input />
+              <Input maxLength={255} showCount />
             </Form.Item>
             <Form.Item
-              label={t("vouchers.fields.code")}
+              label={
+                <div>
+                  <span>{t("vouchers.fields.code")}</span>
+                  <span className="sub-label">(Tối đa 10 ký tự)</span>
+                </div>
+              }
+              required
               name="code"
               rules={[
                 {
@@ -242,10 +254,11 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
                 },
               ]}
             >
-              <Input />
+              <Input maxLength={10} showCount />
             </Form.Item>
             <Form.Item
               label={t("vouchers.fields.value")}
+              required
               name="value"
               rules={[
                 {
@@ -258,6 +271,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
             <Form.Item
               label={t("vouchers.fields.constraint")}
               name="constraint"
+              required
               rules={[
                 {
                   validator: (_, value) =>
@@ -272,6 +286,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
             <Form.Item
               label={t("vouchers.fields.quantity")}
               name="quantity"
+              required
               rules={[
                 {
                   validator: (_, value) =>
@@ -284,6 +299,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
             <Form.Item
               label={t("vouchers.fields.voucherRange")}
               name="voucherRange"
+              required
               rules={[
                 {
                   validator: (_, value) =>
@@ -304,6 +320,7 @@ export const VoucherCreate: React.FC<IResourceComponentsProps> = () => {
               label={t("vouchers.fields.type")}
               name="type"
               initialValue={"CASH"}
+              required
               rules={[
                 {
                   validator: (_, value) => validateCommon(_, value, t, "type"),

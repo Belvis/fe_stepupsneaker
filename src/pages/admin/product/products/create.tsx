@@ -1051,6 +1051,8 @@ export const ProductCreate: React.FC<IResourceComponentsProps> = () => {
                   value={userSelected.product.description}
                   rows={5}
                   placeholder="..."
+                  maxLength={500}
+                  showCount
                 />
               </Col>
             </Row>

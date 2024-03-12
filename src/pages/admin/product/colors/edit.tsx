@@ -69,6 +69,7 @@ export const EditColor: React.FC<EditColorProps> = ({
           label={t("colors.fields.code")}
           name="code"
           initialValue={data?.data.code}
+          required
           rules={[
             {
               validator: (_, value) => validateCommon(_, value, t, "code"),
@@ -82,7 +83,13 @@ export const EditColor: React.FC<EditColorProps> = ({
           />
         </Form.Item>
         <Form.Item
-          label={t("colors.fields.name")}
+          label={
+            <div>
+              <span>{t("colors.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           initialValue={data?.data.name}
           rules={[
@@ -96,6 +103,7 @@ export const EditColor: React.FC<EditColorProps> = ({
         <Form.Item
           label={t("colors.fields.status")}
           name="status"
+          required
           initialValue={data?.data.status}
           rules={[
             {

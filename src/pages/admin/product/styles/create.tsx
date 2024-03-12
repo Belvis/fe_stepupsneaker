@@ -42,7 +42,13 @@ export const CreateStyle: React.FC<CreateStyleProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("brands.fields.name")}
+          label={
+            <div>
+              <span>{t("styles.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           rules={[
             {
@@ -50,7 +56,7 @@ export const CreateStyle: React.FC<CreateStyleProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
       </Form>
     </Modal>

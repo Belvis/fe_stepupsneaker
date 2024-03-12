@@ -549,7 +549,7 @@
         "label": "Phường/Xã",
         "placeholder": "Chọn phường"
       },
-      "more": "Số nhà"
+      "more": "Chi tiết địa chỉ"
     },
     "filters": {
       "title": "Bộ lọc",
@@ -1084,7 +1084,8 @@
       "quantity": "Số lượng không được để trống",
       "value": "Giá trị không được để trống",
       "constraint": "Điều kiện không được để trống",
-      "voucherRange": "Khoảng ngày không được để trống"
+      "voucherRange": "Khoảng ngày không được để trống",
+      "address": "Địa chỉ không được để trống"
     }
   }
 }

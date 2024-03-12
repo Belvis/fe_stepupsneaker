@@ -42,7 +42,13 @@ export const CreateSole: React.FC<CreateSoleProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("brands.fields.name")}
+          label={
+            <div>
+              <span>{t("soles.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           rules={[
             {
@@ -50,7 +56,7 @@ export const CreateSole: React.FC<CreateSoleProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
       </Form>
     </Modal>

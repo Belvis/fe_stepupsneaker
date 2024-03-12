@@ -46,7 +46,13 @@ export const EditMaterial: React.FC<EditMaterialProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("materials.fields.name")}
+          label={
+            <div>
+              <span>{t("materials.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           initialValue={data?.data.name}
           rules={[
@@ -55,11 +61,12 @@ export const EditMaterial: React.FC<EditMaterialProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
         <Form.Item
           label={t("materials.fields.status")}
           name="status"
+          required
           initialValue={data?.data.status}
           rules={[
             {

@@ -324,6 +324,7 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({
   };
 
   const rowSelection = {
+    preserveSelectedRowKeys: true,
     selectedRowKeys,
     onChange: onSelectChange,
   };
@@ -447,7 +448,7 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({
       {...modalProps}
       width={breakpoint.sm ? "1300px" : "100%"}
       zIndex={1001}
-      onOk={handleSubmit}
+      footer={<></>}
     >
       {contextHolder}
       <Row gutter={[10, 10]}>
@@ -689,7 +690,7 @@ export const AdvancedAddModal: React.FC<AdvancedAddModalProps> = ({
                   <span>
                     |{" "}
                     {t("table.selection", {
-                      count: setSelectedRows.length,
+                      count: selectedRowKeys.length,
                     })}
                   </span>
                 )}

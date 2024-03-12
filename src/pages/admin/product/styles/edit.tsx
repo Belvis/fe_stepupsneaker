@@ -47,7 +47,13 @@ export const EditStyle: React.FC<EditStyleProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("styles.fields.name")}
+          label={
+            <div>
+              <span>{t("styles.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           initialValue={data?.data.name}
           rules={[
@@ -56,11 +62,12 @@ export const EditStyle: React.FC<EditStyleProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
         <Form.Item
           label={t("styles.fields.status")}
           name="status"
+          required
           initialValue={data?.data.status}
           rules={[
             {

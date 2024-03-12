@@ -372,6 +372,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
         districtId: Number(defaultAddress.districtId),
         wardCode: defaultAddress.wardCode,
         more: defaultAddress.more,
+        fullName: order.customer.fullName,
       });
     }
   }
@@ -547,13 +548,46 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
             ShopId: GHN_SHOP_ID,
           },
         },
+        successNotification: (data: any, values) => {
+          const shippingMoney = new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+            currencyDisplay: "symbol",
+          }).format(data?.response.data.total as number);
+
+          return {
+            message:
+              "Chi phí vận chuyển của bạn được ước tính là " + shippingMoney,
+            description: "Thành công",
+            type: "success",
+          };
+        },
+        errorNotification: (data, values) => {
+          const shippingMoney = new Intl.NumberFormat("vi-VN", {
+            style: "currency",
+            currency: "VND",
+            currencyDisplay: "symbol",
+          }).format(36500);
+
+          return {
+            message:
+              "Chi phí vận chuyển của bạn được ước tính là " + shippingMoney,
+            description: "Thành công",
+            type: "success",
+          };
+        },
       },
       {
         onError: (error, variables, context) => {
-          // An error occurred!
+          console.log("An error occurred! ", +error);
+
+          const shippingMoney = 36500;
+          setShippingMoney(shippingMoney);
         },
         onSuccess: (data: any, variables, context) => {
-          setShippingMoney(data?.response.data.total as number);
+          const shippingMoney = data?.response.data.total as number;
+
+          setShippingMoney(shippingMoney);
         },
       }
     );
@@ -991,7 +1025,14 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                             },
                           ]}
                         >
-                          <Input />
+                          <Input
+                            bordered={false}
+                            style={{
+                              width: "100%",
+                              borderBottom: `1px solid ${token.colorPrimary}`,
+                              borderRadius: 0,
+                            }}
+                          />
                         </Form.Item>
                       </Col>
                       <Col span={24}>
@@ -1103,6 +1144,7 @@ export const DeliverySales: React.FC<DeliverySalesProps> = ({
                         >
                           <TextArea
                             bordered={false}
+                            rows={1}
                             style={{
                               width: "100%",
                               borderBottom: `1px solid ${token.colorPrimary}`,

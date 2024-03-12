@@ -46,7 +46,13 @@ export const EditSole: React.FC<EditSoleProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("soles.fields.name")}
+          label={
+            <div>
+              <span>{t("soles.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           initialValue={data?.data.name}
           rules={[
@@ -55,11 +61,12 @@ export const EditSole: React.FC<EditSoleProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
         <Form.Item
           label={t("soles.fields.status")}
           name="status"
+          required
           initialValue={data?.data.status}
           rules={[
             {

@@ -46,7 +46,13 @@ export const EditSize: React.FC<EditSizeProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("sizes.fields.name")}
+          label={
+            <div>
+              <span>{t("sizes.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           initialValue={data?.data.name}
           rules={[
@@ -55,11 +61,12 @@ export const EditSize: React.FC<EditSizeProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
         <Form.Item
           label={t("sizes.fields.status")}
           name="status"
+          required
           initialValue={data?.data.status}
           rules={[
             {

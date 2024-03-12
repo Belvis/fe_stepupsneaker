@@ -2,7 +2,12 @@ import { InfoCircleOutlined } from "@ant-design/icons";
 import { Descriptions, Modal, Space, Tooltip, Typography } from "antd";
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { IAddress, IOrderDetail, OrderStatus } from "../../../../interfaces";
+import {
+  IAddress,
+  IOrderDetail,
+  IVoucher,
+  OrderStatus,
+} from "../../../../interfaces";
 import { NumberField } from "@refinedev/antd";
 
 interface ChangeDetailProps {
@@ -47,7 +52,7 @@ const ChangeDetail: React.FC<ChangeDetailProps> = ({
 
           return (
             <Descriptions
-              title="Giỏ hàng"
+              title={t(`dashboard.timeline.changes.${key}`)}
               layout="vertical"
               size="small"
               bordered
@@ -104,7 +109,7 @@ const ChangeDetail: React.FC<ChangeDetailProps> = ({
 
           return (
             <Descriptions
-              title="Trạng thái"
+              title={t(`dashboard.timeline.changes.${key}`)}
               layout="vertical"
               size="small"
               bordered
@@ -135,7 +140,7 @@ const ChangeDetail: React.FC<ChangeDetailProps> = ({
 
           return (
             <Descriptions
-              title="Địa chỉ"
+              title={t(`dashboard.timeline.changes.${key}`)}
               layout="vertical"
               size="small"
               bordered
@@ -198,12 +203,48 @@ const ChangeDetail: React.FC<ChangeDetailProps> = ({
               </Descriptions.Item>
             </Descriptions>
           );
+        case "voucher":
+          const newVoucher: IVoucher = changes[key].newValue;
+          const oldVoucher: IVoucher = changes[key].oldValue;
+
+          return (
+            <Descriptions
+              title={t(`dashboard.timeline.changes.${key}`)}
+              layout="vertical"
+              size="small"
+              bordered
+            >
+              <Descriptions.Item label="Cũ">
+                {oldVoucher ? (
+                  <>
+                    <div>{oldVoucher.code}</div>
+                  </>
+                ) : (
+                  <div>N/A</div>
+                )}
+              </Descriptions.Item>
+              <Descriptions.Item label="Mới">
+                {newVoucher ? (
+                  <>
+                    <div>{newVoucher.code}</div>
+                  </>
+                ) : (
+                  <div>N/A</div>
+                )}
+              </Descriptions.Item>
+            </Descriptions>
+          );
         default:
           const newValue = changes[key].newValue;
           const oldValue = changes[key].oldValue;
 
           return (
-            <Descriptions title={key} layout="vertical" size="small" bordered>
+            <Descriptions
+              title={t(`dashboard.timeline.changes.${key}`)}
+              layout="vertical"
+              size="small"
+              bordered
+            >
               <Descriptions.Item label="Cũ">
                 {oldValue ? <div>{renderValue(oldValue)}</div> : <div>N/A</div>}
               </Descriptions.Item>

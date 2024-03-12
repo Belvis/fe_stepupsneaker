@@ -70,10 +70,14 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
 
   const { mutate: mutateDelete } = useDelete();
 
-  const { formProps, saveButtonProps, queryResult, onFinish } =
+  const { formProps, saveButtonProps, queryResult, onFinish, formLoading } =
     useForm<IVoucher>({});
+  const startDate = Form.useWatch("startDate", formProps.form);
+  const endDate = Form.useWatch("endDate", formProps.form);
 
   const handleOnFinish = (values: any) => {
+    console.log("values", values);
+
     const data = {
       code: `${values.code}`,
       name: `${values.name}`,
@@ -82,8 +86,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       value: `${values.value}`,
       constraint: `${values.constraint}`,
       quantity: `${values.quantity}`,
-      startDate: `${values.voucherRange[0].valueOf()}`,
-      endDate: `${values.voucherRange[1].valueOf()}`,
+      startDate: `${startDate}`,
+      endDate: `${endDate}`,
       image: `${values.image}`,
     };
     showWarningConfirmDialog({
@@ -100,17 +104,14 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   const imageUrl = Form.useWatch("image", formProps.form);
 
   useEffect(() => {
-    const startDate = formProps.form?.getFieldValue("startDate");
-    const endDate = formProps.form?.getFieldValue("endDate");
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
 
-    if (startDate && endDate) {
+    if (startDate && endDate && formProps.form && !formLoading) {
       const voucherRange = [dayjs(startDate), dayjs(endDate)];
-      formProps.form?.setFieldsValue({ voucherRange });
+      formProps.form.setFieldsValue({ voucherRange });
     }
-  }, [
-    formProps.form?.getFieldValue("startDate"),
-    formProps.form?.getFieldValue("endDate"),
-  ]);
+  }, [startDate, endDate]);
 
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -338,10 +339,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={8}>
-          <Edit
-            isLoading={queryResult?.isFetching}
-            saveButtonProps={saveButtonProps}
-          >
+          <Edit isLoading={formLoading} saveButtonProps={saveButtonProps}>
             <Form {...formProps} layout="vertical" onFinish={handleOnFinish}>
               <Row gutter={20}>
                 <Col span={24}>
@@ -413,7 +411,13 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={t("vouchers.fields.name")}
+                    label={
+                      <div>
+                        <span>{t("vouchers.fields.name")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="name"
                     rules={[
                       {
@@ -422,10 +426,16 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={255} showCount />
                   </Form.Item>
                   <Form.Item
-                    label={t("vouchers.fields.code")}
+                    label={
+                      <div>
+                        <span>{t("vouchers.fields.code")}</span>
+                        <span className="sub-label">(Tối đa 10 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="code"
                     rules={[
                       {
@@ -434,11 +444,12 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={10} showCount />
                   </Form.Item>
                   <Form.Item
                     label={t("vouchers.fields.value")}
                     name="value"
+                    required
                     rules={[
                       {
                         required: true,
@@ -454,6 +465,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("vouchers.fields.constraint")}
                     name="constraint"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -470,6 +482,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("vouchers.fields.quantity")}
                     name="quantity"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -486,6 +499,7 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("vouchers.fields.voucherRange")}
                     name="voucherRange"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -493,24 +507,35 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                     initialValue={() => {
-                      const startDate =
-                        formProps.form?.getFieldValue("startDate");
-                      const endDate = formProps.form?.getFieldValue("endDate");
-
-                      const voucherRange = [dayjs(startDate), dayjs(endDate)];
-                      return voucherRange;
+                      return [dayjs(startDate), dayjs(endDate)];
                     }}
                   >
                     <RangePicker
                       showTime={{ format: "HH:mm:ss" }}
                       format="YYYY-MM-DD HH:mm"
                       style={{ width: "100%" }}
+                      onChange={(dates) => {
+                        if (dates && dates.length === 2) {
+                          formProps.form?.setFieldValue(
+                            "startDate",
+                            dates[0]?.valueOf()
+                          );
+                          formProps.form?.setFieldValue(
+                            "endDate",
+                            dates[1]?.valueOf()
+                          );
+                        }
+                      }}
                       disabledDate={(current) =>
                         dayjs(current).isBefore(dayjs().startOf("day"))
                       }
                     />
                   </Form.Item>
-                  <Form.Item label={t("vouchers.fields.type")} name="type">
+                  <Form.Item
+                    label={t("vouchers.fields.type")}
+                    name="type"
+                    required
+                  >
                     <Radio.Group>
                       <Radio value={"PERCENTAGE"}>
                         {t("vouchers.type.PERCENTAGE")}
@@ -528,6 +553,12 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                     ]}
                   >
                     <Select options={getVouccherStatusOptions(t)} />
+                  </Form.Item>
+                  <Form.Item hidden name="startDate">
+                    <Input />
+                  </Form.Item>
+                  <Form.Item hidden name="endDate">
+                    <Input />
                   </Form.Item>
                 </Col>
               </Row>
