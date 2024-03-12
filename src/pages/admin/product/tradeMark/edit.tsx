@@ -46,7 +46,13 @@ export const EditTradeMark: React.FC<EditTradeMarkProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("tradeMarks.fields.name")}
+          label={
+            <div>
+              <span>{t("brand.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           initialValue={data?.data.name}
           rules={[
@@ -55,11 +61,12 @@ export const EditTradeMark: React.FC<EditTradeMarkProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
         <Form.Item
           label={t("tradeMarks.fields.status")}
           name="status"
+          required
           initialValue={data?.data.status}
           rules={[
             {

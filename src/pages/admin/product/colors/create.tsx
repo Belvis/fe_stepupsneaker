@@ -64,6 +64,7 @@ export const CreateColor: React.FC<CreateColorProps> = ({
         <Form.Item
           label={t("colors.fields.code")}
           name="code"
+          required
           rules={[
             {
               validator: (_, value) => validateCommon(_, value, t, "code"),
@@ -77,7 +78,13 @@ export const CreateColor: React.FC<CreateColorProps> = ({
           />
         </Form.Item>
         <Form.Item
-          label={t("colors.fields.name")}
+          label={
+            <div>
+              <span>{t("colors.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           rules={[
             {
@@ -85,7 +92,7 @@ export const CreateColor: React.FC<CreateColorProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
       </Form>
     </Modal>

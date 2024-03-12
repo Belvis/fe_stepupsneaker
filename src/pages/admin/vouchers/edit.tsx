@@ -30,13 +30,29 @@ import {
 } from "antd";
 
 import { ColumnsType } from "antd/es/table";
-import { RcFile, UploadChangeParam, UploadFile, UploadProps } from "antd/es/upload";
+import {
+  RcFile,
+  UploadChangeParam,
+  UploadFile,
+  UploadProps,
+} from "antd/es/upload";
 import dayjs from "dayjs";
 import { Dispatch, Key, SetStateAction, useEffect, useState } from "react";
 import { CustomerVoucherTable } from "../../../components";
-import { getUserStatusOptions, getVouccherStatusOptions } from "../../../constants";
-import { ICustomer, ICustomerFilterVariables, IVoucher } from "../../../interfaces";
-import { formatTimestamp, getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import {
+  getUserStatusOptions,
+  getVouccherStatusOptions,
+} from "../../../constants";
+import {
+  ICustomer,
+  ICustomerFilterVariables,
+  IVoucher,
+} from "../../../interfaces";
+import {
+  formatTimestamp,
+  getBase64Image,
+  showWarningConfirmDialog,
+} from "../../../utils";
 import { SearchOutlined, UndoOutlined } from "@ant-design/icons";
 import { debounce } from "lodash";
 import { validateCommon } from "../../../helpers/validate";
@@ -54,9 +70,14 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
 
   const { mutate: mutateDelete } = useDelete();
 
-  const { formProps, saveButtonProps, queryResult, onFinish } = useForm<IVoucher>({});
+  const { formProps, saveButtonProps, queryResult, onFinish, formLoading } =
+    useForm<IVoucher>({});
+  const startDate = Form.useWatch("startDate", formProps.form);
+  const endDate = Form.useWatch("endDate", formProps.form);
 
   const handleOnFinish = (values: any) => {
+    console.log("values", values);
+
     const data = {
       code: `${values.code}`,
       name: `${values.name}`,
@@ -65,8 +86,8 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       value: `${values.value}`,
       constraint: `${values.constraint}`,
       quantity: `${values.quantity}`,
-      startDate: `${values.voucherRange[0].valueOf()}`,
-      endDate: `${values.voucherRange[1].valueOf()}`,
+      startDate: `${startDate}`,
+      endDate: `${endDate}`,
       image: `${values.image}`,
     };
     showWarningConfirmDialog({
@@ -83,14 +104,14 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
   const imageUrl = Form.useWatch("image", formProps.form);
 
   useEffect(() => {
-    const startDate = formProps.form?.getFieldValue("startDate");
-    const endDate = formProps.form?.getFieldValue("endDate");
+    console.log("startDate", startDate);
+    console.log("endDate", endDate);
 
-    if (startDate && endDate) {
+    if (startDate && endDate && formProps.form && !formLoading) {
       const voucherRange = [dayjs(startDate), dayjs(endDate)];
-      formProps.form?.setFieldsValue({ voucherRange });
+      formProps.form.setFieldsValue({ voucherRange });
     }
-  }, [formProps.form?.getFieldValue("startDate"), formProps.form?.getFieldValue("endDate")]);
+  }, [startDate, endDate]);
 
   const beforeUpload = (file: RcFile) => {
     const isJpgOrPng = file.type === "image/jpeg" || file.type === "image/png";
@@ -110,7 +131,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     return isJpgOrPng && isLt2M;
   };
 
-  function handleInEligibleCustomerVoucher(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
+  function handleInEligibleCustomerVoucher(
+    selectedIds: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ) {
     try {
       mutateCreate(
         {
@@ -133,7 +157,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     }
   }
 
-  function handleEligibleCustomerVoucher(selectedIds: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>) {
+  function handleEligibleCustomerVoucher(
+    selectedIds: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ) {
     try {
       mutateDelete(
         {
@@ -156,7 +183,9 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     }
   }
 
-  const handleChange: UploadProps["onChange"] = (info: UploadChangeParam<UploadFile>) => {
+  const handleChange: UploadProps["onChange"] = (
+    info: UploadChangeParam<UploadFile>
+  ) => {
     if (info.file.status === "uploading") {
       setLoadingImage(true);
       return;
@@ -181,7 +210,6 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     pagination: {
       pageSize: 5,
     },
-    syncWithLocation: false,
     filters: {
       initial: [
         {
@@ -221,7 +249,6 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
     pagination: {
       pageSize: 5,
     },
-    syncWithLocation: false,
     filters: {
       initial: [
         {
@@ -272,7 +299,9 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       dataIndex: "phoneNumber",
       key: "phoneNumber",
       render: (_, record) => {
-        const defaultAddress = record.addressList.find((address) => address.isDefault);
+        const defaultAddress = record.addressList.find(
+          (address) => address.isDefault
+        );
         const phoneNumber = defaultAddress ? defaultAddress.phoneNumber : "N/A";
         return <>{phoneNumber}</>;
       },
@@ -310,11 +339,16 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
       {contextHolder}
       <Row gutter={[16, 24]}>
         <Col span={8}>
-          <Edit isLoading={queryResult?.isFetching} saveButtonProps={saveButtonProps}>
+          <Edit isLoading={formLoading} saveButtonProps={saveButtonProps}>
             <Form {...formProps} layout="vertical" onFinish={handleOnFinish}>
               <Row gutter={20}>
                 <Col span={24}>
-                  <Form.Item name="image" valuePropName="file" getValueFromEvent={getValueFromEvent} noStyle>
+                  <Form.Item
+                    name="image"
+                    valuePropName="file"
+                    getValueFromEvent={getValueFromEvent}
+                    noStyle
+                  >
                     <Upload.Dragger
                       name="file"
                       beforeUpload={beforeUpload}
@@ -368,93 +402,144 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                         >
                           {t("vouchers.fields.images.description")}
                         </Text>
-                        <Text style={{ fontSize: "12px" }}>{t("vouchers.fields.images.validation")}</Text>
+                        <Text style={{ fontSize: "12px" }}>
+                          {t("vouchers.fields.images.validation")}
+                        </Text>
                       </Space>
                     </Upload.Dragger>
                   </Form.Item>
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={t("vouchers.fields.name")}
+                    label={
+                      <div>
+                        <span>{t("vouchers.fields.name")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="name"
                     rules={[
                       {
-                        validator: (_, value) => validateCommon(_, value, t, "name"),
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "name"),
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={255} showCount />
                   </Form.Item>
                   <Form.Item
-                    label={t("vouchers.fields.code")}
+                    label={
+                      <div>
+                        <span>{t("vouchers.fields.code")}</span>
+                        <span className="sub-label">(Tối đa 10 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="code"
                     rules={[
                       {
-                        validator: (_, value) => validateCommon(_, value, t, "code"),
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "code"),
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={10} showCount />
                   </Form.Item>
                   <Form.Item
                     label={t("vouchers.fields.value")}
                     name="value"
+                    required
                     rules={[
                       {
                         required: true,
                       },
                     ]}
                   >
-                    <InputNumber min={1} width={100} style={{ width: "100%" }} />
+                    <InputNumber
+                      min={1}
+                      width={100}
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                   <Form.Item
                     label={t("vouchers.fields.constraint")}
                     name="constraint"
+                    required
                     rules={[
                       {
-                        validator: (_, value) => validateCommon(_, value, t, "constraint"),
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "constraint"),
                       },
                     ]}
                   >
-                    <InputNumber min={1} width={100} style={{ width: "100%" }} />
+                    <InputNumber
+                      min={1}
+                      width={100}
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                   <Form.Item
                     label={t("vouchers.fields.quantity")}
                     name="quantity"
+                    required
                     rules={[
                       {
-                        validator: (_, value) => validateCommon(_, value, t, "quantity"),
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "quantity"),
                       },
                     ]}
                   >
-                    <InputNumber min={1} width={100} style={{ width: "100%" }} />
+                    <InputNumber
+                      min={1}
+                      width={100}
+                      style={{ width: "100%" }}
+                    />
                   </Form.Item>
                   <Form.Item
                     label={t("vouchers.fields.voucherRange")}
                     name="voucherRange"
+                    required
                     rules={[
                       {
-                        validator: (_, value) => validateCommon(_, value, t, "voucherRange"),
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "voucherRange"),
                       },
                     ]}
                     initialValue={() => {
-                      const startDate = formProps.form?.getFieldValue("startDate");
-                      const endDate = formProps.form?.getFieldValue("endDate");
-
-                      const voucherRange = [dayjs(startDate), dayjs(endDate)];
-                      return voucherRange;
+                      return [dayjs(startDate), dayjs(endDate)];
                     }}
                   >
                     <RangePicker
                       showTime={{ format: "HH:mm:ss" }}
                       format="YYYY-MM-DD HH:mm"
                       style={{ width: "100%" }}
-                      disabledDate={(current) => dayjs(current).isBefore(dayjs().startOf("day"))}
+                      onChange={(dates) => {
+                        if (dates && dates.length === 2) {
+                          formProps.form?.setFieldValue(
+                            "startDate",
+                            dates[0]?.valueOf()
+                          );
+                          formProps.form?.setFieldValue(
+                            "endDate",
+                            dates[1]?.valueOf()
+                          );
+                        }
+                      }}
+                      disabledDate={(current) =>
+                        dayjs(current).isBefore(dayjs().startOf("day"))
+                      }
                     />
                   </Form.Item>
-                  <Form.Item label={t("vouchers.fields.type")} name="type">
+                  <Form.Item
+                    label={t("vouchers.fields.type")}
+                    name="type"
+                    required
+                  >
                     <Radio.Group>
-                      <Radio value={"PERCENTAGE"}>{t("vouchers.type.PERCENTAGE")}</Radio>
+                      <Radio value={"PERCENTAGE"}>
+                        {t("vouchers.type.PERCENTAGE")}
+                      </Radio>
                       <Radio value={"CASH"}>{t("vouchers.type.CASH")}</Radio>
                     </Radio.Group>
                   </Form.Item>
@@ -469,6 +554,12 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                   >
                     <Select options={getVouccherStatusOptions(t)} />
                   </Form.Item>
+                  <Form.Item hidden name="startDate">
+                    <Input />
+                  </Form.Item>
+                  <Form.Item hidden name="endDate">
+                    <Input />
+                  </Form.Item>
                 </Col>
               </Row>
             </Form>
@@ -476,7 +567,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
         </Col>
         <Col span={16}>
           <Card style={{ height: "100%" }}>
-            <Space direction="vertical" size="middle" style={{ display: "flex" }}>
+            <Space
+              direction="vertical"
+              size="middle"
+              style={{ display: "flex" }}
+            >
               <Form
                 {...searchFormPropsEligibleCustomer}
                 onValuesChange={debounce(() => {
@@ -484,7 +579,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                 }, 500)}
                 initialValues={{
                   name: getDefaultFilter("q", filtersEligibleCustomer, "eq"),
-                  status: getDefaultFilter("status", filtersEligibleCustomer, "eq"),
+                  status: getDefaultFilter(
+                    "status",
+                    filtersEligibleCustomer,
+                    "eq"
+                  ),
                 }}
               >
                 <Space wrap>
@@ -500,7 +599,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       suffix={<SearchOutlined />}
                     />
                   </Form.Item>
-                  <Form.Item noStyle label={t("customers.fields.status")} name="status">
+                  <Form.Item
+                    noStyle
+                    label={t("customers.fields.status")}
+                    name="status"
+                  >
                     <Select
                       placeholder={t("customers.filters.status.placeholder")}
                       style={{
@@ -509,7 +612,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       options={getUserStatusOptions(t)}
                     />
                   </Form.Item>
-                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersEligibleCustomer}>
+                  <Button
+                    icon={<UndoOutlined />}
+                    onClick={handleClearFiltersEligibleCustomer}
+                  >
                     {t("actions.clear")}
                   </Button>
                 </Space>
@@ -528,7 +634,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                 }, 500)}
                 initialValues={{
                   name: getDefaultFilter("q", filtersInEligibleCustomer, "eq"),
-                  status: getDefaultFilter("status", filtersInEligibleCustomer, "eq"),
+                  status: getDefaultFilter(
+                    "status",
+                    filtersInEligibleCustomer,
+                    "eq"
+                  ),
                 }}
               >
                 <Space wrap>
@@ -544,7 +654,11 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       suffix={<SearchOutlined />}
                     />
                   </Form.Item>
-                  <Form.Item noStyle label={t("customers.fields.status")} name="status">
+                  <Form.Item
+                    noStyle
+                    label={t("customers.fields.status")}
+                    name="status"
+                  >
                     <Select
                       placeholder={t("customers.filters.status.placeholder")}
                       style={{
@@ -553,7 +667,10 @@ export const VoucherEdit: React.FC<IResourceComponentsProps> = () => {
                       options={getUserStatusOptions(t)}
                     />
                   </Form.Item>
-                  <Button icon={<UndoOutlined />} onClick={handleClearFiltersInEligibleCustomer}>
+                  <Button
+                    icon={<UndoOutlined />}
+                    onClick={handleClearFiltersInEligibleCustomer}
+                  >
                     {t("actions.clear")}
                   </Button>
                 </Space>

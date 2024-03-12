@@ -457,7 +457,13 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={t("promotions.fields.name")}
+                    label={
+                      <div>
+                        <span>{t("promotions.fields.name")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="name"
                     rules={[
                       {
@@ -466,10 +472,16 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={255} showCount />
                   </Form.Item>
                   <Form.Item
-                    label={t("promotions.fields.code")}
+                    label={
+                      <div>
+                        <span>{t("promotions.fields.code")}</span>
+                        <span className="sub-label">(Tối đa 10 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="code"
                     rules={[
                       {
@@ -478,11 +490,12 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={10} showCount />
                   </Form.Item>
                   <Form.Item
                     label={t("promotions.fields.value")}
                     name="value"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -499,6 +512,7 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("promotions.fields.promotionRange")}
                     name="promotionRange"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -621,6 +635,7 @@ export const PromotionEdit: React.FC<IResourceComponentsProps> = () => {
                     noStyle
                     label={t("products.fields.status")}
                     name="status"
+                    required
                   >
                     <Select
                       placeholder={t("products.filters.status.placeholder")}

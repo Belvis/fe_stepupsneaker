@@ -37,7 +37,13 @@ export const CreatePaymentMethod: React.FC<CreatePaymentMethodProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("paymentMethods.fields.name")}
+          label={
+            <div>
+              <span>{t("paymentMethods.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           rules={[
             {
@@ -45,7 +51,7 @@ export const CreatePaymentMethod: React.FC<CreatePaymentMethodProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
       </Form>
     </Modal>

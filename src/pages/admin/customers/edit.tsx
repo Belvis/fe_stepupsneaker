@@ -385,7 +385,13 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
               <Row gutter={10}>
                 <Col xs={24} lg={12}>
                   <Form.Item
-                    label={t("customers.fields.fullName")}
+                    label={
+                      <div>
+                        <span>{t("customers.fields.fullName")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="fullName"
                     rules={[
                       {
@@ -393,10 +399,16 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={255} showCount />
                   </Form.Item>
                   <Form.Item
-                    label={t("customers.fields.email")}
+                    label={
+                      <div>
+                        <span>{t("customers.fields.email")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="email"
                     rules={[
                       {
@@ -404,12 +416,13 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={50} showCount />
                   </Form.Item>
                 </Col>
                 <Col xs={24} lg={12}>
                   <Form.Item
                     label={t("customers.fields.dateOfBirth")}
+                    required
                     name="dob"
                     rules={[
                       {
@@ -436,6 +449,7 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                       <Form.Item
                         label={t("customers.fields.gender.label")}
                         name="gender"
+                        required
                         rules={[
                           {
                             validator: (_, value) =>
@@ -453,6 +467,7 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                       <Form.Item
                         label={t("customers.fields.status")}
                         name="status"
+                        required
                         rules={[
                           {
                             validator: (_, value) =>
@@ -470,12 +485,18 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                 </Col>
               </Row>
               <Divider orientation="left" style={{ color: "#000000" }}>
-                Address
+                {t("customers.fields.address")}
               </Divider>
               <Row gutter={10}>
                 <Col xs={24} lg={12}>
                   <Form.Item
-                    label={t("customers.fields.phoneNumber")}
+                    label={
+                      <div>
+                        <span>{t("customers.fields.phoneNumber")}</span>
+                        <span className="sub-label">(Tối đa 10 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="phoneNumber"
                     rules={[
                       {
@@ -488,6 +509,7 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("customers.fields.province.label")}
                     name="provinceId"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -513,6 +535,7 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("customers.fields.district.label")}
                     name="districtId"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -536,6 +559,7 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("customers.fields.ward.label")}
                     name="wardCode"
+                    required
                     rules={[
                       {
                         validator: (_, value) =>
@@ -559,7 +583,13 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={t("customers.fields.more")}
+                    label={
+                      <div>
+                        <span>{t("customers.fields.more")}</span>
+                        <span className="sub-label">(Tối đa 500 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="more"
                     rules={[
                       {
@@ -568,7 +598,12 @@ export const CustomerEdit: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <TextArea rows={5} placeholder="..." />
+                    <TextArea
+                      rows={3}
+                      placeholder="..."
+                      maxLength={500}
+                      showCount
+                    />
                   </Form.Item>
                 </Col>
               </Row>

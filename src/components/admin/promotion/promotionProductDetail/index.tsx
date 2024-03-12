@@ -13,15 +13,15 @@ type PromotionProductDetailTableProps = {
   columns: ColumnsType<IProductDetail>;
   title: string;
   tableProps: TableProps<IProductDetail>;
-  handlePromotionProductDetail(selectedKeys: Key[], setSelectedIds: Dispatch<SetStateAction<Key[]>>): void;
+  handlePromotionProductDetail(
+    selectedKeys: Key[],
+    setSelectedIds: Dispatch<SetStateAction<Key[]>>
+  ): void;
 };
 
-export const PromotionProductDetailTable: React.FC<PromotionProductDetailTableProps> = ({
-  columns,
-  title,
-  tableProps,
-  handlePromotionProductDetail,
-}) => {
+export const PromotionProductDetailTable: React.FC<
+  PromotionProductDetailTableProps
+> = ({ columns, title, tableProps, handlePromotionProductDetail }) => {
   const t = useTranslate();
 
   const [selectedIds, setSelectedIds] = useState<React.Key[]>([]);
@@ -31,6 +31,7 @@ export const PromotionProductDetailTable: React.FC<PromotionProductDetailTablePr
   };
 
   const rowSelection = {
+    preserveSelectedRowKeys: true,
     selectedRowKeys: selectedIds,
     onChange: onSelectChange,
   };
@@ -43,11 +44,19 @@ export const PromotionProductDetailTable: React.FC<PromotionProductDetailTablePr
       title={() => {
         return (
           <Flex justify={"space-between"} align={"center"}>
-            <Title level={5}>{t(`promotionProductDetail.table.title.${title}`)}</Title>
+            <Title level={5}>
+              {t(`promotionProductDetail.table.title.${title}`)}
+            </Title>
             {rowSelection.selectedRowKeys.length > 0 && (
               <Space>
-                <span style={{ marginLeft: 8 }}>Selected {rowSelection.selectedRowKeys.length} items</span>
-                <Button type="primary" loading={tableProps.loading} onClick={() => setSelectedIds([])}>
+                <span style={{ marginLeft: 8 }}>
+                  Selected {rowSelection.selectedRowKeys.length} items
+                </span>
+                <Button
+                  type="primary"
+                  loading={tableProps.loading}
+                  onClick={() => setSelectedIds([])}
+                >
                   {t(`buttons.clear`)}
                 </Button>
                 <Button
@@ -55,7 +64,11 @@ export const PromotionProductDetailTable: React.FC<PromotionProductDetailTablePr
                   onClick={() =>
                     showWarningConfirmDialog({
                       options: {
-                        accept: () => handlePromotionProductDetail(selectedIds, setSelectedIds),
+                        accept: () =>
+                          handlePromotionProductDetail(
+                            selectedIds,
+                            setSelectedIds
+                          ),
                         reject: () => {},
                       },
                       t: t,

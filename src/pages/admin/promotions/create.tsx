@@ -326,7 +326,13 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                 </Col>
                 <Col span={24}>
                   <Form.Item
-                    label={t("promotions.fields.name")}
+                    label={
+                      <div>
+                        <span>{t("promotions.fields.name")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="name"
                     rules={[
                       {
@@ -335,26 +341,34 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={255} showCount />
                   </Form.Item>
                   <Form.Item
-                    label={t("promotions.fields.code")}
+                    label={
+                      <div>
+                        <span>{t("promotions.fields.code")}</span>
+                        <span className="sub-label">(Tối đa 10 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="code"
                     rules={[
                       {
-                        whitespace: true,
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "code"),
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={10} showCount />
                   </Form.Item>
                   <Form.Item
                     label={t("promotions.fields.value")}
                     name="value"
+                    required
                     rules={[
                       {
-                        required: true,
+                        validator: (_, value) =>
+                          validateCommon(_, value, t, "value"),
                       },
                     ]}
                   >
@@ -367,6 +381,7 @@ export const PromotionCreate: React.FC<IResourceComponentsProps> = () => {
                   <Form.Item
                     label={t("promotions.fields.promotionRange")}
                     name="promotionRange"
+                    required
                     rules={[
                       {
                         required: true,

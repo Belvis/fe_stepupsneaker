@@ -236,18 +236,30 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
               <Row gutter={10}>
                 <Col xs={24} lg={12}>
                   <Form.Item
-                    label={t("employees.fields.fullName")}
+                    label={
+                      <div>
+                        <span>{t("employees.fields.fullName")}</span>
+                        <span className="sub-label">(Tối đa 255 ký tự)</span>
+                      </div>
+                    }
                     name="fullName"
+                    required
                     rules={[
                       {
                         validator: validateFullName,
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={255} showCount />
                   </Form.Item>
                   <Form.Item
-                    label={t("employees.fields.email")}
+                    label={
+                      <div>
+                        <span>{t("employees.fields.email")}</span>
+                        <span className="sub-label">(Tối đa 50 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="email"
                     rules={[
                       {
@@ -255,12 +267,18 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={50} showCount />
                   </Form.Item>
                 </Col>
                 <Col xs={24} lg={12}>
                   <Form.Item
-                    label={t("employees.fields.phoneNumber")}
+                    label={
+                      <div>
+                        <span>{t("employees.fields.phoneNumber")}</span>
+                        <span className="sub-label">(Tối đa 10 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="phoneNumber"
                     rules={[
                       {
@@ -268,7 +286,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <Input />
+                    <Input maxLength={10} showCount />
                   </Form.Item>
                   <Flex gap="middle">
                     <Form.Item
@@ -283,6 +301,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     >
                       <Select
                         {...roleSelectProps}
+                        placeholder={t("employees.fields.role")}
                         options={
                           roleSelectProps.options
                             ? roleSelectProps.options.map((option) => ({
@@ -296,6 +315,7 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                     <Form.Item
                       label={t("employees.fields.gender.label")}
                       name="gender"
+                      required
                       rules={[
                         {
                           validator: (_, value) =>
@@ -318,7 +338,13 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
               <Row gutter={10}>
                 <Col xs={24} lg={24}>
                   <Form.Item
-                    label={t("employees.fields.address")}
+                    label={
+                      <div>
+                        <span>{t("employees.fields.address")}</span>
+                        <span className="sub-label">(Tối đa 500 ký tự)</span>
+                      </div>
+                    }
+                    required
                     name="address"
                     rules={[
                       {
@@ -327,7 +353,12 @@ export const EmployeeCreate: React.FC<IResourceComponentsProps> = () => {
                       },
                     ]}
                   >
-                    <TextArea rows={6} placeholder="..." />
+                    <TextArea
+                      rows={3}
+                      placeholder="..."
+                      maxLength={500}
+                      showCount
+                    />
                   </Form.Item>
                 </Col>
               </Row>

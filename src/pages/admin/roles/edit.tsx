@@ -45,7 +45,13 @@ export const EditRole: React.FC<EditRoleProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("roles.fields.name")}
+          label={
+            <div>
+              <span>{t("roles.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           initialValue={data?.data.name}
           rules={[
@@ -54,7 +60,7 @@ export const EditRole: React.FC<EditRoleProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
       </Form>
     </Modal>

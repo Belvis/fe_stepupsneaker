@@ -1,6 +1,9 @@
 import { HttpError, useOne, useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps, Select } from "antd";
-import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
+import {
+  PRODUCT_STATUS_OPTIONS,
+  getProductStatusOptions,
+} from "../../../../constants";
 import { IBrand } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { validateCommon } from "../../../../helpers/validate";
@@ -46,7 +49,13 @@ export const EditBrand: React.FC<EditBrandProps> = ({
     >
       <Form {...formProps} layout="vertical" onFinish={onFinishHandler}>
         <Form.Item
-          label={t("brands.fields.name")}
+          label={
+            <div>
+              <span>{t("brands.fields.name")}</span>
+              <span className="sub-label">(Tối đa 255 ký tự)</span>
+            </div>
+          }
+          required
           name="name"
           initialValue={data?.data.name}
           rules={[
@@ -55,11 +64,12 @@ export const EditBrand: React.FC<EditBrandProps> = ({
             },
           ]}
         >
-          <Input />
+          <Input maxLength={255} showCount />
         </Form.Item>
         <Form.Item
           label={t("brands.fields.status")}
           name="status"
+          required
           initialValue={data?.data.status}
           rules={[
             {
@@ -67,7 +77,7 @@ export const EditBrand: React.FC<EditBrandProps> = ({
             },
           ]}
         >
-          <Select options={PRODUCT_STATUS_OPTIONS} />
+          <Select options={getProductStatusOptions(t)} />
         </Form.Item>
       </Form>
     </Modal>

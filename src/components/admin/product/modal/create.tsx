@@ -162,7 +162,13 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
             </Col>
             <Col span={16}>
               <Form.Item
-                label={t("products.fields.code")}
+                label={
+                  <div>
+                    <span>{t("products.fields.code")}</span>
+                    <span className="sub-label">(Tối đa 10 ký tự)</span>
+                  </div>
+                }
+                required
                 name="code"
                 rules={[
                   {
@@ -171,11 +177,17 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                   },
                 ]}
               >
-                <Input />
+                <Input maxLength={10} showCount />
               </Form.Item>
               <Form.Item
-                label={t("products.fields.name")}
+                label={
+                  <div>
+                    <span>{t("products.fields.name")}</span>
+                    <span className="sub-label">(Tối đa 255 ký tự)</span>
+                  </div>
+                }
                 name="name"
+                required
                 rules={[
                   {
                     validator: (_, value) =>
@@ -183,10 +195,15 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                   },
                 ]}
               >
-                <Input />
+                <Input maxLength={255} showCount />
               </Form.Item>
               <Form.Item
-                label={t("products.fields.description")}
+                label={
+                  <div>
+                    <span>{t("products.fields.description")}</span>
+                    <span className="sub-label">(Tối đa 500 ký tự)</span>
+                  </div>
+                }
                 name="description"
                 rules={[
                   {
@@ -195,7 +212,12 @@ export const CreateProduct: React.FC<CreateProductProps> = ({
                   },
                 ]}
               >
-                <TextArea rows={5} placeholder="..." />
+                <TextArea
+                  rows={3}
+                  placeholder="..."
+                  maxLength={500}
+                  showCount
+                />
               </Form.Item>
             </Col>
           </Row>

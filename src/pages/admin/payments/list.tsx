@@ -138,6 +138,11 @@ export const PaymentList: React.FC<IResourceComponentsProps> = () => {
       defaultSortOrder: getDefaultSortOrder("transactionCode", sorters),
       dataIndex: "transactionCode",
       key: "transactionCode",
+      render: (text) => (
+        <Text style={{ wordBreak: "inherit" }}>
+          {text == "PENDING" ? "Chưa thanh toán" : text}
+        </Text>
+      ),
     },
     {
       title: t("payments.fields.createdAt"),
@@ -159,7 +164,7 @@ export const PaymentList: React.FC<IResourceComponentsProps> = () => {
   };
 
   return (
-    <List>
+    <List canCreate={false}>
       <Row gutter={[8, 12]} align="middle" justify="center">
         <Col span={24}>
           <Card>
