@@ -1,18 +1,7 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { NumberField } from "@refinedev/antd";
 import { useTranslate } from "@refinedev/core";
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  Flex,
-  InputNumber,
-  Row,
-  Typography,
-  message,
-  theme,
-} from "antd";
+import { Avatar, Button, Card, Col, Flex, InputNumber, Row, Typography, message, theme } from "antd";
 import { IProductDetail } from "../../../../interfaces";
 import { isNumber } from "lodash";
 const { useToken } = theme;
@@ -25,18 +14,32 @@ type ProductDetailItemProps = {
   onRemove: (productId: string) => void;
 };
 
-export const ProductDetailItem: React.FC<ProductDetailItemProps> = ({
-  productDetail,
-  callBack,
-  count,
-  onRemove,
-}) => {
+export const ProductDetailItem: React.FC<ProductDetailItemProps> = ({ productDetail, callBack, count, onRemove }) => {
   const t = useTranslate();
   const { token } = useToken();
 
   const [messageApi, contextHolder] = message.useMessage();
 
   const { quantity, product, price, color, size } = productDetail;
+
+  const getDiscountPrice = (price: number, discount: number) => {
+    return discount && discount > 0 ? price - price * (discount / 100) : null;
+  };
+
+  const promotionProductDetailsActive = (productDetail.promotionProductDetails ?? []).filter(
+    (productDetail) => productDetail.promotion.status == "ACTIVE"
+  );
+
+  const maxPromotionProductDetail = promotionProductDetailsActive.reduce((maxProduct, currentProduct) => {
+    return currentProduct.promotion.value > maxProduct.promotion.value ? currentProduct : maxProduct;
+  }, promotionProductDetailsActive[0]);
+
+  const discount = promotionProductDetailsActive.length > 0 ? maxPromotionProductDetail.promotion.value : 0;
+
+  const discountedPrice = getDiscountPrice(productDetail.price, discount);
+
+  const finalProductPrice = +(productDetail.price * 1);
+  const finalDiscountedPrice = +((discountedPrice ?? discount) * 1);
 
   const handleQuantityChange = (value: number | null) => {
     if (value !== null) callBack(productDetail.id, value);
@@ -87,7 +90,7 @@ export const ProductDetailItem: React.FC<ProductDetailItemProps> = ({
                 style: "currency",
               }}
               locale={"vi"}
-              value={price}
+              value={discountedPrice !== null ? finalDiscountedPrice : finalProductPrice}
             />
           </Text>
         </Col>
@@ -99,17 +102,12 @@ export const ProductDetailItem: React.FC<ProductDetailItemProps> = ({
                 style: "currency",
               }}
               locale={"vi"}
-              value={price * quantity}
+              value={(discountedPrice !== null ? finalDiscountedPrice : finalProductPrice) * quantity}
             />
           </Text>
         </Col>
         <Col span={3} style={{ textAlign: "center" }}>
-          <Button
-            shape="circle"
-            type="text"
-            onClick={() => onRemove(productDetail.id)}
-            icon={<DeleteOutlined />}
-          />
+          <Button shape="circle" type="text" onClick={() => onRemove(productDetail.id)} icon={<DeleteOutlined />} />
         </Col>
       </Row>
     </Card>

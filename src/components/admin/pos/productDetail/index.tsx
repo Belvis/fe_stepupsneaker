@@ -1,19 +1,5 @@
 import { HttpError, useCreate, useOne, useTranslate } from "@refinedev/core";
-import {
-  Modal,
-  Image,
-  Grid,
-  Row,
-  Col,
-  Flex,
-  Typography,
-  Space,
-  Tag,
-  InputNumber,
-  Button,
-  message,
-  Badge,
-} from "antd";
+import { Modal, Image, Grid, Row, Col, Flex, Typography, Space, Tag, InputNumber, Button, message, Badge } from "antd";
 import {
   IColor,
   IDiscountInfo,
@@ -25,7 +11,7 @@ import {
   ISizeClient,
   IVariation,
 } from "../../../../interfaces";
-import { useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { Quantity } from "./styled";
 import { AiFillPlusCircle, AiFillMinusCircle } from "react-icons/ai";
 import { NumberField } from "@refinedev/antd";
@@ -82,26 +68,15 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
     setQty(qty + 1);
   };
 
-  const [productData, setProductData] = useState(
-    initializeProductClient(product)
-  );
+  const [productData, setProductData] = useState(initializeProductClient(product));
 
-  const {
-    productClient,
-    initialSelectedColor,
-    initialSelectedSize,
-    initialProductStock,
-  } = productData;
+  const { productClient, initialSelectedColor, initialSelectedSize, initialProductStock } = productData;
 
-  const [selectedProductColor, setSelectedProductColor] =
-    useState(initialSelectedColor);
+  const [selectedProductColor, setSelectedProductColor] = useState(initialSelectedColor);
 
-  const [selectedProductSize, setSelectedProductSize] =
-    useState(initialSelectedSize);
+  const [selectedProductSize, setSelectedProductSize] = useState(initialSelectedSize);
 
-  const [selectedVariant, setSelectedVariant] = useState(
-    productClient.variation[0]
-  );
+  const [selectedVariant, setSelectedVariant] = useState(productClient.variation[0]);
 
   const [productStock, setProductStock] = useState(initialProductStock);
 
@@ -109,6 +84,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
 
   const handleFinish = () => {
     if (selectedVariant) {
+      const price = discountedPrice !== null ? finalDiscountedPrice : finalProductPrice;
       mutateCreate(
         {
           resource: "order-details",
@@ -117,8 +93,8 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
               productDetail: selectedProductSize.productDetailId,
               order: orderId,
               quantity: qty,
-              price: selectedProductSize.price,
-              totalPrice: selectedProductSize.price * qty,
+              price: price,
+              totalPrice: price * qty,
               status: "COMPLETED",
             },
           ],
@@ -155,9 +131,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
   };
 
   useEffect(() => {
-    const selectedVariant = productClient.variation.find(
-      (variation) => variation.color.id === selectedProductColor.id
-    );
+    const selectedVariant = productClient.variation.find((variation) => variation.color.id === selectedProductColor.id);
     if (selectedVariant) setSelectedVariant(selectedVariant);
   }, [selectedProductColor]);
 
@@ -171,6 +145,13 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
       setProductStock(initData.initialProductStock);
     }
   }, [open]);
+
+  const getDiscountPrice = (price: number, discount: number) => {
+    return discount && discount > 0 ? price - price * (discount / 100) : null;
+  };
+  const discountedPrice = getDiscountPrice(selectedProductSize.price, selectedProductSize.discount);
+  const finalProductPrice = +(selectedProductSize.price * 1);
+  const finalDiscountedPrice = +((discountedPrice ?? selectedProductSize.discount) * 1);
 
   return (
     <Modal
@@ -195,18 +176,36 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
             </Col>
             <Col span={24}>
               <Title level={4} style={{ color: "red" }}>
-                <NumberField
-                  options={{
-                    currency: "VND",
-                    style: "currency",
-                  }}
-                  value={
-                    selectedProductSize
-                      ? selectedProductSize.price
-                      : productClient.price.min
-                  }
-                  locale={"vi"}
-                />
+                {discountedPrice !== null ? (
+                  <Fragment>
+                    <NumberField
+                      options={{
+                        currency: "VND",
+                        style: "currency",
+                      }}
+                      value={finalDiscountedPrice}
+                      locale={"vi"}
+                    />
+                    <NumberField
+                      className="old"
+                      options={{
+                        currency: "VND",
+                        style: "currency",
+                      }}
+                      value={finalProductPrice}
+                      locale={"vi"}
+                    />
+                  </Fragment>
+                ) : (
+                  <NumberField
+                    options={{
+                      currency: "VND",
+                      style: "currency",
+                    }}
+                    value={finalProductPrice}
+                    locale={"vi"}
+                  />
+                )}
               </Title>
             </Col>
             <Col span={24}>
@@ -226,9 +225,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                     <>
                       {productClient.variation.map((single, key) => {
                         const hasSale = single.size.some(
-                          (size) =>
-                            typeof size.discount === "number" &&
-                            size.discount > 0
+                          (size) => typeof size.discount === "number" && size.discount > 0
                         );
 
                         return (
@@ -251,9 +248,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                           >
                             <Tag.CheckableTag
                               key={key}
-                              checked={
-                                selectedProductColor.id === single.color.id
-                              }
+                              checked={selectedProductColor.id === single.color.id}
                               style={{
                                 width: "30px",
                                 height: "30px",
@@ -286,8 +281,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                   <Text>{selectedProductSize.name}</Text>
                   <Text strong>Số lượng tồn</Text>
                   <Text style={{ color: productStock <= 0 ? "red" : "" }}>
-                    {productStock}{" "}
-                    {productStock <= 0 ? "Sản phẩm này đã hết hàng" : ""}
+                    {productStock} {productStock <= 0 ? "Sản phẩm này đã hết hàng" : ""}
                   </Text>
                 </Space>
                 <Space>
@@ -315,9 +309,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                                 >
                                   <Tag.CheckableTag
                                     key={key}
-                                    checked={
-                                      selectedProductSize.id === singleSize.id
-                                    }
+                                    checked={selectedProductSize.id === singleSize.id}
                                     style={{
                                       border:
                                         selectedProductSize.id === singleSize.id
@@ -350,11 +342,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
                   <button onClick={decreaseQty} disabled={productStock <= 0}>
                     <AiFillMinusCircle />
                   </button>
-                  <InputNumber
-                    min={1}
-                    value={qty}
-                    disabled={productStock <= 0}
-                  />
+                  <InputNumber min={1} value={qty} disabled={productStock <= 0} />
                   <button onClick={increaseQty} disabled={productStock <= 0}>
                     <AiFillPlusCircle />
                   </button>
@@ -379,9 +367,7 @@ export const ProductDetail: React.FC<ProductDetailProps> = ({
   );
 };
 
-const mapProductResponseToClient = (
-  productResponse: IProduct
-): IProductClient => {
+const mapProductResponseToClient = (productResponse: IProduct): IProductClient => {
   const variations: IVariation[] = [];
   const images: string[] = [productResponse.image];
   let minPrice = Number.MAX_SAFE_INTEGER;
@@ -392,14 +378,11 @@ const mapProductResponseToClient = (
   } as IDiscountInfo;
   const thresholdInMilliseconds = 7 * 24 * 60 * 60 * 1000;
   const currentTime = new Date().getTime();
-  const isNew =
-    currentTime - productResponse.createdAt < thresholdInMilliseconds;
+  const isNew = currentTime - productResponse.createdAt < thresholdInMilliseconds;
 
   productResponse.productDetails.forEach((productDetail) => {
     images.push(productDetail.image);
-    const existingVariation = variations.find(
-      (v) => v.color.id === productDetail.color.id
-    );
+    const existingVariation = variations.find((v) => v.color.id === productDetail.color.id);
     if (existingVariation) {
       existingVariation.size.push(mapSizeToSizeClient(productDetail));
       existingVariation.image.push(productDetail.image);
@@ -418,9 +401,7 @@ const mapProductResponseToClient = (
       maxPrice = Math.max(maxPrice, productDetail.price);
     }
 
-    const currentDiscountInfo = getDiscountInfo(
-      productDetail.promotionProductDetails ?? []
-    );
+    const currentDiscountInfo = getDiscountInfo(productDetail.promotionProductDetails ?? []);
 
     if (currentDiscountInfo) {
       if (!discountInfo || currentDiscountInfo.value > discountInfo.value) {
@@ -467,9 +448,7 @@ const mapSizeToSizeClient = (detail: IProductDetail): ISizeClient => {
   };
 };
 
-export const getDiscountInfo = (
-  promotionProductDetails: IPromotionProductDetailResponse[]
-): IDiscountInfo | null => {
+export const getDiscountInfo = (promotionProductDetails: IPromotionProductDetailResponse[]): IDiscountInfo | null => {
   if (!promotionProductDetails || promotionProductDetails.length === 0) {
     return null;
   }
@@ -499,9 +478,7 @@ const mapProductToClient = (product: IProduct): IProductClient => {
 
   mappedProduct.image.sort();
 
-  mappedProduct.variation.sort((a, b) =>
-    a.color.name.localeCompare(b.color.name)
-  );
+  mappedProduct.variation.sort((a, b) => a.color.name.localeCompare(b.color.name));
 
   mappedProduct.variation.forEach((variation) => {
     variation.size.sort((a, b) => a.name.localeCompare(b.name));
@@ -518,17 +495,13 @@ const initializeProductClient = (product: IProduct) => {
   const productClient = mapProductToClient(product);
 
   const initialSelectedColor =
-    productClient.variation && productClient.variation.length > 0
-      ? productClient.variation[0].color
-      : ({} as IColor);
+    productClient.variation && productClient.variation.length > 0 ? productClient.variation[0].color : ({} as IColor);
   const initialSelectedSize =
     productClient.variation && productClient.variation.length > 0
       ? productClient.variation[0].size[0]
       : ({} as ISizeClient);
   const initialProductStock =
-    productClient.variation && productClient.variation.length > 0
-      ? productClient.variation[0].size[0].stock
-      : 0;
+    productClient.variation && productClient.variation.length > 0 ? productClient.variation[0].size[0].stock : 0;
 
   return {
     productClient,
