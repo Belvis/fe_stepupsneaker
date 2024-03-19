@@ -21,26 +21,30 @@ import {
   Upload,
   message,
 } from "antd";
-import InputMask from "react-input-mask";
 
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { QRScannerModal } from "../../../components";
-import { getUserGenderOptions } from "../../../constants";
-import { ICustomer, IDistrict, IProvince, IWard } from "../../../interfaces";
+import { QRScannerModal } from "../../../../src/components";
+import { getUserGenderOptions } from "../../../../src/constants";
+import {
+  ICustomer,
+  IDistrict,
+  IProvince,
+  IWard,
+} from "../../../../src/interfaces";
 import {
   getBase64Image,
   parseQRCodeResult,
   showWarningConfirmDialog,
-} from "../../../utils";
+} from "../../../../src/utils";
 import {
   validateCommon,
   validateEmail,
   validateFullName,
   validatePhoneNumber,
-} from "../../../helpers/validate";
+} from "../../../../src/helpers/validate";
 
 const { Text } = Typography;
 const { TextArea } = Input;

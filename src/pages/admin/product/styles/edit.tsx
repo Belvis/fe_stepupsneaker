@@ -1,9 +1,9 @@
 import { HttpError, useOne, useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps, Select } from "antd";
-import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
 import { IStyle } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { validateCommon } from "../../../../helpers/validate";
+import { getProductStatusOptions } from "../../../../constants";
 
 type EditStyleProps = {
   modalProps: ModalProps;
@@ -75,7 +75,7 @@ export const EditStyle: React.FC<EditStyleProps> = ({
             },
           ]}
         >
-          <Select options={PRODUCT_STATUS_OPTIONS} />
+          <Select options={getProductStatusOptions(t)} />
         </Form.Item>
       </Form>
     </Modal>

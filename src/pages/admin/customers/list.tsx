@@ -39,13 +39,13 @@ import { ColumnsType } from "antd/es/table";
 import dayjs from "dayjs";
 import { debounce } from "lodash";
 import { useState } from "react";
-import { UserStatus, AddressModal } from "../../../components";
+import { ICustomer, ICustomerFilterVariables } from "../../../interfaces";
+import { showDangerConfirmDialog } from "../../../utils";
+import { AddressModal, UserStatus } from "../../../components";
 import {
   getUserStatusOptions,
   tablePaginationSettings,
 } from "../../../constants";
-import { ICustomer, ICustomerFilterVariables } from "../../../interfaces";
-import { showDangerConfirmDialog } from "../../../utils";
 
 const { Text } = Typography;
 

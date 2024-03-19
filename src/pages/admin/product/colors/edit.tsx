@@ -10,11 +10,11 @@ import {
   Select,
 } from "antd";
 import type { Color } from "antd/es/color-picker";
-import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
 import { IColor } from "../../../../interfaces";
 import { colorPickerStyles } from "./style";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { validateCommon } from "../../../../helpers/validate";
+import { getProductStatusOptions } from "../../../../constants";
 
 type EditColorProps = {
   modalProps: ModalProps;
@@ -111,7 +111,7 @@ export const EditColor: React.FC<EditColorProps> = ({
             },
           ]}
         >
-          <Select options={PRODUCT_STATUS_OPTIONS} />
+          <Select options={getProductStatusOptions(t)} />
         </Form.Item>
       </Form>
     </Modal>

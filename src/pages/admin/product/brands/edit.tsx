@@ -1,9 +1,6 @@
 import { HttpError, useOne, useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps, Select } from "antd";
-import {
-  PRODUCT_STATUS_OPTIONS,
-  getProductStatusOptions,
-} from "../../../../constants";
+import { getProductStatusOptions } from "../../../../constants";
 import { IBrand } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { validateCommon } from "../../../../helpers/validate";

@@ -1,9 +1,9 @@
 import { HttpError, useOne, useTranslate } from "@refinedev/core";
 import { Form, FormProps, Grid, Input, Modal, ModalProps, Select } from "antd";
-import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
 import { ISole } from "../../../../interfaces";
 import { showWarningConfirmDialog } from "../../../../utils";
 import { validateCommon } from "../../../../helpers/validate";
+import { getProductStatusOptions } from "../../../../constants";
 
 type EditSoleProps = {
   modalProps: ModalProps;
@@ -74,7 +74,7 @@ export const EditSole: React.FC<EditSoleProps> = ({
             },
           ]}
         >
-          <Select options={PRODUCT_STATUS_OPTIONS} />
+          <Select options={getProductStatusOptions(t)} />
         </Form.Item>
       </Form>
     </Modal>

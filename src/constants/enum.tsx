@@ -1,16 +1,5 @@
 import { TranslateFunction } from "@refinedev/core/dist/interfaces/bindings/i18n";
 
-export const PRODUCT_STATUS_OPTIONS = [
-  {
-    label: "Active",
-    value: "ACTIVE",
-  },
-  {
-    label: "Inactive",
-    value: "INACTIVE",
-  },
-];
-
 export const getProductStatusOptions = (t: TranslateFunction) => [
   {
     label: t("enum.productStatuses.ACTIVE"),

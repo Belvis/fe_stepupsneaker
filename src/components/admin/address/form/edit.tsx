@@ -29,7 +29,6 @@ export const EditAddressForm: React.FC<EditAddressFormProps> = ({
   addressId,
 }) => {
   const t = useTranslate();
-  const [phoneInputValue, setPhoneInputValue] = useState("");
   const [provinces, setProvinces] = useState<IProvince[]>([]);
   const [districts, setDistricts] = useState<IDistrict[]>([]);
   const [wards, setWards] = useState<IWard[]>([]);

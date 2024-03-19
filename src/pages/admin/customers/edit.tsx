@@ -33,15 +33,26 @@ import {
 } from "antd/es/upload";
 import dayjs from "dayjs";
 import { useEffect, useState } from "react";
-import { ICustomer, IDistrict, IProvince, IWard } from "../../../interfaces";
-import { getUserGenderOptions, getUserStatusOptions } from "../../../constants";
-import { getBase64Image, showWarningConfirmDialog } from "../../../utils";
+import {
+  ICustomer,
+  IDistrict,
+  IProvince,
+  IWard,
+} from "../../../../src/interfaces";
+import {
+  getUserGenderOptions,
+  getUserStatusOptions,
+} from "../../../../src/constants";
+import {
+  getBase64Image,
+  showWarningConfirmDialog,
+} from "../../../../src/utils";
 import {
   validateCommon,
   validateEmail,
   validateFullName,
   validatePhoneNumber,
-} from "../../../helpers/validate";
+} from "../../../../src/helpers/validate";
 
 const { Text } = Typography;
 const { TextArea } = Input;

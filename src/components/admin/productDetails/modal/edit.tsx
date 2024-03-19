@@ -22,21 +22,20 @@ import {
 import type { UploadChangeParam } from "antd/es/upload";
 import type { RcFile, UploadFile, UploadProps } from "antd/es/upload/interface";
 import { useState } from "react";
-import { PRODUCT_STATUS_OPTIONS } from "../../../../constants";
-import { getBase64Image, showWarningConfirmDialog } from "../../../../utils";
+import { validateCommon } from "../../../../helpers/validate";
 import {
   IBrand,
   IColor,
   IMaterial,
+  IProductDetail,
   IProductDetailConvertedPayload,
-  IProductDetailFilterVariables,
   ISize,
   ISole,
   IStyle,
   ITradeMark,
-  IProductDetail,
 } from "../../../../interfaces";
-import { validateCommon } from "../../../../helpers/validate";
+import { getBase64Image, showWarningConfirmDialog } from "../../../../utils";
+import { getProductStatusOptions } from "../../../../constants";
 
 const { TextArea } = Input;
 const { Text } = Typography;
@@ -466,7 +465,7 @@ export const EditProductDetail: React.FC<EditProductProps> = ({
                 },
               ]}
             >
-              <Select options={PRODUCT_STATUS_OPTIONS} />
+              <Select options={getProductStatusOptions(t)} />
             </Form.Item>
           </Col>
         </Row>

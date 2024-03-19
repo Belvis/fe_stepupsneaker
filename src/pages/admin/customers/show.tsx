@@ -42,15 +42,18 @@ import {
   CreateAddress,
   EditAddressForm,
   OrderStatus,
-} from "../../../components";
+} from "../../../../src/components";
 import {
   IAddress,
   ICustomer,
   IOrder,
   IOrderFilterVariables,
   IVoucherHistory,
-} from "../../../interfaces";
-import { formatTimestamp, showWarningConfirmDialog } from "../../../utils";
+} from "../../../../src/interfaces";
+import {
+  formatTimestamp,
+  showWarningConfirmDialog,
+} from "../../../../src/utils";
 
 const { useBreakpoint } = Grid;
 const { Text } = Typography;
