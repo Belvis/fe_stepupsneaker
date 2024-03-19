@@ -1,17 +1,6 @@
 import { DeleteOutlined } from "@ant-design/icons";
 import { useDelete, useTranslate, useUpdate } from "@refinedev/core";
-import {
-  Avatar,
-  Button,
-  Card,
-  Col,
-  Flex,
-  InputNumber,
-  Row,
-  Typography,
-  message,
-  theme,
-} from "antd";
+import { Avatar, Button, Card, Col, Flex, InputNumber, Row, Typography, message, theme } from "antd";
 import { IOrderDetail } from "../../../../interfaces";
 import { NumberField } from "@refinedev/antd";
 import "./style.css";
@@ -26,11 +15,7 @@ type OrderItemProps = {
   callBack: () => void;
 };
 
-export const OrderItem: React.FC<OrderItemProps> = ({
-  orderDetail,
-  callBack,
-  count,
-}) => {
+export const OrderItem: React.FC<OrderItemProps> = ({ orderDetail, callBack, count }) => {
   const t = useTranslate();
   const { token } = useToken();
 
@@ -137,11 +122,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
         </Col>
         <Col span={8}>
           <Flex gap={15}>
-            <Avatar
-              shape="square"
-              size={64}
-              src={orderDetail.productDetail.image}
-            />
+            <Avatar shape="square" size={64} src={orderDetail.productDetail.image} />
             <Flex vertical>
               <Text strong>{product.name}</Text>
               <Text>Kích cỡ: {size.name}</Text>
@@ -160,10 +141,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
               borderRadius: 0,
             }}
             value={quantity}
-            onChange={debounce(
-              (value) => handleQuantityChange(value as number),
-              300
-            )}
+            onChange={debounce((value) => handleQuantityChange(value as number), 300)}
           />
         </Col>
         <Col span={4} style={{ textAlign: "end" }}>
@@ -191,12 +169,7 @@ export const OrderItem: React.FC<OrderItemProps> = ({
           </Text>
         </Col>
         <Col span={3} style={{ textAlign: "center" }}>
-          <Button
-            shape="circle"
-            type="text"
-            onClick={handleDelete}
-            icon={<DeleteOutlined />}
-          />
+          <Button shape="circle" type="text" onClick={handleDelete} icon={<DeleteOutlined />} />
         </Col>
       </Row>
     </Card>

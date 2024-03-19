@@ -10,3 +10,8 @@
 .page-tab-parent & {
     height: 100%;
 }
+
+.old {
+    text-decoration: line-through;
+    color: #333;
+}

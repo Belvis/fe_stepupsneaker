@@ -25,10 +25,10 @@ export interface INotification {
   customer: ICustomer;
   href: string;
   notificationType:
-    | "ORDER_PLACED"
-    | "ORDER_PENDING"
-    | "ORDER_CHANGED"
-    | "PRODUCT_LOW_STOCK";
+  | "ORDER_PLACED"
+  | "ORDER_PENDING"
+  | "ORDER_CHANGED"
+  | "PRODUCT_LOW_STOCK";
   read: boolean;
   delivered: boolean;
   createdAt: number;
@@ -417,6 +417,7 @@ export interface IProductDetail {
   image: string;
   price: number;
   quantity: number;
+  saleCount: number;
   status: ProductStatus;
   promotionProductDetails?: IPromotionProductDetailResponse[];
 }
